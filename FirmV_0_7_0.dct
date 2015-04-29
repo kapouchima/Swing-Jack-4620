@@ -1972,6 +1972,7 @@ tmr3on_bit
 to_
 to__bit
 tolower
+torquelogger
 tosh
 tosl
 tosu
@@ -2110,6 +2111,8 @@ uart1_tx_idle
 uart1_write
 uart1_write_text
 uldiv
+vcapm1
+vcapm2
 vcfg0
 vcfg0_bit
 vcfg1

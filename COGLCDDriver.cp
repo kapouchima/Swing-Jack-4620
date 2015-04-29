@@ -1,4 +1,4 @@
-#line 1 "C:/Users/baghi/Desktop/Sina/SwingJack - 4620/COGLCDDriver.c"
+#line 1 "C:/Users/baghi/Desktop/Sina/SwingJack - 4620/Swing-Jack-4620/COGLCDDriver.c"
 void LCD_Init(unsigned char lines)
 {
  I2C1_Start();

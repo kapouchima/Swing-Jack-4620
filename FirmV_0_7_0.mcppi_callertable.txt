@@ -43,6 +43,18 @@ main
 	ResetTaskEvents
 	TaskManager
 		Mul_16x16_U
+	TorqueLogger
+		WordToStrWithZeros
+			Div_16x16_U
+		Logger
+			LongWordToStrWithZeros
+				Div_32x32_U
+			UART_Write_Text
+				UART_Write
+					____DoIFC
+			UART1_Write_Text
+				UART1_Write
+			UART1_Write
 	EventHandler
 		GetExternalKeysState
 		GetLimitSwitchState
