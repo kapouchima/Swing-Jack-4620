@@ -1028,6 +1028,7 @@ overloadcounter2
 overloadduration
 overloadinit
 overloadsens
+overloadtime
 overloadtreshold
 ow_read
 ow_reset

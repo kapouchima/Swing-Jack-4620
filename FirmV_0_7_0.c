@@ -1,9 +1,3 @@
-/*
-Version 0.7.0 :
-
-
-*/
-
 #include "COGLCDDriver.h"
 
 
@@ -120,7 +114,7 @@ unsigned int  OverloadCounter1=0,OverloadCounter2=0;
 unsigned long temp;
 unsigned VCapM1,VCapM2;
 //------Configs
-char Door1OpenTime,Door2OpenTime,Door1CloseTime,Door2CloseTime,OpenPhEnable,LimiterEnable,LockEnable;
+char Door1OpenTime,Door2OpenTime,Door1CloseTime,Door2CloseTime,OpenPhEnable,LimiterEnable,LockEnable,OverloadTime;
 char OpenSoftStopTime,CloseSoftStopTime,OpenSoftStartTime,CloseSoftStartTime,ActionTimeDiff,LockForce,CloseAfterPass;
 unsigned AutoCloseTime,OverloadTreshold,OverloadDuration;
 //------Configs
@@ -192,7 +186,7 @@ void ClearTasks(char);
 void charValueToStr(char,char*);
 void charValueToStr_AC(char, char *);
 void intValueToStr(unsigned,char*);
-void SetOverloadParams(char);
+void SetOverloadParams(char,char);
 void TorqueLogger();
 
 
@@ -1702,12 +1696,13 @@ void SaveConfigs()
   EEPROM_Write(10,Hi(AutoCloseTime));
   EEPROM_Write(11,Lo(AutoCloseTime));
   EEPROM_Write(12,OverloadSens);
-  SetOverloadParams(OverloadSens);
   EEPROM_Write(13,CloseAfterPass);
   EEPROM_Write(14,LockForce);
   EEPROM_Write(15,OpenPhEnable);
   EEPROM_Write(16,LimiterEnable);
   EEPROM_Write(17,LockEnable);
+  EEPROM_Write(18,OverloadTime);
+  SetOverloadParams(OverloadSens,OverloadTime);
 
 }
 
@@ -1737,12 +1732,13 @@ void LoadConfigs()
   AutoCloseTime=AutoCloseTime<<8;
   AutoCloseTime=AutocloseTime|EEPROM_Read(11);
   OverloadSens=EEPROM_Read(12);
-  SetOverloadParams(OverloadSens);
   CloseAfterPass=EEPROM_Read(13);
   LockForce=EEPROM_Read(14);
   OpenPhEnable=EEPROM_Read(15);
   LimiterEnable=EEPROM_Read(16);
   LockEnable=EEPROM_Read(17);
+  OverloadTime=EEPROM_Read(18);
+  SetOverloadParams(OverloadSens,OverloadTime);
 
 }
 
@@ -1763,8 +1759,9 @@ void FactorySettings()
   Door1CloseTime=20;
   Door2OpenTime=20;
   Door2CloseTime=20;
-  OverloadSens=5;
-  SetOverloadParams(5);
+  OverloadSens=7;
+  OverloadTime=2;
+  SetOverloadParams(7,2);
   OpenSoftStopTime=10;
   OpenSoftStartTime=4;
   CloseSoftStopTime=10;
@@ -1966,45 +1963,49 @@ if(MenuPointer==0)
     charValueToStr(CloseSoftStopTime,LCDLine2+6);}
 
  if(MenuPointer==9)
-   {memcpy(LCDLine1,"09 Power        ",16);LCDUpdateFlag=1;
-    bytetostr(OverloadSens,LCDLine2+3);if(OverloadSens>9)memcpy(LCDLine2+7,"250Kg+",6);else memcpy(LCDLine2+7,"250Kg-",6);}
-    
+   {memcpy(LCDLine1,"09 Overload Sens",16);LCDUpdateFlag=1;
+    bytetostr(OverloadSens,LCDLine2+3);if(OverloadSens>7)memcpy(LCDLine2+7,"250Kg-",6);else memcpy(LCDLine2+7,"250Kg+",6);}
+ 
  if(MenuPointer==10)
-   {memcpy(LCDLine1,"10 Interval Time",16);LCDUpdateFlag=1;
-    charValueToStr(ActionTimeDiff,LCDLine2+6);}
+   {memcpy(LCDLine1,"10 Overload Tim",16);LCDUpdateFlag=1;
+    charValueToStr(OverloadTime,LCDLine2+6);}
     
  if(MenuPointer==11)
-   {memcpy(LCDLine1,"11 Auto-close T ",16);LCDUpdateFlag=1;
+   {memcpy(LCDLine1,"11 Interval Time",16);LCDUpdateFlag=1;
+    charValueToStr(ActionTimeDiff,LCDLine2+6);}
+    
+ if(MenuPointer==12)
+   {memcpy(LCDLine1,"12 Auto-close T ",16);LCDUpdateFlag=1;
     intValueToStr(AutoCloseTime,LCDLine2+4);}
     
-if(MenuPointer==12)
-   {memcpy(LCDLine1,"12 Factory Reset",16);LCDUpdateFlag=1;}
+if(MenuPointer==13)
+   {memcpy(LCDLine1,"13 Factory Reset",16);LCDUpdateFlag=1;}
    
- if(MenuPointer==13)
-   {memcpy(LCDLine1,"13 Open Photo En",16);LCDUpdateFlag=1;
+ if(MenuPointer==14)
+   {memcpy(LCDLine1,"14 Open Photo En",16);LCDUpdateFlag=1;
     if(OpenPhEnable==0) memcpy(LCDLine2+6,"No     ",7);else memcpy(LCDLine2+6,"Yes     ",8);}
 
- if(MenuPointer==14)
-   {memcpy(LCDLine1,"14 Limit Enable ",16);LCDUpdateFlag=1;
+ if(MenuPointer==15)
+   {memcpy(LCDLine1,"15 Limit Enable ",16);LCDUpdateFlag=1;
     if(LimiterEnable==0) memcpy(LCDLine2+6,"No     ",7);else memcpy(LCDLine2+6,"Yes     ",8);}
 
- if(MenuPointer==15)
-   {memcpy(LCDLine1,"15 Lock Enable  ",16);LCDUpdateFlag=1;
+ if(MenuPointer==16)
+   {memcpy(LCDLine1,"16 Lock Enable  ",16);LCDUpdateFlag=1;
     if(LockEnable==0) memcpy(LCDLine2+6,"No     ",7);else memcpy(LCDLine2+6,"Yes     ",8);}
 
- if(MenuPointer==16)
-   {memcpy(LCDLine1,"16 Lock Force   ",16);LCDUpdateFlag=1;
+ if(MenuPointer==17)
+   {memcpy(LCDLine1,"17 Lock Force   ",16);LCDUpdateFlag=1;
     if(LockForce==0) memcpy(LCDLine2+6,"No     ",7);else memcpy(LCDLine2+6,"Yes     ",8);}
  
- if(MenuPointer==17)
-   {memcpy(LCDLine1,"17 Au-Cl Pass   ",16);LCDUpdateFlag=1;
+ if(MenuPointer==18)
+   {memcpy(LCDLine1,"18 Au-Cl Pass   ",16);LCDUpdateFlag=1;
     charValueToStr(CloseAfterPass,LCDLine2+6);}
 
-  if(MenuPointer==18)
-   {memcpy(LCDLine1,"18 Save Changes ",16);LCDUpdateFlag=1;}
-
   if(MenuPointer==19)
-   {memcpy(LCDLine1,"19 Discard Exit ",16);LCDUpdateFlag=1;}
+   {memcpy(LCDLine1,"19 Save Changes ",16);LCDUpdateFlag=1;}
+
+  if(MenuPointer==20)
+   {memcpy(LCDLine1,"20 Discard Exit ",16);LCDUpdateFlag=1;}
 
 
    State=101;
@@ -2048,10 +2049,10 @@ void Menu1()
 {
 
   if((Events.Keys.b0==1))
-    {if(MenuPointer==0){MenuPointer=19;}else{MenuPointer=MenuPointer-1;}State=100;}
+    {if(MenuPointer==0){MenuPointer=20;}else{MenuPointer=MenuPointer-1;}State=100;}
 
   if((Events.Keys.b2==1))
-    {if(MenuPointer==19){MenuPointer=0;}else{MenuPointer=MenuPointer+1;}State=100;}
+    {if(MenuPointer==20){MenuPointer=0;}else{MenuPointer=MenuPointer+1;}State=100;}
 
   if((Events.Keys.b1==1))
     {State=102;}
@@ -2170,8 +2171,18 @@ void Menu2()
         {OverloadSens=OverloadSens+1;Menu0();State=102;}
     }
 
-  //interval time
+  //overload time
   if(MenuPointer==10)
+    { if((Events.Keys.b0==1)&&(OverloadTime>1))
+        {OverloadTime=OverloadTime-1;Menu0();State=102;}
+      if((Events.Keys.b2==1)&&(OverloadTime<10))
+        {OverloadTime=OverloadTime+1;Menu0();State=102;}
+    }
+
+
+
+  //interval time
+  if(MenuPointer==11)
     { if((Events.Keys.b0==1)&&(ActionTimeDiff>0))
         {ActionTimeDiff=ActionTimeDiff-1;Menu0();State=102;}
       if((Events.Keys.b2==1)&&(ActionTimeDiff<255))
@@ -2179,7 +2190,7 @@ void Menu2()
     }
   
   //autoclose time
-  if(MenuPointer==11)
+  if(MenuPointer==12)
     { if((Events.Keys.b0==1)&&(AutoCloseTime>0))
         {AutoCloseTime=AutoCloseTime-1;Menu0();State=102;}
       if((Events.Keys.b2==1)&&(AutoCloseTime<65000))
@@ -2187,7 +2198,7 @@ void Menu2()
     }
 
   //factory reset
-  if(MenuPointer==12)
+  if(MenuPointer==13)
     {
       State=0;
       memcpy(LCDLine1,Sipher,16);
@@ -2200,7 +2211,7 @@ void Menu2()
     }
 
   //open photocell enable
-  if(MenuPointer==13)
+  if(MenuPointer==14)
     { if((Events.Keys.b0==1)&&(OpenPhEnable>0))
         {OpenPhEnable=OpenPhEnable-1;Menu0();State=102;}
       if((Events.Keys.b2==1)&&(OpenPhEnable<1))
@@ -2209,7 +2220,7 @@ void Menu2()
     
     
   //limiter enable
-  if(MenuPointer==14)
+  if(MenuPointer==15)
     { if((Events.Keys.b0==1)&&(LimiterEnable>0))
         {LimiterEnable=LimiterEnable-1;Menu0();State=102;}
       if((Events.Keys.b2==1)&&(LimiterEnable<1))
@@ -2217,7 +2228,7 @@ void Menu2()
     }
 
   //lock
-  if(MenuPointer==15)
+  if(MenuPointer==16)
     { if((Events.Keys.b0==1)&&(LockEnable>0))
         {LockEnable=LockEnable-1;Menu0();State=102;}
       if((Events.Keys.b2==1)&&(LockEnable<1))
@@ -2225,7 +2236,7 @@ void Menu2()
     }
 
   //lock force
-  if(MenuPointer==16)
+  if(MenuPointer==17)
     { if((Events.Keys.b0==1)&&(LockForce>0))
         {LockForce=LockForce-1;Menu0();State=102;}
       if((Events.Keys.b2==1)&&(LockForce<1))
@@ -2233,7 +2244,7 @@ void Menu2()
     }
 
   //auto close after pass
-  if(MenuPointer==17)
+  if(MenuPointer==18)
     { if((Events.Keys.b0==1)&&(CloseAfterPass>0))
         {CloseAfterPass=CloseAfterPass-1;if(CloseAfterPass==9) CloseAfterPass=0;Menu0();State=102;}
       if((Events.Keys.b2==1)&&(CloseAfterPass<255))
@@ -2241,7 +2252,7 @@ void Menu2()
     }
 
   //save
-  if(MenuPointer==18)
+  if(MenuPointer==19)
     {
       State=103;
       memcpy(LCDLine1,Sipher,16);
@@ -2252,7 +2263,7 @@ void Menu2()
     }
 
   //Exit
-  if(MenuPointer==19)
+  if(MenuPointer==20)
     {
       State=0;
       memcpy(LCDLine1,Sipher,16);
@@ -2663,43 +2674,69 @@ void intValueToStr(unsigned val, char * string)
 
 
 
-void SetOverloadParams(char p)
+void SetOverloadParams(char p, char d)
 {
 
   switch(p)
   {
-    case 0: OverloadTreshold=750;OverloadDuration=50; break;
+    case 0: OverloadTreshold=0; break;
 
-    case 1: OverloadTreshold=720;OverloadDuration=50; break;
+    case 1: OverloadTreshold=480; break;
 
-    case 2: OverloadTreshold=680;OverloadDuration=50; break;
+    case 2: OverloadTreshold=490; break;
 
-    case 3: OverloadTreshold=650;OverloadDuration=50; break;
+    case 3: OverloadTreshold=500; break;
 
-    case 4: OverloadTreshold=630;OverloadDuration=50; break;
+    case 4: OverloadTreshold=530; break;
 
-    case 5: OverloadTreshold=600;OverloadDuration=50; break;
+    case 5: OverloadTreshold=550; break;
 
-    case 6: OverloadTreshold=550;OverloadDuration=100; break;
+    case 6: OverloadTreshold=570; break;
 
-    case 7: OverloadTreshold=530;OverloadDuration=100; break;
+    case 7: OverloadTreshold=600; break;
 
-    case 8: OverloadTreshold=500;OverloadDuration=100; break;
+    case 8: OverloadTreshold=630; break;
 
-    case 9: OverloadTreshold=490;OverloadDuration=100; break;
+    case 9: OverloadTreshold=650; break;
     
-    case 10: OverloadTreshold=490;OverloadDuration=300; break;
+    case 10: OverloadTreshold=670; break;
     
-    case 11: OverloadTreshold=490;OverloadDuration=500; break;
+    case 11: OverloadTreshold=700; break;
     
-    case 12: OverloadTreshold=480;OverloadDuration=1000; break;
+    case 12: OverloadTreshold=750; break;
     
-    case 13: OverloadTreshold=480;OverloadDuration=2000; break;
+    case 13: OverloadTreshold=800; break;
     
-    case 14: OverloadTreshold=480;OverloadDuration=3000; break;
+    case 14: OverloadTreshold=850; break;
     
-    case 15: OverloadTreshold=0;OverloadDuration=255; break;
+    case 15: OverloadTreshold=900; break;
 
+  }
+  
+  
+  switch(d)
+  {
+    case 0: OverloadDuration=100; break;
+  
+    case 1: OverloadDuration=500; break;
+
+    case 2: OverloadDuration=1000; break;
+
+    case 3: OverloadDuration=1500; break;
+
+    case 4: OverloadDuration=2000; break;
+
+    case 5: OverloadDuration=2500; break;
+
+    case 6: OverloadDuration=3000; break;
+
+    case 7: OverloadDuration=3500; break;
+
+    case 8: OverloadDuration=4000; break;
+
+    case 9: OverloadDuration=4500; break;
+
+    case 10: OverloadDuration=5000; break;
   }
 }
 
@@ -2776,6 +2813,8 @@ void TorqueLogger()
       wordtostrwithzeros(VCapM2,txt+4);
       txt[9]=0;
       Logger(txt,0);
+      
+      break;
       
     case 200:
       txt[0]='D';txt[1]='L';txt[2]='1';txt[3]='-';
