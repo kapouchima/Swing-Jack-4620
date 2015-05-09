@@ -76,15 +76,15 @@ char msCounter=0,ms20A=0,ms20B,Flag20ms=1,Flag500ms=1,State=0,LCDUpdateFlag=0,LC
 char PrevRemotePulseTime1=0,PrevRemotePulseTime2=0,RemoteAFlag=0,RemoteBFlag=0,Motor1FullSpeed=1,Motor2FullSpeed=1,BuzzCounter=0;
 char Motor1Start=0,Motor2Start=0,ZCCounter=0,PhotocellOpenFlag=0,ActiveDoors=0,BuzzFlag=0,LongBuzzFlag=0;
 char OverloadCheckFlag1=0,OverloadCheckFlag2=0,OpenDone=3,CloseDone=3,M1isSlow=0,M2isSlow=0,PassFlag=0,LearnPhase,AboutCounter=0;
-char _AC=0,PhotocellCount=0,MenuPointer=0,DebouncingDelay=0,LCDFlash=0,Pressed=0,OverloadSens=5,LearningMode=0,KeyFlag=0,LCDLines=1;
+char _AC=0,PhotocellCount=0,MenuPointer=0,DebouncingDelay=0,LCDFlash=0,Pressed=0,OverloadSens1=7,OverloadSens2=7,LearningMode=0,KeyFlag=0,LCDLines=1;
 char t[11],FlashFlag=0;
 unsigned int OverloadCounter1=0,OverloadCounter2=0;
 unsigned long temp;
 unsigned VCapM1,VCapM2;
 
-char Door1OpenTime,Door2OpenTime,Door1CloseTime,Door2CloseTime,OpenPhEnable,LimiterEnable,LockEnable,OverloadTime;
+char Door1OpenTime,Door2OpenTime,Door1CloseTime,Door2CloseTime,OpenPhEnable,LimiterEnable,LockEnable,OverloadTime1,OverloadTime2;
 char OpenSoftStopTime,CloseSoftStopTime,OpenSoftStartTime,CloseSoftStartTime,ActionTimeDiff,LockForce,CloseAfterPass;
-unsigned AutoCloseTime,OverloadTreshold,OverloadDuration;
+unsigned AutoCloseTime,OverloadTreshold1,OverloadDuration1,OverloadTreshold2,OverloadDuration2;
 
 char LCDLine1[17]="                ";
 char LCDLine2[17]="                ";
@@ -140,7 +140,7 @@ void ClearTasks(char);
 void charValueToStr(char,char*);
 void charValueToStr_AC(char, char *);
 void intValueToStr(unsigned,char*);
-void SetOverloadParams(char,char);
+void SetOverloadParams(char,char,char,char);
 void TorqueLogger();
 #line 204 "C:/Users/baghi/Desktop/Sina/SwingJack - 4620/Swing-Jack-4620/FirmV_0_7_0.c"
 void interrupt()
@@ -1281,7 +1281,7 @@ if(Motor1FullSpeed!=0)
 {
 
 
- if(VCapM1<OverloadTreshold)
+ if(VCapM1<OverloadTreshold1)
  {
  if(OverloadCounter1<65530)
  OverloadCounter1=OverloadCounter1+1;
@@ -1295,7 +1295,7 @@ if(Motor1FullSpeed!=0)
 else
 {OverloadCounter1=0;}
 
-if (OverloadCounter1>OverloadDuration)
+if (OverloadCounter1>OverloadDuration1)
  res.b0=1;
 
 
@@ -1303,7 +1303,7 @@ if (OverloadCounter1>OverloadDuration)
 
 if(Motor2FullSpeed!=0)
 {
- if(VCapM2<OverloadTreshold)
+ if(VCapM2<OverloadTreshold2)
  {
  if(OverloadCounter2<65530)
  OverloadCounter2=OverloadCounter2+1;
@@ -1318,7 +1318,7 @@ else
 {OverloadCounter2=0;}
 
 
-if (OverloadCounter2>OverloadDuration)
+if (OverloadCounter2>OverloadDuration2)
  res.b1=1;
 
 return res;
@@ -1394,17 +1394,19 @@ void SaveConfigs()
  EEPROM_Write(9,CloseSoftStopTime);
  EEPROM_Write(10, ((char *)&AutoCloseTime)[1] );
  EEPROM_Write(11, ((char *)&AutoCloseTime)[0] );
- EEPROM_Write(12,OverloadSens);
+ EEPROM_Write(12,OverloadSens1);
  EEPROM_Write(13,CloseAfterPass);
  EEPROM_Write(14,LockForce);
  EEPROM_Write(15,OpenPhEnable);
  EEPROM_Write(16,LimiterEnable);
  EEPROM_Write(17,LockEnable);
- EEPROM_Write(18,OverloadTime);
- SetOverloadParams(OverloadSens,OverloadTime);
+ EEPROM_Write(18,OverloadTime1);
+ EEPROM_Write(19,OverloadSens2);
+ EEPROM_Write(20,OverloadTime2);
+ SetOverloadParams(OverloadSens1,OverloadTime1,OverloadSens2,OverloadTime2);
 
 }
-#line 1720 "C:/Users/baghi/Desktop/Sina/SwingJack - 4620/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 1722 "C:/Users/baghi/Desktop/Sina/SwingJack - 4620/Swing-Jack-4620/FirmV_0_7_0.c"
 void LoadConfigs()
 {
  Door1OpenTime=EEPROM_Read(1);
@@ -1419,26 +1421,30 @@ void LoadConfigs()
  AutoCloseTime=EEPROM_Read(10);
  AutoCloseTime=AutoCloseTime<<8;
  AutoCloseTime=AutocloseTime|EEPROM_Read(11);
- OverloadSens=EEPROM_Read(12);
+ OverloadSens1=EEPROM_Read(12);
  CloseAfterPass=EEPROM_Read(13);
  LockForce=EEPROM_Read(14);
  OpenPhEnable=EEPROM_Read(15);
  LimiterEnable=EEPROM_Read(16);
  LockEnable=EEPROM_Read(17);
- OverloadTime=EEPROM_Read(18);
- SetOverloadParams(OverloadSens,OverloadTime);
+ OverloadTime1=EEPROM_Read(18);
+ OverloadSens2=EEPROM_Read(19);
+ OverloadTime2=EEPROM_Read(20);
+ SetOverloadParams(OverloadSens1,OverloadTime1,OverloadSens2,OverloadTime2);
 
 }
-#line 1756 "C:/Users/baghi/Desktop/Sina/SwingJack - 4620/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 1760 "C:/Users/baghi/Desktop/Sina/SwingJack - 4620/Swing-Jack-4620/FirmV_0_7_0.c"
 void FactorySettings()
 {
  Door1OpenTime=20;
  Door1CloseTime=20;
  Door2OpenTime=20;
  Door2CloseTime=20;
- OverloadSens=7;
- OverloadTime=2;
- SetOverloadParams(7,2);
+ OverloadSens1=7;
+ OverloadTime1=2;
+ OverloadSens2=7;
+ OverloadTime2=2;
+ SetOverloadParams(7,2,7,2);
  OpenSoftStopTime=10;
  OpenSoftStartTime=4;
  CloseSoftStopTime=10;
@@ -1492,7 +1498,7 @@ void StopMotor(char Mx)
   portb.b4 =0;
  }
 }
-#line 1829 "C:/Users/baghi/Desktop/Sina/SwingJack - 4620/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 1835 "C:/Users/baghi/Desktop/Sina/SwingJack - 4620/Swing-Jack-4620/FirmV_0_7_0.c"
 char CheckTask(char TaskCode)
 {
  if(Events.Task1==TaskCode)
@@ -1550,7 +1556,7 @@ char GetAutocloseTime()
  if(i>=20) i=0;
  return i;
 }
-#line 1902 "C:/Users/baghi/Desktop/Sina/SwingJack - 4620/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 1908 "C:/Users/baghi/Desktop/Sina/SwingJack - 4620/Swing-Jack-4620/FirmV_0_7_0.c"
 void ClearTasks(char except)
 {
  char i;
@@ -1558,7 +1564,7 @@ void ClearTasks(char except)
  if((Tasks[i].Expired==0)&&(Tasks[i].TaskCode!=except))
  Tasks[i].Expired=1;
 }
-#line 1923 "C:/Users/baghi/Desktop/Sina/SwingJack - 4620/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 1929 "C:/Users/baghi/Desktop/Sina/SwingJack - 4620/Swing-Jack-4620/FirmV_0_7_0.c"
 void Menu0()
 {
  LCDLines=2;
@@ -1602,49 +1608,57 @@ if(MenuPointer==0)
  charValueToStr(CloseSoftStopTime,LCDLine2+6);}
 
  if(MenuPointer==9)
- {memcpy(LCDLine1,"09 Overload Sens",16);LCDUpdateFlag=1;
- bytetostr(OverloadSens,LCDLine2+3);if(OverloadSens>7)memcpy(LCDLine2+7,"250Kg-",6);else memcpy(LCDLine2+7,"250Kg+",6);}
+ {memcpy(LCDLine1,"09 M1 Overl Sens",16);LCDUpdateFlag=1;
+ bytetostr(OverloadSens1,LCDLine2+3);if(OverloadSens1>7)memcpy(LCDLine2+7,"250Kg-",6);else memcpy(LCDLine2+7,"250Kg+",6);}
 
  if(MenuPointer==10)
- {memcpy(LCDLine1,"10 Overload Tim",16);LCDUpdateFlag=1;
- charValueToStr(OverloadTime,LCDLine2+6);}
+ {memcpy(LCDLine1,"10 M2 Overl Sens",16);LCDUpdateFlag=1;
+ bytetostr(OverloadSens2,LCDLine2+3);if(OverloadSens2>7)memcpy(LCDLine2+7,"250Kg-",6);else memcpy(LCDLine2+7,"250Kg+",6);}
 
  if(MenuPointer==11)
- {memcpy(LCDLine1,"11 Interval Time",16);LCDUpdateFlag=1;
- charValueToStr(ActionTimeDiff,LCDLine2+6);}
+ {memcpy(LCDLine1,"11 M1 Overl Time",16);LCDUpdateFlag=1;
+ charValueToStr(OverloadTime1,LCDLine2+6);}
 
  if(MenuPointer==12)
- {memcpy(LCDLine1,"12 Auto-close T ",16);LCDUpdateFlag=1;
- intValueToStr(AutoCloseTime,LCDLine2+4);}
+ {memcpy(LCDLine1,"12 M2 Overl Time",16);LCDUpdateFlag=1;
+ charValueToStr(OverloadTime2,LCDLine2+6);}
 
-if(MenuPointer==13)
- {memcpy(LCDLine1,"13 Factory Reset",16);LCDUpdateFlag=1;}
+ if(MenuPointer==13)
+ {memcpy(LCDLine1,"13 Interval Time",16);LCDUpdateFlag=1;
+ charValueToStr(ActionTimeDiff,LCDLine2+6);}
 
  if(MenuPointer==14)
- {memcpy(LCDLine1,"14 Open Photo En",16);LCDUpdateFlag=1;
- if(OpenPhEnable==0) memcpy(LCDLine2+6,"No     ",7);else memcpy(LCDLine2+6,"Yes     ",8);}
+ {memcpy(LCDLine1,"14 Auto-close T ",16);LCDUpdateFlag=1;
+ intValueToStr(AutoCloseTime,LCDLine2+4);}
 
- if(MenuPointer==15)
- {memcpy(LCDLine1,"15 Limit Enable ",16);LCDUpdateFlag=1;
- if(LimiterEnable==0) memcpy(LCDLine2+6,"No     ",7);else memcpy(LCDLine2+6,"Yes     ",8);}
+if(MenuPointer==15)
+ {memcpy(LCDLine1,"15 Factory Reset",16);LCDUpdateFlag=1;}
 
  if(MenuPointer==16)
- {memcpy(LCDLine1,"16 Lock Enable  ",16);LCDUpdateFlag=1;
- if(LockEnable==0) memcpy(LCDLine2+6,"No     ",7);else memcpy(LCDLine2+6,"Yes     ",8);}
+ {memcpy(LCDLine1,"16 Open Photo En",16);LCDUpdateFlag=1;
+ if(OpenPhEnable==0) memcpy(LCDLine2+6,"No     ",7);else memcpy(LCDLine2+6,"Yes     ",8);}
 
  if(MenuPointer==17)
- {memcpy(LCDLine1,"17 Lock Force   ",16);LCDUpdateFlag=1;
- if(LockForce==0) memcpy(LCDLine2+6,"No     ",7);else memcpy(LCDLine2+6,"Yes     ",8);}
+ {memcpy(LCDLine1,"17 Limit Enable ",16);LCDUpdateFlag=1;
+ if(LimiterEnable==0) memcpy(LCDLine2+6,"No     ",7);else memcpy(LCDLine2+6,"Yes     ",8);}
 
  if(MenuPointer==18)
- {memcpy(LCDLine1,"18 Au-Cl Pass   ",16);LCDUpdateFlag=1;
- charValueToStr(CloseAfterPass,LCDLine2+6);}
+ {memcpy(LCDLine1,"18 Lock Enable  ",16);LCDUpdateFlag=1;
+ if(LockEnable==0) memcpy(LCDLine2+6,"No     ",7);else memcpy(LCDLine2+6,"Yes     ",8);}
 
  if(MenuPointer==19)
- {memcpy(LCDLine1,"19 Save Changes ",16);LCDUpdateFlag=1;}
+ {memcpy(LCDLine1,"19 Lock Force   ",16);LCDUpdateFlag=1;
+ if(LockForce==0) memcpy(LCDLine2+6,"No     ",7);else memcpy(LCDLine2+6,"Yes     ",8);}
 
  if(MenuPointer==20)
- {memcpy(LCDLine1,"20 Discard Exit ",16);LCDUpdateFlag=1;}
+ {memcpy(LCDLine1,"20 Au-Cl Pass   ",16);LCDUpdateFlag=1;
+ charValueToStr(CloseAfterPass,LCDLine2+6);}
+
+ if(MenuPointer==21)
+ {memcpy(LCDLine1,"21 Save Changes ",16);LCDUpdateFlag=1;}
+
+ if(MenuPointer==22)
+ {memcpy(LCDLine1,"22 Discard Exit ",16);LCDUpdateFlag=1;}
 
 
  State=101;
@@ -1688,10 +1702,10 @@ void Menu1()
 {
 
  if((Events.Keys.b0==1))
- {if(MenuPointer==0){MenuPointer=20;}else{MenuPointer=MenuPointer-1;}State=100;}
+ {if(MenuPointer==0){MenuPointer=22;}else{MenuPointer=MenuPointer-1;}State=100;}
 
  if((Events.Keys.b2==1))
- {if(MenuPointer==20){MenuPointer=0;}else{MenuPointer=MenuPointer+1;}State=100;}
+ {if(MenuPointer==22){MenuPointer=0;}else{MenuPointer=MenuPointer+1;}State=100;}
 
  if((Events.Keys.b1==1))
  {State=102;}
@@ -1804,24 +1818,40 @@ void Menu2()
 
 
  if(MenuPointer==9)
- { if((Events.Keys.b0==1)&&(OverloadSens>1))
- {OverloadSens=OverloadSens-1;Menu0();State=102;}
- if((Events.Keys.b2==1)&&(OverloadSens<15))
- {OverloadSens=OverloadSens+1;Menu0();State=102;}
+ { if((Events.Keys.b0==1)&&(OverloadSens1>1))
+ {OverloadSens1=OverloadSens1-1;Menu0();State=102;}
+ if((Events.Keys.b2==1)&&(OverloadSens1<15))
+ {OverloadSens1=OverloadSens1+1;Menu0();State=102;}
  }
+
 
 
  if(MenuPointer==10)
- { if((Events.Keys.b0==1)&&(OverloadTime>1))
- {OverloadTime=OverloadTime-1;Menu0();State=102;}
- if((Events.Keys.b2==1)&&(OverloadTime<10))
- {OverloadTime=OverloadTime+1;Menu0();State=102;}
+ { if((Events.Keys.b0==1)&&(OverloadSens2>1))
+ {OverloadSens2=OverloadSens2-1;Menu0();State=102;}
+ if((Events.Keys.b2==1)&&(OverloadSens2<15))
+ {OverloadSens2=OverloadSens2+1;Menu0();State=102;}
+ }
+
+
+ if(MenuPointer==11)
+ { if((Events.Keys.b0==1)&&(OverloadTime1>1))
+ {OverloadTime1=OverloadTime1-1;Menu0();State=102;}
+ if((Events.Keys.b2==1)&&(OverloadTime1<10))
+ {OverloadTime1=OverloadTime1+1;Menu0();State=102;}
  }
 
 
 
+ if(MenuPointer==12)
+ { if((Events.Keys.b0==1)&&(OverloadTime2>1))
+ {OverloadTime2=OverloadTime2-1;Menu0();State=102;}
+ if((Events.Keys.b2==1)&&(OverloadTime2<10))
+ {OverloadTime2=OverloadTime2+1;Menu0();State=102;}
+ }
 
- if(MenuPointer==11)
+
+ if(MenuPointer==13)
  { if((Events.Keys.b0==1)&&(ActionTimeDiff>0))
  {ActionTimeDiff=ActionTimeDiff-1;Menu0();State=102;}
  if((Events.Keys.b2==1)&&(ActionTimeDiff<255))
@@ -1829,7 +1859,7 @@ void Menu2()
  }
 
 
- if(MenuPointer==12)
+ if(MenuPointer==14)
  { if((Events.Keys.b0==1)&&(AutoCloseTime>0))
  {AutoCloseTime=AutoCloseTime-1;Menu0();State=102;}
  if((Events.Keys.b2==1)&&(AutoCloseTime<65000))
@@ -1837,7 +1867,7 @@ void Menu2()
  }
 
 
- if(MenuPointer==13)
+ if(MenuPointer==15)
  {
  State=0;
  memcpy(LCDLine1,Sipher,16);
@@ -1850,7 +1880,7 @@ void Menu2()
  }
 
 
- if(MenuPointer==14)
+ if(MenuPointer==16)
  { if((Events.Keys.b0==1)&&(OpenPhEnable>0))
  {OpenPhEnable=OpenPhEnable-1;Menu0();State=102;}
  if((Events.Keys.b2==1)&&(OpenPhEnable<1))
@@ -1859,7 +1889,7 @@ void Menu2()
 
 
 
- if(MenuPointer==15)
+ if(MenuPointer==17)
  { if((Events.Keys.b0==1)&&(LimiterEnable>0))
  {LimiterEnable=LimiterEnable-1;Menu0();State=102;}
  if((Events.Keys.b2==1)&&(LimiterEnable<1))
@@ -1867,7 +1897,7 @@ void Menu2()
  }
 
 
- if(MenuPointer==16)
+ if(MenuPointer==18)
  { if((Events.Keys.b0==1)&&(LockEnable>0))
  {LockEnable=LockEnable-1;Menu0();State=102;}
  if((Events.Keys.b2==1)&&(LockEnable<1))
@@ -1875,7 +1905,7 @@ void Menu2()
  }
 
 
- if(MenuPointer==17)
+ if(MenuPointer==19)
  { if((Events.Keys.b0==1)&&(LockForce>0))
  {LockForce=LockForce-1;Menu0();State=102;}
  if((Events.Keys.b2==1)&&(LockForce<1))
@@ -1883,7 +1913,7 @@ void Menu2()
  }
 
 
- if(MenuPointer==18)
+ if(MenuPointer==20)
  { if((Events.Keys.b0==1)&&(CloseAfterPass>0))
  {CloseAfterPass=CloseAfterPass-1;if(CloseAfterPass==9) CloseAfterPass=0;Menu0();State=102;}
  if((Events.Keys.b2==1)&&(CloseAfterPass<255))
@@ -1891,7 +1921,7 @@ void Menu2()
  }
 
 
- if(MenuPointer==19)
+ if(MenuPointer==21)
  {
  State=103;
  memcpy(LCDLine1,Sipher,16);
@@ -1902,7 +1932,7 @@ void Menu2()
  }
 
 
- if(MenuPointer==20)
+ if(MenuPointer==22)
  {
  State=0;
  memcpy(LCDLine1,Sipher,16);
@@ -1913,13 +1943,13 @@ void Menu2()
  LongBuzzFlag=1;
  }
 }
-#line 2288 "C:/Users/baghi/Desktop/Sina/SwingJack - 4620/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 2318 "C:/Users/baghi/Desktop/Sina/SwingJack - 4620/Swing-Jack-4620/FirmV_0_7_0.c"
 void Menu3()
 {
  SaveConfigs();
  State=0;
 }
-#line 2306 "C:/Users/baghi/Desktop/Sina/SwingJack - 4620/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 2336 "C:/Users/baghi/Desktop/Sina/SwingJack - 4620/Swing-Jack-4620/FirmV_0_7_0.c"
 void LearnAuto()
 {
  static unsigned long startT,stopT;
@@ -2006,7 +2036,7 @@ void LearnAuto()
 
 
 }
-#line 2411 "C:/Users/baghi/Desktop/Sina/SwingJack - 4620/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 2441 "C:/Users/baghi/Desktop/Sina/SwingJack - 4620/Swing-Jack-4620/FirmV_0_7_0.c"
 void AutoLearnCalculator(Learn *raw)
 {
 
@@ -2026,7 +2056,7 @@ void AutoLearnCalculator(Learn *raw)
  (*raw).D2CloseSoftStop=10;
 
 }
-#line 2441 "C:/Users/baghi/Desktop/Sina/SwingJack - 4620/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 2471 "C:/Users/baghi/Desktop/Sina/SwingJack - 4620/Swing-Jack-4620/FirmV_0_7_0.c"
 void SaveLearnData(Learn *d,char DCount)
 {
  Door1OpenTime=(*d).D1OpenTime;
@@ -2052,7 +2082,7 @@ void SaveLearnData(Learn *d,char DCount)
 
  SaveConfigs();
 }
-#line 2480 "C:/Users/baghi/Desktop/Sina/SwingJack - 4620/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 2510 "C:/Users/baghi/Desktop/Sina/SwingJack - 4620/Swing-Jack-4620/FirmV_0_7_0.c"
 void LearnManual()
 {
 
@@ -2178,7 +2208,7 @@ void LearnManual()
  break;
  }
 }
-#line 2625 "C:/Users/baghi/Desktop/Sina/SwingJack - 4620/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 2655 "C:/Users/baghi/Desktop/Sina/SwingJack - 4620/Swing-Jack-4620/FirmV_0_7_0.c"
 void charValueToStr(char val, char * string)
 {
  bytetostr(val>>1,string);
@@ -2200,7 +2230,7 @@ void charValueToStr_AC(char val, char * string)
  bytetostr(val>>1,string);
  memcpy(string+3,"s  ",4);
 }
-#line 2658 "C:/Users/baghi/Desktop/Sina/SwingJack - 4620/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 2688 "C:/Users/baghi/Desktop/Sina/SwingJack - 4620/Swing-Jack-4620/FirmV_0_7_0.c"
 void intValueToStr(unsigned val, char * string)
 {
  wordtostr(val>>1,string);
@@ -2209,73 +2239,139 @@ void intValueToStr(unsigned val, char * string)
  else
  memcpy(string+5,".0s",4);
 }
-#line 2677 "C:/Users/baghi/Desktop/Sina/SwingJack - 4620/Swing-Jack-4620/FirmV_0_7_0.c"
-void SetOverloadParams(char p, char d)
+#line 2707 "C:/Users/baghi/Desktop/Sina/SwingJack - 4620/Swing-Jack-4620/FirmV_0_7_0.c"
+void SetOverloadParams(char p1, char d1,char p2, char d2)
 {
 
- switch(p)
+ switch(p1)
  {
- case 0: OverloadTreshold=0; break;
+ case 0: OverloadTreshold1=0; break;
 
- case 1: OverloadTreshold=480; break;
+ case 1: OverloadTreshold1=480; break;
 
- case 2: OverloadTreshold=490; break;
+ case 2: OverloadTreshold1=490; break;
 
- case 3: OverloadTreshold=500; break;
+ case 3: OverloadTreshold1=500; break;
 
- case 4: OverloadTreshold=530; break;
+ case 4: OverloadTreshold1=530; break;
 
- case 5: OverloadTreshold=550; break;
+ case 5: OverloadTreshold1=550; break;
 
- case 6: OverloadTreshold=570; break;
+ case 6: OverloadTreshold1=570; break;
 
- case 7: OverloadTreshold=600; break;
+ case 7: OverloadTreshold1=600; break;
 
- case 8: OverloadTreshold=630; break;
+ case 8: OverloadTreshold1=630; break;
 
- case 9: OverloadTreshold=650; break;
+ case 9: OverloadTreshold1=650; break;
 
- case 10: OverloadTreshold=670; break;
+ case 10: OverloadTreshold1=670; break;
 
- case 11: OverloadTreshold=700; break;
+ case 11: OverloadTreshold1=700; break;
 
- case 12: OverloadTreshold=750; break;
+ case 12: OverloadTreshold1=750; break;
 
- case 13: OverloadTreshold=800; break;
+ case 13: OverloadTreshold1=800; break;
 
- case 14: OverloadTreshold=850; break;
+ case 14: OverloadTreshold1=850; break;
 
- case 15: OverloadTreshold=900; break;
+ case 15: OverloadTreshold1=900; break;
 
  }
 
 
- switch(d)
+ switch(d1)
  {
- case 0: OverloadDuration=100; break;
+ case 0: OverloadDuration1=100; break;
 
- case 1: OverloadDuration=500; break;
+ case 1: OverloadDuration1=500; break;
 
- case 2: OverloadDuration=1000; break;
+ case 2: OverloadDuration1=1000; break;
 
- case 3: OverloadDuration=1500; break;
+ case 3: OverloadDuration1=1500; break;
 
- case 4: OverloadDuration=2000; break;
+ case 4: OverloadDuration1=2000; break;
 
- case 5: OverloadDuration=2500; break;
+ case 5: OverloadDuration1=2500; break;
 
- case 6: OverloadDuration=3000; break;
+ case 6: OverloadDuration1=3000; break;
 
- case 7: OverloadDuration=3500; break;
+ case 7: OverloadDuration1=3500; break;
 
- case 8: OverloadDuration=4000; break;
+ case 8: OverloadDuration1=4000; break;
 
- case 9: OverloadDuration=4500; break;
+ case 9: OverloadDuration1=4500; break;
 
- case 10: OverloadDuration=5000; break;
+ case 10: OverloadDuration1=5000; break;
+ }
+
+
+
+
+
+ switch(p2)
+ {
+ case 0: OverloadTreshold2=0; break;
+
+ case 1: OverloadTreshold2=480; break;
+
+ case 2: OverloadTreshold2=490; break;
+
+ case 3: OverloadTreshold2=500; break;
+
+ case 4: OverloadTreshold2=530; break;
+
+ case 5: OverloadTreshold2=550; break;
+
+ case 6: OverloadTreshold2=570; break;
+
+ case 7: OverloadTreshold2=600; break;
+
+ case 8: OverloadTreshold2=630; break;
+
+ case 9: OverloadTreshold2=650; break;
+
+ case 10: OverloadTreshold2=670; break;
+
+ case 11: OverloadTreshold2=700; break;
+
+ case 12: OverloadTreshold2=750; break;
+
+ case 13: OverloadTreshold2=800; break;
+
+ case 14: OverloadTreshold2=850; break;
+
+ case 15: OverloadTreshold2=900; break;
+
+ }
+
+
+ switch(d2)
+ {
+ case 0: OverloadDuration2=100; break;
+
+ case 1: OverloadDuration2=500; break;
+
+ case 2: OverloadDuration2=1000; break;
+
+ case 3: OverloadDuration2=1500; break;
+
+ case 4: OverloadDuration2=2000; break;
+
+ case 5: OverloadDuration2=2500; break;
+
+ case 6: OverloadDuration2=3000; break;
+
+ case 7: OverloadDuration2=3500; break;
+
+ case 8: OverloadDuration2=4000; break;
+
+ case 9: OverloadDuration2=4500; break;
+
+ case 10: OverloadDuration2=5000; break;
  }
 }
-#line 2762 "C:/Users/baghi/Desktop/Sina/SwingJack - 4620/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 2858 "C:/Users/baghi/Desktop/Sina/SwingJack - 4620/Swing-Jack-4620/FirmV_0_7_0.c"
 void TorqueLogger()
 {
  char txt[10];
