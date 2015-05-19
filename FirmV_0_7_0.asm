@@ -12271,11 +12271,11 @@ L_Menu2547:
 	XORLW       11
 	BTFSS       STATUS+0, 2 
 	GOTO        L_Menu2554
-;FirmV_0_7_0.c,2199 :: 		{ if((Events.Keys.b0==1)&&(OverloadTime1>1))
+;FirmV_0_7_0.c,2199 :: 		{ if((Events.Keys.b0==1)&&(OverloadTime1>0))
 	BTFSS       _Events+0, 0 
 	GOTO        L_Menu2557
 	MOVF        _OverloadTime1+0, 0 
-	SUBLW       1
+	SUBLW       0
 	BTFSC       STATUS+0, 0 
 	GOTO        L_Menu2557
 L__Menu2882:
@@ -12306,11 +12306,11 @@ L_Menu2554:
 	XORLW       12
 	BTFSS       STATUS+0, 2 
 	GOTO        L_Menu2561
-;FirmV_0_7_0.c,2208 :: 		{ if((Events.Keys.b0==1)&&(OverloadTime2>1))
+;FirmV_0_7_0.c,2208 :: 		{ if((Events.Keys.b0==1)&&(OverloadTime2>0))
 	BTFSS       _Events+0, 0 
 	GOTO        L_Menu2564
 	MOVF        _OverloadTime2+0, 0 
-	SUBLW       1
+	SUBLW       0
 	BTFSC       STATUS+0, 0 
 	GOTO        L_Menu2564
 L__Menu2880:

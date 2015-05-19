@@ -2196,7 +2196,7 @@ void Menu2()
 
   //overload time  1
   if(MenuPointer==11)
-    { if((Events.Keys.b0==1)&&(OverloadTime1>1))
+    { if((Events.Keys.b0==1)&&(OverloadTime1>0))
         {OverloadTime1=OverloadTime1-1;Menu0();State=102;}
       if((Events.Keys.b2==1)&&(OverloadTime1<10))
         {OverloadTime1=OverloadTime1+1;Menu0();State=102;}
@@ -2205,7 +2205,7 @@ void Menu2()
 
   //overload time  2
   if(MenuPointer==12)
-    { if((Events.Keys.b0==1)&&(OverloadTime2>1))
+    { if((Events.Keys.b0==1)&&(OverloadTime2>0))
         {OverloadTime2=OverloadTime2-1;Menu0();State=102;}
       if((Events.Keys.b2==1)&&(OverloadTime2<10))
         {OverloadTime2=OverloadTime2+1;Menu0();State=102;}
