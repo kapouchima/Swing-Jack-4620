@@ -25,10 +25,8 @@ Count=0
 Count=0
 ActiveImageIndex=-1
 [OPENED_FILES]
-Count=3
+Count=1
 File0=FirmV_0_7_0.c
-File1=COGLCDDriver.c
-File2=COGLCDDriver.h
 [EEPROM]
 Count=1
 File0=FirmV_0_7_0.ihex

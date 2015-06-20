@@ -3,7 +3,8 @@
 
 #define Flasher portd.b7
 #define PhotocellRel portc.b5
-#define Buzzer portb.b5
+#define Buzzer portb.b7
+#define FlasherLamp portb.b5
 #define Motor1 portb.b3
 #define Motor2 portb.b4
 #define Motor1Dir portc.b1
@@ -37,6 +38,7 @@
 #define KeyRepeatDelay 2
 #define DebouncingFix 5
 #define LockForceTime 2
+#define RelaseTime 1
 
 #include <built_in.h>
 
@@ -398,6 +400,8 @@ Buzzer=0;
 
 while(1)
 {
+  asm CLRWDT;
+  
   if(Flag20ms==1)
   {
      if((Buzzer==1)&&(BuzzCounter<100))
@@ -424,9 +428,9 @@ while(1)
   if(Flag500ms==1)
   {
     if(FlashFlag)
-      Buzzer=!Buzzer;
+      FlasherLamp=!FlasherLamp;// Buzzer=!Buzzer;
     else
-      if((!BuzzFlag)&&(!LongBuzzFlag))Buzzer=0;
+      if((!BuzzFlag)&&(!LongBuzzFlag))FlasherLamp=0; // Buzzer=0;
     ResetTaskEvents();
     TaskManager();
     TorqueLogger();
@@ -796,6 +800,13 @@ void State3()
     memcpy(LCDLine1,_stop,16);memcpy(LCDLine2,_ErrLimit,16);LCDUpdateFlag=1;LCDLines=2;}
 
   if(OpenDone==0)
+    if(LockEnable)
+    {StartMotor(1,_Close);StartMotor(2,_Close);SetMotorSpeed(1,Motor2FullSpeed);OverloadCheckFlag1=0; M1isSlow=0;SetMotorSpeed(Motor1FullSpeed,1);OverloadCheckFlag2=0; M2isSlow=0;
+    AddTask(ms500+RelaseTime,3);AddTask(ms500+RelaseTime,4);AddTask(ms500+1+RelaseTime,13);OpenDone.b2=1;}
+    else
+    {AddTask(ms500+1,13);OpenDone.b2=1;}
+
+  if(CheckTask(13))
     {State=2; PassFlag=0;ClearTasks(9);memcpy(LCDLine1,_open,16);memcpy(LCDLine2,_blank,16);LCDUpdateFlag=1;LCDLines=2;}
 
   if((State==5)||(State==6))
@@ -875,6 +886,16 @@ FlashFlag=1;
     memcpy(LCDLine1,_stop,16);memcpy(LCDLine2,_ErrRemote,16);LCDUpdateFlag=1;LCDLines=2;}
 
   if(CloseDone==0)
+    if(LockEnable)
+    {StartMotor(1,_Open);AddTask(ms500+1,14);SetMotorSpeed(1,Motor2FullSpeed);OverloadCheckFlag1=0;M1isSlow=0;SetMotorSpeed(Motor1FullSpeed,1);OverloadCheckFlag2=0;M2isSlow=0;
+    AddTask(ms500+RelaseTime,3);AddTask(ms500+1+RelaseTime,4);AddTask(ms500+1+RelaseTime,13);CloseDone.b2=1;}
+    else
+    {AddTask(ms500+1,13);CloseDone.b2=1;}
+
+  if(CheckTask(14))
+    StartMotor(2,_Open);
+
+  if(CheckTask(13))
     {State=1; PassFlag=0;ClearTasks(9);memcpy(LCDLine1,_close,16);memcpy(LCDLine2,_Blank,16);LCDUpdateFlag=1;LCDLines=1;}
 
   if((State==5)||(State==6))
@@ -1119,6 +1140,16 @@ void State7()
     memcpy(LCDLine1,_stop,16);memcpy(LCDLine2,_ErrLimit,16);LCDUpdateFlag=1;LCDLines=2;}
 
   if(CloseDone==0)
+    if(LockEnable)
+    {StartMotor(1,_Open);AddTask(ms500+1,14);SetMotorSpeed(1,Motor2FullSpeed);OverloadCheckFlag1=0; M1isSlow=0;SetMotorSpeed(Motor1FullSpeed,1);OverloadCheckFlag2=0; M2isSlow=0;
+    AddTask(ms500+RelaseTime,3);AddTask(ms500+1+RelaseTime,4);AddTask(ms500+1+RelaseTime,13);CloseDone.b2=1;}
+    else
+    {AddTask(ms500+1,13);CloseDone.b2=1;}
+
+  if(CheckTask(14))
+    StartMotor(2,_Open);
+
+  if(CheckTask(13))
     {State=1; PassFlag=0;ClearTasks(9);memcpy(LCDLine1,_close,16);memcpy(LCDLine2,_Blank,16);LCDUpdateFlag=1;LCDLines=1;}
 
   if((State==5)||(State==6))
@@ -1190,6 +1221,14 @@ void State8()
     memcpy(LCDLine1,_stop,16);memcpy(LCDLine2,_ErrLimit,16);LCDUpdateFlag=1;LCDLines=2;}
 
   if(OpenDone==0)
+    if(LockEnable)
+    {StartMotor(1,_Close);StartMotor(2,_Close);SetMotorSpeed(1,Motor2FullSpeed);OverloadCheckFlag1=0; M1isSlow=0;SetMotorSpeed(Motor1FullSpeed,1);OverloadCheckFlag2=0; M2isSlow=0;
+    AddTask(ms500+RelaseTime,3);AddTask(ms500+RelaseTime,4);AddTask(ms500+1+RelaseTime,13);OpenDone.b2=1;}
+    else
+    {AddTask(ms500+1,13);OpenDone.b2=1;}
+
+
+  if(CheckTask(13))
     {State=2; PassFlag=0;ClearTasks(9);memcpy(LCDLine1,_open,16);memcpy(LCDLine2,_Blank,16);LCDUpdateFlag=1;LCDLines=1;}
 
   if((State==5)||(State==6))
@@ -1265,7 +1304,7 @@ portc=0;
 portd=0;
 porte=0;
 trisa=0b101111;
-trisb=0b10000111;
+trisb=0b00000111;
 trisc=0b10000100;
 trisd=0b00111111;
 trise=0b001;
