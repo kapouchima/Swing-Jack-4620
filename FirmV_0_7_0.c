@@ -1656,7 +1656,7 @@ return res;
 
 char GetPhotocellState()
 {
-if(Phcell1==0)
+if(Phcell2==0)
   {if(PhotocellCount<=20)PhotocellCount=PhotocellCount+1;}
 else
   {PhotocellCount=0;}
