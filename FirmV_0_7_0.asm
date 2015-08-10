@@ -3,7 +3,7 @@ _interrupt:
 
 ;FirmV_0_7_0.c,206 :: 		void interrupt()
 ;FirmV_0_7_0.c,208 :: 		if(TMR0IF_bit)
-	BTFSS       TMR0IF_bit+0, 2 
+	BTFSS       TMR0IF_bit+0, BitPos(TMR0IF_bit+0) 
 	GOTO        L_interrupt0
 ;FirmV_0_7_0.c,210 :: 		msCounter=msCounter+1;
 	INCF        _msCounter+0, 1 
@@ -72,11 +72,11 @@ L_interrupt5:
 	MOVLW       202
 	MOVWF       TMR0L+0 
 ;FirmV_0_7_0.c,233 :: 		TMR0IF_bit=0;
-	BCF         TMR0IF_bit+0, 2 
+	BCF         TMR0IF_bit+0, BitPos(TMR0IF_bit+0) 
 ;FirmV_0_7_0.c,234 :: 		}
 L_interrupt0:
 ;FirmV_0_7_0.c,237 :: 		if(INT1F_bit)
-	BTFSS       INT1F_bit+0, 0 
+	BTFSS       INT1F_bit+0, BitPos(INT1F_bit+0) 
 	GOTO        L_interrupt6
 ;FirmV_0_7_0.c,239 :: 		if(RemotePulse1==0)
 	MOVF        _RemotePulse1+0, 0 
@@ -117,11 +117,11 @@ L_interrupt12:
 L_interrupt13:
 L_interrupt9:
 ;FirmV_0_7_0.c,248 :: 		INT1IF_bit=0;
-	BCF         INT1IF_bit+0, 0 
+	BCF         INT1IF_bit+0, BitPos(INT1IF_bit+0) 
 ;FirmV_0_7_0.c,249 :: 		}
 L_interrupt6:
 ;FirmV_0_7_0.c,253 :: 		if(INT2IF_bit)
-	BTFSS       INT2IF_bit+0, 1 
+	BTFSS       INT2IF_bit+0, BitPos(INT2IF_bit+0) 
 	GOTO        L_interrupt14
 ;FirmV_0_7_0.c,255 :: 		if(RemotePulse2==0)
 	MOVF        _RemotePulse2+0, 0 
@@ -162,11 +162,11 @@ L_interrupt20:
 L_interrupt21:
 L_interrupt17:
 ;FirmV_0_7_0.c,264 :: 		INT2IF_bit=0;
-	BCF         INT2IF_bit+0, 1 
+	BCF         INT2IF_bit+0, BitPos(INT2IF_bit+0) 
 ;FirmV_0_7_0.c,265 :: 		}
 L_interrupt14:
 ;FirmV_0_7_0.c,270 :: 		if(INT0F_bit==1)
-	BTFSS       INT0F_bit+0, 1 
+	BTFSS       INT0F_bit+0, BitPos(INT0F_bit+0) 
 	GOTO        L_interrupt22
 ;FirmV_0_7_0.c,272 :: 		ZCCounter=ZCCounter+1;
 	INCF        _ZCCounter+0, 1 
@@ -184,7 +184,7 @@ L_interrupt23:
 	MOVWF       R4 
 	MOVF        _ZCCounter+0, 0 
 	MOVWF       R0 
-	CALL        _Div_8x8_U+0, 0
+	CALL        _Div_8X8_U+0, 0
 	MOVF        R8, 0 
 	MOVWF       R0 
 	MOVF        R0, 0 
@@ -230,7 +230,7 @@ L_interrupt24:
 	MOVWF       R4 
 	MOVF        _ZCCounter+0, 0 
 	MOVWF       R0 
-	CALL        _Div_8x8_U+0, 0
+	CALL        _Div_8X8_U+0, 0
 	MOVF        R8, 0 
 	MOVWF       R0 
 	MOVF        R0, 0 
@@ -254,11 +254,12 @@ L_interrupt33:
 ;FirmV_0_7_0.c,296 :: 		}
 L_interrupt31:
 ;FirmV_0_7_0.c,297 :: 		INT0F_bit=0;
-	BCF         INT0F_bit+0, 1 
+	BCF         INT0F_bit+0, BitPos(INT0F_bit+0) 
 ;FirmV_0_7_0.c,298 :: 		}
 L_interrupt22:
 ;FirmV_0_7_0.c,299 :: 		}
-L__interrupt927:
+L_end_interrupt:
+L__interrupt928:
 	RETFIE      1
 ; end of _interrupt
 
@@ -272,6 +273,7 @@ _ResetTaskEvents:
 ;FirmV_0_7_0.c,316 :: 		Events.Task3=0;
 	CLRF        _Events+3 
 ;FirmV_0_7_0.c,317 :: 		}
+L_end_ResetTaskEvents:
 	RETURN      0
 ; end of _ResetTaskEvents
 
@@ -342,6 +344,7 @@ _Decrypt:
 	ADDWF       _crypto+31, 0 
 	MOVWF       _Sipher+15 
 ;FirmV_0_7_0.c,344 :: 		}
+L_end_Decrypt:
 	RETURN      0
 ; end of _Decrypt
 
@@ -373,11 +376,6 @@ _Logger:
 	MOVWF       FARG_UART_Write_Text_uart_text+1 
 	CALL        _UART_Write_Text+0, 0
 ;FirmV_0_7_0.c,363 :: 		uart1_write_text(": ");
-	MOVLW       58
-	MOVWF       ?lstr1_FirmV_0_7_0+0 
-	MOVLW       32
-	MOVWF       ?lstr1_FirmV_0_7_0+1 
-	CLRF        ?lstr1_FirmV_0_7_0+2 
 	MOVLW       ?lstr1_FirmV_0_7_0+0
 	MOVWF       FARG_UART1_Write_Text_uart_text+0 
 	MOVLW       hi_addr(?lstr1_FirmV_0_7_0+0)
@@ -400,6 +398,7 @@ L_Logger34:
 	MOVWF       FARG_UART1_Write_data_+0 
 	CALL        _UART1_Write+0, 0
 ;FirmV_0_7_0.c,368 :: 		}
+L_end_Logger:
 	RETURN      0
 ; end of _Logger
 
@@ -415,25 +414,6 @@ _main:
 ;FirmV_0_7_0.c,394 :: 		Buzzer=1;
 	BSF         PORTB+0, 7 
 ;FirmV_0_7_0.c,395 :: 		Logger("Start ...",1);
-	MOVLW       83
-	MOVWF       ?lstr2_FirmV_0_7_0+0 
-	MOVLW       116
-	MOVWF       ?lstr2_FirmV_0_7_0+1 
-	MOVLW       97
-	MOVWF       ?lstr2_FirmV_0_7_0+2 
-	MOVLW       114
-	MOVWF       ?lstr2_FirmV_0_7_0+3 
-	MOVLW       116
-	MOVWF       ?lstr2_FirmV_0_7_0+4 
-	MOVLW       32
-	MOVWF       ?lstr2_FirmV_0_7_0+5 
-	MOVLW       46
-	MOVWF       ?lstr2_FirmV_0_7_0+6 
-	MOVLW       46
-	MOVWF       ?lstr2_FirmV_0_7_0+7 
-	MOVLW       46
-	MOVWF       ?lstr2_FirmV_0_7_0+8 
-	CLRF        ?lstr2_FirmV_0_7_0+9 
 	MOVLW       ?lstr2_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr2_FirmV_0_7_0+0)
@@ -594,6 +574,7 @@ L_main55:
 ;FirmV_0_7_0.c,441 :: 		}
 	GOTO        L_main35
 ;FirmV_0_7_0.c,443 :: 		}
+L_end_main:
 	GOTO        $+0
 ; end of _main
 
@@ -742,6 +723,7 @@ L_StateManager61:
 	GOTO        L_StateManager79
 L_StateManager62:
 ;FirmV_0_7_0.c,509 :: 		}
+L_end_StateManager:
 	RETURN      0
 ; end of _StateManager
 
@@ -766,6 +748,7 @@ L_StateTest81:
 	MOVLW       1
 	MOVWF       _LCDUpdateFlag+0 
 ;FirmV_0_7_0.c,522 :: 		}
+L_end_StateTest:
 	RETURN      0
 ; end of _StateTest
 
@@ -804,6 +787,7 @@ _State00:
 	MOVWF       _State+0 
 L_State0082:
 ;FirmV_0_7_0.c,539 :: 		}
+L_end_State00:
 	RETURN      0
 ; end of _State00
 
@@ -813,7 +797,6 @@ _State1:
 ;FirmV_0_7_0.c,550 :: 		char delay=3;
 	MOVLW       3
 	MOVWF       State1_delay_L0+0 
-;FirmV_0_7_0.c,551 :: 		unsigned long AutoCloseTemp=0;
 	CLRF        State1_AutoCloseTemp_L0+0 
 	CLRF        State1_AutoCloseTemp_L0+1 
 	CLRF        State1_AutoCloseTemp_L0+2 
@@ -1495,10 +1478,10 @@ L_State191:
 	MOVLW       0
 	XORWF       _AutoCloseTime+1, 0 
 	BTFSS       STATUS+0, 2 
-	GOTO        L__State1928
+	GOTO        L__State1937
 	MOVLW       0
 	XORWF       _AutoCloseTime+0, 0 
-L__State1928:
+L__State1937:
 	BTFSC       STATUS+0, 2 
 	GOTO        L_State195
 ;FirmV_0_7_0.c,606 :: 		{temp=AutoCloseTemp+AutoCloseTime;AddTask(temp,9);}
@@ -1549,6 +1532,7 @@ L_State195:
 ;FirmV_0_7_0.c,613 :: 		}
 L_State184:
 ;FirmV_0_7_0.c,614 :: 		}
+L_end_State1:
 	RETURN      0
 ; end of _State1
 
@@ -1588,29 +1572,6 @@ _State2:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine2+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       67
-	MOVWF       ?lstr3_FirmV_0_7_0+0 
-	MOVLW       108
-	MOVWF       ?lstr3_FirmV_0_7_0+1 
-	MOVLW       111
-	MOVWF       ?lstr3_FirmV_0_7_0+2 
-	MOVLW       115
-	MOVWF       ?lstr3_FirmV_0_7_0+3 
-	MOVLW       101
-	MOVWF       ?lstr3_FirmV_0_7_0+4 
-	MOVLW       32
-	MOVWF       ?lstr3_FirmV_0_7_0+5 
-	MOVLW       97
-	MOVWF       ?lstr3_FirmV_0_7_0+6 
-	MOVLW       102
-	MOVWF       ?lstr3_FirmV_0_7_0+7 
-	MOVLW       116
-	MOVWF       ?lstr3_FirmV_0_7_0+8 
-	MOVLW       101
-	MOVWF       ?lstr3_FirmV_0_7_0+9 
-	MOVLW       114
-	MOVWF       ?lstr3_FirmV_0_7_0+10 
-	CLRF        ?lstr3_FirmV_0_7_0+11 
 	MOVLW       ?lstr3_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr3_FirmV_0_7_0+0)
@@ -2563,10 +2524,10 @@ L_State299:
 	MOVLW       0
 	XORWF       _AutoCloseTime+1, 0 
 	BTFSS       STATUS+0, 2 
-	GOTO        L__State2929
+	GOTO        L__State2939
 	MOVLW       0
 	XORWF       _AutoCloseTime+0, 0 
-L__State2929:
+L__State2939:
 	BTFSC       STATUS+0, 2 
 	GOTO        L_State2121
 	MOVF        _PassFlag+0, 0 
@@ -2580,21 +2541,6 @@ L__State2817:
 	CALL        _GetAutocloseTime+0, 0
 	MOVF        R0, 0 
 	MOVWF       __AC+0 
-	MOVLW       ?ICS?lstr4_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr4_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr4_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr4_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr4_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       22
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr4_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr4_FirmV_0_7_0+0)
@@ -2613,10 +2559,10 @@ L_State2121:
 	MOVLW       0
 	XORWF       _AutoCloseTime+1, 0 
 	BTFSS       STATUS+0, 2 
-	GOTO        L__State2930
+	GOTO        L__State2940
 	MOVLW       0
 	XORWF       _AutoCloseTime+0, 0 
-L__State2930:
+L__State2940:
 	BTFSC       STATUS+0, 2 
 	GOTO        L_State2124
 L__State2816:
@@ -2671,21 +2617,6 @@ L__State2816:
 	MOVLW       hi_addr(_t+0)
 	MOVWF       FARG_LongWordToStrWithZeros_output+1 
 	CALL        _LongWordToStrWithZeros+0, 0
-	MOVLW       ?ICS?lstr5_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr5_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr5_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr5_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr5_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       16
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr5_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr5_FirmV_0_7_0+0)
@@ -2748,21 +2679,6 @@ L_State2125:
 	MOVLW       hi_addr(_t+0)
 	MOVWF       FARG_LongWordToStrWithZeros_output+1 
 	CALL        _LongWordToStrWithZeros+0, 0
-	MOVLW       ?ICS?lstr6_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr6_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr6_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr6_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr6_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       16
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr6_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr6_FirmV_0_7_0+0)
@@ -2780,6 +2696,7 @@ L_State2125:
 L_State2126:
 L_State2124:
 ;FirmV_0_7_0.c,726 :: 		}
+L_end_State2:
 	RETURN      0
 ; end of _State2
 
@@ -2804,35 +2721,6 @@ _State3:
 	MOVLW       1
 	MOVWF       FARG_StartMotor+0 
 	CALL        _StartMotor+0, 0
-	MOVLW       83
-	MOVWF       ?lstr7_FirmV_0_7_0+0 
-	MOVLW       51
-	MOVWF       ?lstr7_FirmV_0_7_0+1 
-	MOVLW       32
-	MOVWF       ?lstr7_FirmV_0_7_0+2 
-	MOVLW       77
-	MOVWF       ?lstr7_FirmV_0_7_0+3 
-	MOVLW       111
-	MOVWF       ?lstr7_FirmV_0_7_0+4 
-	MOVLW       116
-	MOVWF       ?lstr7_FirmV_0_7_0+5 
-	MOVLW       111
-	MOVWF       ?lstr7_FirmV_0_7_0+6 
-	MOVLW       114
-	MOVWF       ?lstr7_FirmV_0_7_0+7 
-	MOVLW       49
-	MOVWF       ?lstr7_FirmV_0_7_0+8 
-	MOVLW       83
-	MOVWF       ?lstr7_FirmV_0_7_0+9 
-	MOVLW       116
-	MOVWF       ?lstr7_FirmV_0_7_0+10 
-	MOVLW       97
-	MOVWF       ?lstr7_FirmV_0_7_0+11 
-	MOVLW       114
-	MOVWF       ?lstr7_FirmV_0_7_0+12 
-	MOVLW       116
-	MOVWF       ?lstr7_FirmV_0_7_0+13 
-	CLRF        ?lstr7_FirmV_0_7_0+14 
 	MOVLW       ?lstr7_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr7_FirmV_0_7_0+0)
@@ -2885,35 +2773,6 @@ L_State3127:
 	MOVLW       1
 	MOVWF       FARG_StartMotor+0 
 	CALL        _StartMotor+0, 0
-	MOVLW       83
-	MOVWF       ?lstr8_FirmV_0_7_0+0 
-	MOVLW       51
-	MOVWF       ?lstr8_FirmV_0_7_0+1 
-	MOVLW       32
-	MOVWF       ?lstr8_FirmV_0_7_0+2 
-	MOVLW       77
-	MOVWF       ?lstr8_FirmV_0_7_0+3 
-	MOVLW       111
-	MOVWF       ?lstr8_FirmV_0_7_0+4 
-	MOVLW       116
-	MOVWF       ?lstr8_FirmV_0_7_0+5 
-	MOVLW       111
-	MOVWF       ?lstr8_FirmV_0_7_0+6 
-	MOVLW       114
-	MOVWF       ?lstr8_FirmV_0_7_0+7 
-	MOVLW       50
-	MOVWF       ?lstr8_FirmV_0_7_0+8 
-	MOVLW       83
-	MOVWF       ?lstr8_FirmV_0_7_0+9 
-	MOVLW       116
-	MOVWF       ?lstr8_FirmV_0_7_0+10 
-	MOVLW       97
-	MOVWF       ?lstr8_FirmV_0_7_0+11 
-	MOVLW       114
-	MOVWF       ?lstr8_FirmV_0_7_0+12 
-	MOVLW       116
-	MOVWF       ?lstr8_FirmV_0_7_0+13 
-	CLRF        ?lstr8_FirmV_0_7_0+14 
 	MOVLW       ?lstr8_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr8_FirmV_0_7_0+0)
@@ -2938,35 +2797,6 @@ L_State3128:
 	CALL        _SetMotorSpeed+0, 0
 	CLRF        _OverloadCheckFlag1+0 
 	CLRF        _M1isSlow+0 
-	MOVLW       83
-	MOVWF       ?lstr9_FirmV_0_7_0+0 
-	MOVLW       51
-	MOVWF       ?lstr9_FirmV_0_7_0+1 
-	MOVLW       32
-	MOVWF       ?lstr9_FirmV_0_7_0+2 
-	MOVLW       77
-	MOVWF       ?lstr9_FirmV_0_7_0+3 
-	MOVLW       111
-	MOVWF       ?lstr9_FirmV_0_7_0+4 
-	MOVLW       116
-	MOVWF       ?lstr9_FirmV_0_7_0+5 
-	MOVLW       111
-	MOVWF       ?lstr9_FirmV_0_7_0+6 
-	MOVLW       114
-	MOVWF       ?lstr9_FirmV_0_7_0+7 
-	MOVLW       49
-	MOVWF       ?lstr9_FirmV_0_7_0+8 
-	MOVLW       32
-	MOVWF       ?lstr9_FirmV_0_7_0+9 
-	MOVLW       70
-	MOVWF       ?lstr9_FirmV_0_7_0+10 
-	MOVLW       97
-	MOVWF       ?lstr9_FirmV_0_7_0+11 
-	MOVLW       115
-	MOVWF       ?lstr9_FirmV_0_7_0+12 
-	MOVLW       116
-	MOVWF       ?lstr9_FirmV_0_7_0+13 
-	CLRF        ?lstr9_FirmV_0_7_0+14 
 	MOVLW       ?lstr9_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr9_FirmV_0_7_0+0)
@@ -2989,35 +2819,6 @@ L_State3129:
 	CALL        _SetMotorSpeed+0, 0
 	MOVLW       1
 	MOVWF       _M1isSlow+0 
-	MOVLW       83
-	MOVWF       ?lstr10_FirmV_0_7_0+0 
-	MOVLW       51
-	MOVWF       ?lstr10_FirmV_0_7_0+1 
-	MOVLW       32
-	MOVWF       ?lstr10_FirmV_0_7_0+2 
-	MOVLW       77
-	MOVWF       ?lstr10_FirmV_0_7_0+3 
-	MOVLW       111
-	MOVWF       ?lstr10_FirmV_0_7_0+4 
-	MOVLW       116
-	MOVWF       ?lstr10_FirmV_0_7_0+5 
-	MOVLW       111
-	MOVWF       ?lstr10_FirmV_0_7_0+6 
-	MOVLW       114
-	MOVWF       ?lstr10_FirmV_0_7_0+7 
-	MOVLW       49
-	MOVWF       ?lstr10_FirmV_0_7_0+8 
-	MOVLW       32
-	MOVWF       ?lstr10_FirmV_0_7_0+9 
-	MOVLW       83
-	MOVWF       ?lstr10_FirmV_0_7_0+10 
-	MOVLW       108
-	MOVWF       ?lstr10_FirmV_0_7_0+11 
-	MOVLW       111
-	MOVWF       ?lstr10_FirmV_0_7_0+12 
-	MOVLW       119
-	MOVWF       ?lstr10_FirmV_0_7_0+13 
-	CLRF        ?lstr10_FirmV_0_7_0+14 
 	MOVLW       ?lstr10_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr10_FirmV_0_7_0+0)
@@ -3041,35 +2842,6 @@ L_State3130:
 	CALL        _SetMotorSpeed+0, 0
 	CLRF        _OverloadCheckFlag2+0 
 	CLRF        _M2isSlow+0 
-	MOVLW       83
-	MOVWF       ?lstr11_FirmV_0_7_0+0 
-	MOVLW       51
-	MOVWF       ?lstr11_FirmV_0_7_0+1 
-	MOVLW       32
-	MOVWF       ?lstr11_FirmV_0_7_0+2 
-	MOVLW       77
-	MOVWF       ?lstr11_FirmV_0_7_0+3 
-	MOVLW       111
-	MOVWF       ?lstr11_FirmV_0_7_0+4 
-	MOVLW       116
-	MOVWF       ?lstr11_FirmV_0_7_0+5 
-	MOVLW       111
-	MOVWF       ?lstr11_FirmV_0_7_0+6 
-	MOVLW       114
-	MOVWF       ?lstr11_FirmV_0_7_0+7 
-	MOVLW       50
-	MOVWF       ?lstr11_FirmV_0_7_0+8 
-	MOVLW       32
-	MOVWF       ?lstr11_FirmV_0_7_0+9 
-	MOVLW       70
-	MOVWF       ?lstr11_FirmV_0_7_0+10 
-	MOVLW       97
-	MOVWF       ?lstr11_FirmV_0_7_0+11 
-	MOVLW       115
-	MOVWF       ?lstr11_FirmV_0_7_0+12 
-	MOVLW       116
-	MOVWF       ?lstr11_FirmV_0_7_0+13 
-	CLRF        ?lstr11_FirmV_0_7_0+14 
 	MOVLW       ?lstr11_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr11_FirmV_0_7_0+0)
@@ -3092,35 +2864,6 @@ L_State3131:
 	CALL        _SetMotorSpeed+0, 0
 	MOVLW       1
 	MOVWF       _M2isSlow+0 
-	MOVLW       83
-	MOVWF       ?lstr12_FirmV_0_7_0+0 
-	MOVLW       51
-	MOVWF       ?lstr12_FirmV_0_7_0+1 
-	MOVLW       32
-	MOVWF       ?lstr12_FirmV_0_7_0+2 
-	MOVLW       77
-	MOVWF       ?lstr12_FirmV_0_7_0+3 
-	MOVLW       111
-	MOVWF       ?lstr12_FirmV_0_7_0+4 
-	MOVLW       116
-	MOVWF       ?lstr12_FirmV_0_7_0+5 
-	MOVLW       111
-	MOVWF       ?lstr12_FirmV_0_7_0+6 
-	MOVLW       114
-	MOVWF       ?lstr12_FirmV_0_7_0+7 
-	MOVLW       50
-	MOVWF       ?lstr12_FirmV_0_7_0+8 
-	MOVLW       32
-	MOVWF       ?lstr12_FirmV_0_7_0+9 
-	MOVLW       83
-	MOVWF       ?lstr12_FirmV_0_7_0+10 
-	MOVLW       108
-	MOVWF       ?lstr12_FirmV_0_7_0+11 
-	MOVLW       111
-	MOVWF       ?lstr12_FirmV_0_7_0+12 
-	MOVLW       119
-	MOVWF       ?lstr12_FirmV_0_7_0+13 
-	CLRF        ?lstr12_FirmV_0_7_0+14 
 	MOVLW       ?lstr12_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr12_FirmV_0_7_0+0)
@@ -3142,21 +2885,6 @@ L_State3132:
 	MOVLW       1
 	MOVWF       FARG_OverloadInit+0 
 	CALL        _OverloadInit+0, 0
-	MOVLW       ?ICS?lstr13_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr13_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr13_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr13_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr13_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       22
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr13_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr13_FirmV_0_7_0+0)
@@ -3178,21 +2906,6 @@ L_State3133:
 	MOVLW       2
 	MOVWF       FARG_OverloadInit+0 
 	CALL        _OverloadInit+0, 0
-	MOVLW       ?ICS?lstr14_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr14_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr14_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr14_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr14_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       22
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr14_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr14_FirmV_0_7_0+0)
@@ -3213,35 +2926,6 @@ L_State3134:
 	MOVLW       1
 	MOVWF       FARG_StopMotor+0 
 	CALL        _StopMotor+0, 0
-	MOVLW       83
-	MOVWF       ?lstr15_FirmV_0_7_0+0 
-	MOVLW       51
-	MOVWF       ?lstr15_FirmV_0_7_0+1 
-	MOVLW       32
-	MOVWF       ?lstr15_FirmV_0_7_0+2 
-	MOVLW       77
-	MOVWF       ?lstr15_FirmV_0_7_0+3 
-	MOVLW       111
-	MOVWF       ?lstr15_FirmV_0_7_0+4 
-	MOVLW       116
-	MOVWF       ?lstr15_FirmV_0_7_0+5 
-	MOVLW       111
-	MOVWF       ?lstr15_FirmV_0_7_0+6 
-	MOVLW       114
-	MOVWF       ?lstr15_FirmV_0_7_0+7 
-	MOVLW       49
-	MOVWF       ?lstr15_FirmV_0_7_0+8 
-	MOVLW       32
-	MOVWF       ?lstr15_FirmV_0_7_0+9 
-	MOVLW       83
-	MOVWF       ?lstr15_FirmV_0_7_0+10 
-	MOVLW       116
-	MOVWF       ?lstr15_FirmV_0_7_0+11 
-	MOVLW       111
-	MOVWF       ?lstr15_FirmV_0_7_0+12 
-	MOVLW       112
-	MOVWF       ?lstr15_FirmV_0_7_0+13 
-	CLRF        ?lstr15_FirmV_0_7_0+14 
 	MOVLW       ?lstr15_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr15_FirmV_0_7_0+0)
@@ -3262,35 +2946,6 @@ L_State3135:
 	MOVLW       2
 	MOVWF       FARG_StopMotor+0 
 	CALL        _StopMotor+0, 0
-	MOVLW       83
-	MOVWF       ?lstr16_FirmV_0_7_0+0 
-	MOVLW       51
-	MOVWF       ?lstr16_FirmV_0_7_0+1 
-	MOVLW       32
-	MOVWF       ?lstr16_FirmV_0_7_0+2 
-	MOVLW       77
-	MOVWF       ?lstr16_FirmV_0_7_0+3 
-	MOVLW       111
-	MOVWF       ?lstr16_FirmV_0_7_0+4 
-	MOVLW       116
-	MOVWF       ?lstr16_FirmV_0_7_0+5 
-	MOVLW       111
-	MOVWF       ?lstr16_FirmV_0_7_0+6 
-	MOVLW       114
-	MOVWF       ?lstr16_FirmV_0_7_0+7 
-	MOVLW       50
-	MOVWF       ?lstr16_FirmV_0_7_0+8 
-	MOVLW       32
-	MOVWF       ?lstr16_FirmV_0_7_0+9 
-	MOVLW       83
-	MOVWF       ?lstr16_FirmV_0_7_0+10 
-	MOVLW       116
-	MOVWF       ?lstr16_FirmV_0_7_0+11 
-	MOVLW       111
-	MOVWF       ?lstr16_FirmV_0_7_0+12 
-	MOVLW       112
-	MOVWF       ?lstr16_FirmV_0_7_0+13 
-	CLRF        ?lstr16_FirmV_0_7_0+14 
 	MOVLW       ?lstr16_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr16_FirmV_0_7_0+0)
@@ -3332,21 +2987,6 @@ L__State3826:
 	MOVWF       _State+0 
 	CLRF        _OverloadCheckFlag1+0 
 	CLRF        _OverloadCheckFlag2+0 
-	MOVLW       ?ICS?lstr17_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr17_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr17_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr17_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr17_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       20
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr17_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr17_FirmV_0_7_0+0)
@@ -3412,21 +3052,6 @@ L__State3825:
 	MOVWF       _State+0 
 	CLRF        _OverloadCheckFlag1+0 
 	CLRF        _OverloadCheckFlag2+0 
-	MOVLW       ?ICS?lstr18_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr18_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr18_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr18_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr18_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       20
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr18_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr18_FirmV_0_7_0+0)
@@ -3501,21 +3126,6 @@ L__State3823:
 	CLRF        _OverloadCheckFlag2+0 
 	MOVLW       5
 	MOVWF       _State+0 
-	MOVLW       ?ICS?lstr19_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr19_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr19_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr19_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr19_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       17
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr19_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr19_FirmV_0_7_0+0)
@@ -3574,21 +3184,6 @@ L_State3149:
 	CLRF        _OverloadCheckFlag2+0 
 	MOVLW       5
 	MOVWF       _State+0 
-	MOVLW       ?ICS?lstr20_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr20_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr20_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr20_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr20_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       17
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr20_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr20_FirmV_0_7_0+0)
@@ -3651,21 +3246,6 @@ L__State3822:
 	CLRF        _OverloadCheckFlag2+0 
 	MOVLW       5
 	MOVWF       _State+0 
-	MOVLW       ?ICS?lstr21_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr21_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr21_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr21_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr21_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       23
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr21_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr21_FirmV_0_7_0+0)
@@ -3876,10 +3456,10 @@ L__State3821:
 	MOVLW       0
 	XORWF       _AutoCloseTime+1, 0 
 	BTFSS       STATUS+0, 2 
-	GOTO        L__State3931
+	GOTO        L__State3942
 	MOVLW       0
 	XORWF       _AutoCloseTime+0, 0 
-L__State3931:
+L__State3942:
 	BTFSC       STATUS+0, 2 
 	GOTO        L_State3161
 	MOVF        _AutoCloseTime+0, 0 
@@ -3897,21 +3477,6 @@ L__State3931:
 	MOVLW       9
 	MOVWF       FARG_AddTask+0 
 	CALL        _AddTask+0, 0
-	MOVLW       ?ICS?lstr22_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr22_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr22_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr22_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr22_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       21
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr22_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr22_FirmV_0_7_0+0)
@@ -3939,6 +3504,7 @@ L__State3931:
 L_State3161:
 L_State3160:
 ;FirmV_0_7_0.c,815 :: 		}
+L_end_State3:
 	RETURN      0
 ; end of _State3
 
@@ -3962,35 +3528,6 @@ _State4:
 	MOVWF       FARG_StartMotor+0 
 	CLRF        FARG_StartMotor+0 
 	CALL        _StartMotor+0, 0
-	MOVLW       83
-	MOVWF       ?lstr23_FirmV_0_7_0+0 
-	MOVLW       52
-	MOVWF       ?lstr23_FirmV_0_7_0+1 
-	MOVLW       32
-	MOVWF       ?lstr23_FirmV_0_7_0+2 
-	MOVLW       77
-	MOVWF       ?lstr23_FirmV_0_7_0+3 
-	MOVLW       111
-	MOVWF       ?lstr23_FirmV_0_7_0+4 
-	MOVLW       116
-	MOVWF       ?lstr23_FirmV_0_7_0+5 
-	MOVLW       111
-	MOVWF       ?lstr23_FirmV_0_7_0+6 
-	MOVLW       114
-	MOVWF       ?lstr23_FirmV_0_7_0+7 
-	MOVLW       49
-	MOVWF       ?lstr23_FirmV_0_7_0+8 
-	MOVLW       83
-	MOVWF       ?lstr23_FirmV_0_7_0+9 
-	MOVLW       116
-	MOVWF       ?lstr23_FirmV_0_7_0+10 
-	MOVLW       97
-	MOVWF       ?lstr23_FirmV_0_7_0+11 
-	MOVLW       114
-	MOVWF       ?lstr23_FirmV_0_7_0+12 
-	MOVLW       116
-	MOVWF       ?lstr23_FirmV_0_7_0+13 
-	CLRF        ?lstr23_FirmV_0_7_0+14 
 	MOVLW       ?lstr23_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr23_FirmV_0_7_0+0)
@@ -4011,35 +3548,6 @@ L_State4162:
 	MOVWF       FARG_StartMotor+0 
 	CLRF        FARG_StartMotor+0 
 	CALL        _StartMotor+0, 0
-	MOVLW       83
-	MOVWF       ?lstr24_FirmV_0_7_0+0 
-	MOVLW       52
-	MOVWF       ?lstr24_FirmV_0_7_0+1 
-	MOVLW       32
-	MOVWF       ?lstr24_FirmV_0_7_0+2 
-	MOVLW       77
-	MOVWF       ?lstr24_FirmV_0_7_0+3 
-	MOVLW       111
-	MOVWF       ?lstr24_FirmV_0_7_0+4 
-	MOVLW       116
-	MOVWF       ?lstr24_FirmV_0_7_0+5 
-	MOVLW       111
-	MOVWF       ?lstr24_FirmV_0_7_0+6 
-	MOVLW       114
-	MOVWF       ?lstr24_FirmV_0_7_0+7 
-	MOVLW       50
-	MOVWF       ?lstr24_FirmV_0_7_0+8 
-	MOVLW       83
-	MOVWF       ?lstr24_FirmV_0_7_0+9 
-	MOVLW       116
-	MOVWF       ?lstr24_FirmV_0_7_0+10 
-	MOVLW       97
-	MOVWF       ?lstr24_FirmV_0_7_0+11 
-	MOVLW       114
-	MOVWF       ?lstr24_FirmV_0_7_0+12 
-	MOVLW       116
-	MOVWF       ?lstr24_FirmV_0_7_0+13 
-	CLRF        ?lstr24_FirmV_0_7_0+14 
 	MOVLW       ?lstr24_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr24_FirmV_0_7_0+0)
@@ -4091,21 +3599,6 @@ L_State4163:
 	MOVLW       1
 	MOVWF       FARG_OverloadInit+0 
 	CALL        _OverloadInit+0, 0
-	MOVLW       ?ICS?lstr25_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr25_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr25_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr25_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr25_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       21
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr25_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr25_FirmV_0_7_0+0)
@@ -4127,21 +3620,6 @@ L_State4164:
 	MOVLW       2
 	MOVWF       FARG_OverloadInit+0 
 	CALL        _OverloadInit+0, 0
-	MOVLW       ?ICS?lstr26_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr26_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr26_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr26_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr26_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       21
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr26_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr26_FirmV_0_7_0+0)
@@ -4165,35 +3643,6 @@ L_State4165:
 	CALL        _SetMotorSpeed+0, 0
 	CLRF        _OverloadCheckFlag1+0 
 	CLRF        _M1isSlow+0 
-	MOVLW       83
-	MOVWF       ?lstr27_FirmV_0_7_0+0 
-	MOVLW       52
-	MOVWF       ?lstr27_FirmV_0_7_0+1 
-	MOVLW       32
-	MOVWF       ?lstr27_FirmV_0_7_0+2 
-	MOVLW       77
-	MOVWF       ?lstr27_FirmV_0_7_0+3 
-	MOVLW       49
-	MOVWF       ?lstr27_FirmV_0_7_0+4 
-	MOVLW       32
-	MOVWF       ?lstr27_FirmV_0_7_0+5 
-	MOVLW       83
-	MOVWF       ?lstr27_FirmV_0_7_0+6 
-	MOVLW       112
-	MOVWF       ?lstr27_FirmV_0_7_0+7 
-	MOVLW       101
-	MOVWF       ?lstr27_FirmV_0_7_0+8 
-	MOVLW       101
-	MOVWF       ?lstr27_FirmV_0_7_0+9 
-	MOVLW       100
-	MOVWF       ?lstr27_FirmV_0_7_0+10 
-	MOVLW       32
-	MOVWF       ?lstr27_FirmV_0_7_0+11 
-	MOVLW       85
-	MOVWF       ?lstr27_FirmV_0_7_0+12 
-	MOVLW       80
-	MOVWF       ?lstr27_FirmV_0_7_0+13 
-	CLRF        ?lstr27_FirmV_0_7_0+14 
 	MOVLW       ?lstr27_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr27_FirmV_0_7_0+0)
@@ -4217,21 +3666,6 @@ L_State4166:
 	CLRF        _OverloadCheckFlag1+0 
 	MOVLW       1
 	MOVWF       _M1isSlow+0 
-	MOVLW       ?ICS?lstr28_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr28_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr28_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr28_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr28_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       17
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr28_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr28_FirmV_0_7_0+0)
@@ -4254,35 +3688,6 @@ L_State4167:
 	MOVWF       FARG_SetMotorSpeed+0 
 	CALL        _SetMotorSpeed+0, 0
 	CLRF        _M2isSlow+0 
-	MOVLW       83
-	MOVWF       ?lstr29_FirmV_0_7_0+0 
-	MOVLW       52
-	MOVWF       ?lstr29_FirmV_0_7_0+1 
-	MOVLW       32
-	MOVWF       ?lstr29_FirmV_0_7_0+2 
-	MOVLW       77
-	MOVWF       ?lstr29_FirmV_0_7_0+3 
-	MOVLW       50
-	MOVWF       ?lstr29_FirmV_0_7_0+4 
-	MOVLW       32
-	MOVWF       ?lstr29_FirmV_0_7_0+5 
-	MOVLW       83
-	MOVWF       ?lstr29_FirmV_0_7_0+6 
-	MOVLW       112
-	MOVWF       ?lstr29_FirmV_0_7_0+7 
-	MOVLW       101
-	MOVWF       ?lstr29_FirmV_0_7_0+8 
-	MOVLW       101
-	MOVWF       ?lstr29_FirmV_0_7_0+9 
-	MOVLW       100
-	MOVWF       ?lstr29_FirmV_0_7_0+10 
-	MOVLW       32
-	MOVWF       ?lstr29_FirmV_0_7_0+11 
-	MOVLW       85
-	MOVWF       ?lstr29_FirmV_0_7_0+12 
-	MOVLW       80
-	MOVWF       ?lstr29_FirmV_0_7_0+13 
-	CLRF        ?lstr29_FirmV_0_7_0+14 
 	MOVLW       ?lstr29_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr29_FirmV_0_7_0+0)
@@ -4305,21 +3710,6 @@ L_State4168:
 	CALL        _SetMotorSpeed+0, 0
 	MOVLW       1
 	MOVWF       _M2isSlow+0 
-	MOVLW       ?ICS?lstr30_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr30_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr30_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr30_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr30_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       17
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr30_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr30_FirmV_0_7_0+0)
@@ -4340,31 +3730,6 @@ L_State4169:
 	MOVLW       1
 	MOVWF       FARG_StopMotor+0 
 	CALL        _StopMotor+0, 0
-	MOVLW       83
-	MOVWF       ?lstr31_FirmV_0_7_0+0 
-	MOVLW       52
-	MOVWF       ?lstr31_FirmV_0_7_0+1 
-	MOVLW       32
-	MOVWF       ?lstr31_FirmV_0_7_0+2 
-	MOVLW       77
-	MOVWF       ?lstr31_FirmV_0_7_0+3 
-	MOVLW       49
-	MOVWF       ?lstr31_FirmV_0_7_0+4 
-	MOVLW       32
-	MOVWF       ?lstr31_FirmV_0_7_0+5 
-	MOVLW       83
-	MOVWF       ?lstr31_FirmV_0_7_0+6 
-	MOVLW       116
-	MOVWF       ?lstr31_FirmV_0_7_0+7 
-	MOVLW       111
-	MOVWF       ?lstr31_FirmV_0_7_0+8 
-	MOVLW       112
-	MOVWF       ?lstr31_FirmV_0_7_0+9 
-	MOVLW       101
-	MOVWF       ?lstr31_FirmV_0_7_0+10 
-	MOVLW       100
-	MOVWF       ?lstr31_FirmV_0_7_0+11 
-	CLRF        ?lstr31_FirmV_0_7_0+12 
 	MOVLW       ?lstr31_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr31_FirmV_0_7_0+0)
@@ -4385,31 +3750,6 @@ L_State4170:
 	MOVLW       2
 	MOVWF       FARG_StopMotor+0 
 	CALL        _StopMotor+0, 0
-	MOVLW       83
-	MOVWF       ?lstr32_FirmV_0_7_0+0 
-	MOVLW       52
-	MOVWF       ?lstr32_FirmV_0_7_0+1 
-	MOVLW       32
-	MOVWF       ?lstr32_FirmV_0_7_0+2 
-	MOVLW       77
-	MOVWF       ?lstr32_FirmV_0_7_0+3 
-	MOVLW       50
-	MOVWF       ?lstr32_FirmV_0_7_0+4 
-	MOVLW       32
-	MOVWF       ?lstr32_FirmV_0_7_0+5 
-	MOVLW       83
-	MOVWF       ?lstr32_FirmV_0_7_0+6 
-	MOVLW       116
-	MOVWF       ?lstr32_FirmV_0_7_0+7 
-	MOVLW       111
-	MOVWF       ?lstr32_FirmV_0_7_0+8 
-	MOVLW       112
-	MOVWF       ?lstr32_FirmV_0_7_0+9 
-	MOVLW       101
-	MOVWF       ?lstr32_FirmV_0_7_0+10 
-	MOVLW       100
-	MOVWF       ?lstr32_FirmV_0_7_0+11 
-	CLRF        ?lstr32_FirmV_0_7_0+12 
 	MOVLW       ?lstr32_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr32_FirmV_0_7_0+0)
@@ -4441,21 +3781,6 @@ L__State4831:
 	MOVWF       _State+0 
 	CLRF        _OverloadCheckFlag1+0 
 	CLRF        _OverloadCheckFlag2+0 
-	MOVLW       ?ICS?lstr33_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr33_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr33_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr33_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr33_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       17
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr33_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr33_FirmV_0_7_0+0)
@@ -4521,21 +3846,6 @@ L__State4830:
 	MOVWF       _State+0 
 	CLRF        _OverloadCheckFlag1+0 
 	CLRF        _OverloadCheckFlag2+0 
-	MOVLW       ?ICS?lstr34_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr34_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr34_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr34_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr34_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       17
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr34_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr34_FirmV_0_7_0+0)
@@ -4608,21 +3918,6 @@ L_State4180:
 	MOVWF       _State+0 
 	MOVLW       1
 	MOVWF       _PhotocellOpenFlag+0 
-	MOVLW       ?ICS?lstr35_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr35_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr35_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr35_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr35_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       17
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr35_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr35_FirmV_0_7_0+0)
@@ -4685,21 +3980,6 @@ L__State4828:
 	MOVWF       _State+0 
 	CLRF        _OverloadCheckFlag1+0 
 	CLRF        _OverloadCheckFlag2+0 
-	MOVLW       ?ICS?lstr36_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr36_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr36_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr36_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr36_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       21
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr36_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr36_FirmV_0_7_0+0)
@@ -4758,21 +4038,6 @@ L_State4184:
 	MOVWF       _State+0 
 	CLRF        _OverloadCheckFlag1+0 
 	CLRF        _OverloadCheckFlag2+0 
-	MOVLW       ?ICS?lstr37_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr37_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr37_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr37_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr37_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       18
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr37_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr37_FirmV_0_7_0+0)
@@ -5015,10 +4280,10 @@ L__State4827:
 	MOVLW       0
 	XORWF       _AutoCloseTime+1, 0 
 	BTFSS       STATUS+0, 2 
-	GOTO        L__State4932
+	GOTO        L__State4944
 	MOVLW       0
 	XORWF       _AutoCloseTime+0, 0 
-L__State4932:
+L__State4944:
 	BTFSC       STATUS+0, 2 
 	GOTO        L_State4194
 	MOVF        _AutoCloseTime+0, 0 
@@ -5036,21 +4301,6 @@ L__State4932:
 	MOVLW       9
 	MOVWF       FARG_AddTask+0 
 	CALL        _AddTask+0, 0
-	MOVLW       ?ICS?lstr38_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr38_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr38_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr38_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr38_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       21
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr38_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr38_FirmV_0_7_0+0)
@@ -5078,6 +4328,7 @@ L__State4932:
 L_State4194:
 L_State4193:
 ;FirmV_0_7_0.c,904 :: 		}
+L_end_State4:
 	RETURN      0
 ; end of _State4
 
@@ -5576,10 +4827,10 @@ L_State5197:
 	MOVLW       0
 	XORWF       _AutoCloseTime+1, 0 
 	BTFSS       STATUS+0, 2 
-	GOTO        L__State5933
+	GOTO        L__State5946
 	MOVLW       0
 	XORWF       _AutoCloseTime+0, 0 
-L__State5933:
+L__State5946:
 	BTFSC       STATUS+0, 2 
 	GOTO        L_State5206
 	MOVF        _PassFlag+0, 0 
@@ -5593,21 +4844,6 @@ L__State5833:
 	CALL        _GetAutocloseTime+0, 0
 	MOVF        R0, 0 
 	MOVWF       __AC+0 
-	MOVLW       ?ICS?lstr39_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr39_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr39_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr39_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr39_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       22
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr39_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr39_FirmV_0_7_0+0)
@@ -5626,10 +4862,10 @@ L_State5206:
 	MOVLW       0
 	XORWF       _AutoCloseTime+1, 0 
 	BTFSS       STATUS+0, 2 
-	GOTO        L__State5934
+	GOTO        L__State5947
 	MOVLW       0
 	XORWF       _AutoCloseTime+0, 0 
-L__State5934:
+L__State5947:
 	BTFSC       STATUS+0, 2 
 	GOTO        L_State5209
 L__State5832:
@@ -5679,21 +4915,6 @@ L__State5832:
 	MOVLW       hi_addr(_t+0)
 	MOVWF       FARG_LongWordToStrWithZeros_output+1 
 	CALL        _LongWordToStrWithZeros+0, 0
-	MOVLW       ?ICS?lstr40_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr40_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr40_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr40_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr40_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       16
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr40_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr40_FirmV_0_7_0+0)
@@ -5713,6 +4934,7 @@ L_State5211:
 ;FirmV_0_7_0.c,978 :: 		}
 L_State5209:
 ;FirmV_0_7_0.c,980 :: 		}
+L_end_State5:
 	RETURN      0
 ; end of _State5
 
@@ -6292,10 +5514,10 @@ L_State6219:
 	MOVLW       0
 	XORWF       _AutoCloseTime+1, 0 
 	BTFSS       STATUS+0, 2 
-	GOTO        L__State6935
+	GOTO        L__State6949
 	MOVLW       0
 	XORWF       _AutoCloseTime+0, 0 
-L__State6935:
+L__State6949:
 	BTFSC       STATUS+0, 2 
 	GOTO        L_State6225
 	MOVF        _PassFlag+0, 0 
@@ -6309,21 +5531,6 @@ L__State6838:
 	CALL        _GetAutocloseTime+0, 0
 	MOVF        R0, 0 
 	MOVWF       __AC+0 
-	MOVLW       ?ICS?lstr42_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr42_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr42_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr42_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr42_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       22
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr42_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr42_FirmV_0_7_0+0)
@@ -6342,10 +5549,10 @@ L_State6225:
 	MOVLW       0
 	XORWF       _AutoCloseTime+1, 0 
 	BTFSS       STATUS+0, 2 
-	GOTO        L__State6936
+	GOTO        L__State6950
 	MOVLW       0
 	XORWF       _AutoCloseTime+0, 0 
-L__State6936:
+L__State6950:
 	BTFSC       STATUS+0, 2 
 	GOTO        L_State6228
 L__State6837:
@@ -6395,21 +5602,6 @@ L__State6837:
 	MOVLW       hi_addr(_t+0)
 	MOVWF       FARG_LongWordToStrWithZeros_output+1 
 	CALL        _LongWordToStrWithZeros+0, 0
-	MOVLW       ?ICS?lstr43_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr43_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr43_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr43_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr43_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       16
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr43_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr43_FirmV_0_7_0+0)
@@ -6429,6 +5621,7 @@ L_State6230:
 ;FirmV_0_7_0.c,1074 :: 		}
 L_State6228:
 ;FirmV_0_7_0.c,1076 :: 		}
+L_end_State6:
 	RETURN      0
 ; end of _State6
 
@@ -6452,35 +5645,6 @@ _State7:
 	MOVWF       FARG_StartMotor+0 
 	CLRF        FARG_StartMotor+0 
 	CALL        _StartMotor+0, 0
-	MOVLW       83
-	MOVWF       ?lstr45_FirmV_0_7_0+0 
-	MOVLW       55
-	MOVWF       ?lstr45_FirmV_0_7_0+1 
-	MOVLW       32
-	MOVWF       ?lstr45_FirmV_0_7_0+2 
-	MOVLW       77
-	MOVWF       ?lstr45_FirmV_0_7_0+3 
-	MOVLW       111
-	MOVWF       ?lstr45_FirmV_0_7_0+4 
-	MOVLW       116
-	MOVWF       ?lstr45_FirmV_0_7_0+5 
-	MOVLW       111
-	MOVWF       ?lstr45_FirmV_0_7_0+6 
-	MOVLW       114
-	MOVWF       ?lstr45_FirmV_0_7_0+7 
-	MOVLW       49
-	MOVWF       ?lstr45_FirmV_0_7_0+8 
-	MOVLW       83
-	MOVWF       ?lstr45_FirmV_0_7_0+9 
-	MOVLW       116
-	MOVWF       ?lstr45_FirmV_0_7_0+10 
-	MOVLW       97
-	MOVWF       ?lstr45_FirmV_0_7_0+11 
-	MOVLW       114
-	MOVWF       ?lstr45_FirmV_0_7_0+12 
-	MOVLW       116
-	MOVWF       ?lstr45_FirmV_0_7_0+13 
-	CLRF        ?lstr45_FirmV_0_7_0+14 
 	MOVLW       ?lstr45_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr45_FirmV_0_7_0+0)
@@ -6501,35 +5665,6 @@ L_State7231:
 	MOVWF       FARG_StartMotor+0 
 	CLRF        FARG_StartMotor+0 
 	CALL        _StartMotor+0, 0
-	MOVLW       83
-	MOVWF       ?lstr46_FirmV_0_7_0+0 
-	MOVLW       55
-	MOVWF       ?lstr46_FirmV_0_7_0+1 
-	MOVLW       32
-	MOVWF       ?lstr46_FirmV_0_7_0+2 
-	MOVLW       77
-	MOVWF       ?lstr46_FirmV_0_7_0+3 
-	MOVLW       111
-	MOVWF       ?lstr46_FirmV_0_7_0+4 
-	MOVLW       116
-	MOVWF       ?lstr46_FirmV_0_7_0+5 
-	MOVLW       111
-	MOVWF       ?lstr46_FirmV_0_7_0+6 
-	MOVLW       114
-	MOVWF       ?lstr46_FirmV_0_7_0+7 
-	MOVLW       50
-	MOVWF       ?lstr46_FirmV_0_7_0+8 
-	MOVLW       83
-	MOVWF       ?lstr46_FirmV_0_7_0+9 
-	MOVLW       116
-	MOVWF       ?lstr46_FirmV_0_7_0+10 
-	MOVLW       97
-	MOVWF       ?lstr46_FirmV_0_7_0+11 
-	MOVLW       114
-	MOVWF       ?lstr46_FirmV_0_7_0+12 
-	MOVLW       116
-	MOVWF       ?lstr46_FirmV_0_7_0+13 
-	CLRF        ?lstr46_FirmV_0_7_0+14 
 	MOVLW       ?lstr46_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr46_FirmV_0_7_0+0)
@@ -6581,21 +5716,6 @@ L_State7232:
 	MOVLW       1
 	MOVWF       FARG_OverloadInit+0 
 	CALL        _OverloadInit+0, 0
-	MOVLW       ?ICS?lstr47_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr47_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr47_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr47_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr47_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       21
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr47_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr47_FirmV_0_7_0+0)
@@ -6617,21 +5737,6 @@ L_State7233:
 	MOVLW       2
 	MOVWF       FARG_OverloadInit+0 
 	CALL        _OverloadInit+0, 0
-	MOVLW       ?ICS?lstr48_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr48_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr48_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr48_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr48_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       21
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr48_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr48_FirmV_0_7_0+0)
@@ -6654,35 +5759,6 @@ L_State7234:
 	MOVWF       FARG_SetMotorSpeed+0 
 	CALL        _SetMotorSpeed+0, 0
 	CLRF        _M1isSlow+0 
-	MOVLW       83
-	MOVWF       ?lstr49_FirmV_0_7_0+0 
-	MOVLW       55
-	MOVWF       ?lstr49_FirmV_0_7_0+1 
-	MOVLW       32
-	MOVWF       ?lstr49_FirmV_0_7_0+2 
-	MOVLW       77
-	MOVWF       ?lstr49_FirmV_0_7_0+3 
-	MOVLW       49
-	MOVWF       ?lstr49_FirmV_0_7_0+4 
-	MOVLW       32
-	MOVWF       ?lstr49_FirmV_0_7_0+5 
-	MOVLW       83
-	MOVWF       ?lstr49_FirmV_0_7_0+6 
-	MOVLW       112
-	MOVWF       ?lstr49_FirmV_0_7_0+7 
-	MOVLW       101
-	MOVWF       ?lstr49_FirmV_0_7_0+8 
-	MOVLW       101
-	MOVWF       ?lstr49_FirmV_0_7_0+9 
-	MOVLW       100
-	MOVWF       ?lstr49_FirmV_0_7_0+10 
-	MOVLW       32
-	MOVWF       ?lstr49_FirmV_0_7_0+11 
-	MOVLW       85
-	MOVWF       ?lstr49_FirmV_0_7_0+12 
-	MOVLW       80
-	MOVWF       ?lstr49_FirmV_0_7_0+13 
-	CLRF        ?lstr49_FirmV_0_7_0+14 
 	MOVLW       ?lstr49_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr49_FirmV_0_7_0+0)
@@ -6705,35 +5781,6 @@ L_State7235:
 	MOVWF       FARG_SetMotorSpeed+0 
 	CALL        _SetMotorSpeed+0, 0
 	CLRF        _M2isSlow+0 
-	MOVLW       83
-	MOVWF       ?lstr50_FirmV_0_7_0+0 
-	MOVLW       55
-	MOVWF       ?lstr50_FirmV_0_7_0+1 
-	MOVLW       32
-	MOVWF       ?lstr50_FirmV_0_7_0+2 
-	MOVLW       77
-	MOVWF       ?lstr50_FirmV_0_7_0+3 
-	MOVLW       50
-	MOVWF       ?lstr50_FirmV_0_7_0+4 
-	MOVLW       32
-	MOVWF       ?lstr50_FirmV_0_7_0+5 
-	MOVLW       83
-	MOVWF       ?lstr50_FirmV_0_7_0+6 
-	MOVLW       112
-	MOVWF       ?lstr50_FirmV_0_7_0+7 
-	MOVLW       101
-	MOVWF       ?lstr50_FirmV_0_7_0+8 
-	MOVLW       101
-	MOVWF       ?lstr50_FirmV_0_7_0+9 
-	MOVLW       100
-	MOVWF       ?lstr50_FirmV_0_7_0+10 
-	MOVLW       32
-	MOVWF       ?lstr50_FirmV_0_7_0+11 
-	MOVLW       85
-	MOVWF       ?lstr50_FirmV_0_7_0+12 
-	MOVLW       80
-	MOVWF       ?lstr50_FirmV_0_7_0+13 
-	CLRF        ?lstr50_FirmV_0_7_0+14 
 	MOVLW       ?lstr50_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr50_FirmV_0_7_0+0)
@@ -6767,31 +5814,6 @@ L__State7848:
 	MOVLW       1
 	MOVWF       FARG_StopMotor+0 
 	CALL        _StopMotor+0, 0
-	MOVLW       83
-	MOVWF       ?lstr51_FirmV_0_7_0+0 
-	MOVLW       55
-	MOVWF       ?lstr51_FirmV_0_7_0+1 
-	MOVLW       32
-	MOVWF       ?lstr51_FirmV_0_7_0+2 
-	MOVLW       77
-	MOVWF       ?lstr51_FirmV_0_7_0+3 
-	MOVLW       49
-	MOVWF       ?lstr51_FirmV_0_7_0+4 
-	MOVLW       32
-	MOVWF       ?lstr51_FirmV_0_7_0+5 
-	MOVLW       83
-	MOVWF       ?lstr51_FirmV_0_7_0+6 
-	MOVLW       116
-	MOVWF       ?lstr51_FirmV_0_7_0+7 
-	MOVLW       111
-	MOVWF       ?lstr51_FirmV_0_7_0+8 
-	MOVLW       112
-	MOVWF       ?lstr51_FirmV_0_7_0+9 
-	MOVLW       101
-	MOVWF       ?lstr51_FirmV_0_7_0+10 
-	MOVLW       100
-	MOVWF       ?lstr51_FirmV_0_7_0+11 
-	CLRF        ?lstr51_FirmV_0_7_0+12 
 	MOVLW       ?lstr51_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr51_FirmV_0_7_0+0)
@@ -6825,31 +5847,6 @@ L__State7845:
 	MOVLW       2
 	MOVWF       FARG_StopMotor+0 
 	CALL        _StopMotor+0, 0
-	MOVLW       83
-	MOVWF       ?lstr52_FirmV_0_7_0+0 
-	MOVLW       55
-	MOVWF       ?lstr52_FirmV_0_7_0+1 
-	MOVLW       32
-	MOVWF       ?lstr52_FirmV_0_7_0+2 
-	MOVLW       77
-	MOVWF       ?lstr52_FirmV_0_7_0+3 
-	MOVLW       50
-	MOVWF       ?lstr52_FirmV_0_7_0+4 
-	MOVLW       32
-	MOVWF       ?lstr52_FirmV_0_7_0+5 
-	MOVLW       83
-	MOVWF       ?lstr52_FirmV_0_7_0+6 
-	MOVLW       116
-	MOVWF       ?lstr52_FirmV_0_7_0+7 
-	MOVLW       111
-	MOVWF       ?lstr52_FirmV_0_7_0+8 
-	MOVLW       112
-	MOVWF       ?lstr52_FirmV_0_7_0+9 
-	MOVLW       101
-	MOVWF       ?lstr52_FirmV_0_7_0+10 
-	MOVLW       100
-	MOVWF       ?lstr52_FirmV_0_7_0+11 
-	CLRF        ?lstr52_FirmV_0_7_0+12 
 	MOVLW       ?lstr52_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr52_FirmV_0_7_0+0)
@@ -6888,21 +5885,6 @@ L_State7253:
 	MOVWF       _State+0 
 	MOVLW       1
 	MOVWF       _PhotocellOpenFlag+0 
-	MOVLW       ?ICS?lstr53_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr53_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr53_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr53_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr53_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       17
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr53_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr53_FirmV_0_7_0+0)
@@ -6961,21 +5943,6 @@ L_State7254:
 	MOVWF       _State+0 
 	CLRF        _OverloadCheckFlag1+0 
 	CLRF        _OverloadCheckFlag2+0 
-	MOVLW       ?ICS?lstr54_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr54_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr54_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr54_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr54_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       18
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr54_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr54_FirmV_0_7_0+0)
@@ -7038,21 +6005,6 @@ L__State7843:
 	MOVWF       _State+0 
 	CLRF        _OverloadCheckFlag1+0 
 	CLRF        _OverloadCheckFlag2+0 
-	MOVLW       ?ICS?lstr55_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr55_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr55_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr55_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr55_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       21
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr55_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr55_FirmV_0_7_0+0)
@@ -7295,10 +6247,10 @@ L__State7842:
 	MOVLW       0
 	XORWF       _AutoCloseTime+1, 0 
 	BTFSS       STATUS+0, 2 
-	GOTO        L__State7937
+	GOTO        L__State7952
 	MOVLW       0
 	XORWF       _AutoCloseTime+0, 0 
-L__State7937:
+L__State7952:
 	BTFSC       STATUS+0, 2 
 	GOTO        L_State7267
 	MOVF        _AutoCloseTime+0, 0 
@@ -7316,21 +6268,6 @@ L__State7937:
 	MOVLW       9
 	MOVWF       FARG_AddTask+0 
 	CALL        _AddTask+0, 0
-	MOVLW       ?ICS?lstr56_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr56_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr56_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr56_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr56_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       21
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr56_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr56_FirmV_0_7_0+0)
@@ -7358,6 +6295,7 @@ L__State7937:
 L_State7267:
 L_State7266:
 ;FirmV_0_7_0.c,1159 :: 		}
+L_end_State7:
 	RETURN      0
 ; end of _State7
 
@@ -7382,35 +6320,6 @@ _State8:
 	MOVLW       1
 	MOVWF       FARG_StartMotor+0 
 	CALL        _StartMotor+0, 0
-	MOVLW       83
-	MOVWF       ?lstr57_FirmV_0_7_0+0 
-	MOVLW       56
-	MOVWF       ?lstr57_FirmV_0_7_0+1 
-	MOVLW       32
-	MOVWF       ?lstr57_FirmV_0_7_0+2 
-	MOVLW       77
-	MOVWF       ?lstr57_FirmV_0_7_0+3 
-	MOVLW       111
-	MOVWF       ?lstr57_FirmV_0_7_0+4 
-	MOVLW       116
-	MOVWF       ?lstr57_FirmV_0_7_0+5 
-	MOVLW       111
-	MOVWF       ?lstr57_FirmV_0_7_0+6 
-	MOVLW       114
-	MOVWF       ?lstr57_FirmV_0_7_0+7 
-	MOVLW       49
-	MOVWF       ?lstr57_FirmV_0_7_0+8 
-	MOVLW       83
-	MOVWF       ?lstr57_FirmV_0_7_0+9 
-	MOVLW       116
-	MOVWF       ?lstr57_FirmV_0_7_0+10 
-	MOVLW       97
-	MOVWF       ?lstr57_FirmV_0_7_0+11 
-	MOVLW       114
-	MOVWF       ?lstr57_FirmV_0_7_0+12 
-	MOVLW       116
-	MOVWF       ?lstr57_FirmV_0_7_0+13 
-	CLRF        ?lstr57_FirmV_0_7_0+14 
 	MOVLW       ?lstr57_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr57_FirmV_0_7_0+0)
@@ -7463,35 +6372,6 @@ L_State8268:
 	MOVLW       1
 	MOVWF       FARG_StartMotor+0 
 	CALL        _StartMotor+0, 0
-	MOVLW       83
-	MOVWF       ?lstr58_FirmV_0_7_0+0 
-	MOVLW       56
-	MOVWF       ?lstr58_FirmV_0_7_0+1 
-	MOVLW       32
-	MOVWF       ?lstr58_FirmV_0_7_0+2 
-	MOVLW       77
-	MOVWF       ?lstr58_FirmV_0_7_0+3 
-	MOVLW       111
-	MOVWF       ?lstr58_FirmV_0_7_0+4 
-	MOVLW       116
-	MOVWF       ?lstr58_FirmV_0_7_0+5 
-	MOVLW       111
-	MOVWF       ?lstr58_FirmV_0_7_0+6 
-	MOVLW       114
-	MOVWF       ?lstr58_FirmV_0_7_0+7 
-	MOVLW       50
-	MOVWF       ?lstr58_FirmV_0_7_0+8 
-	MOVLW       83
-	MOVWF       ?lstr58_FirmV_0_7_0+9 
-	MOVLW       116
-	MOVWF       ?lstr58_FirmV_0_7_0+10 
-	MOVLW       97
-	MOVWF       ?lstr58_FirmV_0_7_0+11 
-	MOVLW       114
-	MOVWF       ?lstr58_FirmV_0_7_0+12 
-	MOVLW       116
-	MOVWF       ?lstr58_FirmV_0_7_0+13 
-	CLRF        ?lstr58_FirmV_0_7_0+14 
 	MOVLW       ?lstr58_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr58_FirmV_0_7_0+0)
@@ -7514,21 +6394,6 @@ L_State8269:
 	MOVLW       1
 	MOVWF       FARG_OverloadInit+0 
 	CALL        _OverloadInit+0, 0
-	MOVLW       ?ICS?lstr59_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr59_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr59_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr59_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr59_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       22
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr59_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr59_FirmV_0_7_0+0)
@@ -7550,21 +6415,6 @@ L_State8270:
 	MOVLW       2
 	MOVWF       FARG_OverloadInit+0 
 	CALL        _OverloadInit+0, 0
-	MOVLW       ?ICS?lstr60_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr60_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr60_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr60_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr60_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       22
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr60_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr60_FirmV_0_7_0+0)
@@ -7587,35 +6437,6 @@ L_State8271:
 	MOVWF       FARG_SetMotorSpeed+0 
 	CALL        _SetMotorSpeed+0, 0
 	CLRF        _M1isSlow+0 
-	MOVLW       83
-	MOVWF       ?lstr61_FirmV_0_7_0+0 
-	MOVLW       56
-	MOVWF       ?lstr61_FirmV_0_7_0+1 
-	MOVLW       32
-	MOVWF       ?lstr61_FirmV_0_7_0+2 
-	MOVLW       77
-	MOVWF       ?lstr61_FirmV_0_7_0+3 
-	MOVLW       111
-	MOVWF       ?lstr61_FirmV_0_7_0+4 
-	MOVLW       116
-	MOVWF       ?lstr61_FirmV_0_7_0+5 
-	MOVLW       111
-	MOVWF       ?lstr61_FirmV_0_7_0+6 
-	MOVLW       114
-	MOVWF       ?lstr61_FirmV_0_7_0+7 
-	MOVLW       49
-	MOVWF       ?lstr61_FirmV_0_7_0+8 
-	MOVLW       32
-	MOVWF       ?lstr61_FirmV_0_7_0+9 
-	MOVLW       70
-	MOVWF       ?lstr61_FirmV_0_7_0+10 
-	MOVLW       97
-	MOVWF       ?lstr61_FirmV_0_7_0+11 
-	MOVLW       115
-	MOVWF       ?lstr61_FirmV_0_7_0+12 
-	MOVLW       116
-	MOVWF       ?lstr61_FirmV_0_7_0+13 
-	CLRF        ?lstr61_FirmV_0_7_0+14 
 	MOVLW       ?lstr61_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr61_FirmV_0_7_0+0)
@@ -7638,35 +6459,6 @@ L_State8272:
 	MOVWF       FARG_SetMotorSpeed+0 
 	CALL        _SetMotorSpeed+0, 0
 	CLRF        _M2isSlow+0 
-	MOVLW       83
-	MOVWF       ?lstr62_FirmV_0_7_0+0 
-	MOVLW       56
-	MOVWF       ?lstr62_FirmV_0_7_0+1 
-	MOVLW       32
-	MOVWF       ?lstr62_FirmV_0_7_0+2 
-	MOVLW       77
-	MOVWF       ?lstr62_FirmV_0_7_0+3 
-	MOVLW       111
-	MOVWF       ?lstr62_FirmV_0_7_0+4 
-	MOVLW       116
-	MOVWF       ?lstr62_FirmV_0_7_0+5 
-	MOVLW       111
-	MOVWF       ?lstr62_FirmV_0_7_0+6 
-	MOVLW       114
-	MOVWF       ?lstr62_FirmV_0_7_0+7 
-	MOVLW       50
-	MOVWF       ?lstr62_FirmV_0_7_0+8 
-	MOVLW       32
-	MOVWF       ?lstr62_FirmV_0_7_0+9 
-	MOVLW       70
-	MOVWF       ?lstr62_FirmV_0_7_0+10 
-	MOVLW       97
-	MOVWF       ?lstr62_FirmV_0_7_0+11 
-	MOVLW       115
-	MOVWF       ?lstr62_FirmV_0_7_0+12 
-	MOVLW       116
-	MOVWF       ?lstr62_FirmV_0_7_0+13 
-	CLRF        ?lstr62_FirmV_0_7_0+14 
 	MOVLW       ?lstr62_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr62_FirmV_0_7_0+0)
@@ -7700,35 +6492,6 @@ L__State8858:
 	MOVLW       1
 	MOVWF       FARG_StopMotor+0 
 	CALL        _StopMotor+0, 0
-	MOVLW       83
-	MOVWF       ?lstr63_FirmV_0_7_0+0 
-	MOVLW       56
-	MOVWF       ?lstr63_FirmV_0_7_0+1 
-	MOVLW       32
-	MOVWF       ?lstr63_FirmV_0_7_0+2 
-	MOVLW       77
-	MOVWF       ?lstr63_FirmV_0_7_0+3 
-	MOVLW       111
-	MOVWF       ?lstr63_FirmV_0_7_0+4 
-	MOVLW       116
-	MOVWF       ?lstr63_FirmV_0_7_0+5 
-	MOVLW       111
-	MOVWF       ?lstr63_FirmV_0_7_0+6 
-	MOVLW       114
-	MOVWF       ?lstr63_FirmV_0_7_0+7 
-	MOVLW       49
-	MOVWF       ?lstr63_FirmV_0_7_0+8 
-	MOVLW       32
-	MOVWF       ?lstr63_FirmV_0_7_0+9 
-	MOVLW       83
-	MOVWF       ?lstr63_FirmV_0_7_0+10 
-	MOVLW       116
-	MOVWF       ?lstr63_FirmV_0_7_0+11 
-	MOVLW       111
-	MOVWF       ?lstr63_FirmV_0_7_0+12 
-	MOVLW       112
-	MOVWF       ?lstr63_FirmV_0_7_0+13 
-	CLRF        ?lstr63_FirmV_0_7_0+14 
 	MOVLW       ?lstr63_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr63_FirmV_0_7_0+0)
@@ -7762,35 +6525,6 @@ L__State8855:
 	MOVLW       2
 	MOVWF       FARG_StopMotor+0 
 	CALL        _StopMotor+0, 0
-	MOVLW       83
-	MOVWF       ?lstr64_FirmV_0_7_0+0 
-	MOVLW       56
-	MOVWF       ?lstr64_FirmV_0_7_0+1 
-	MOVLW       32
-	MOVWF       ?lstr64_FirmV_0_7_0+2 
-	MOVLW       77
-	MOVWF       ?lstr64_FirmV_0_7_0+3 
-	MOVLW       111
-	MOVWF       ?lstr64_FirmV_0_7_0+4 
-	MOVLW       116
-	MOVWF       ?lstr64_FirmV_0_7_0+5 
-	MOVLW       111
-	MOVWF       ?lstr64_FirmV_0_7_0+6 
-	MOVLW       114
-	MOVWF       ?lstr64_FirmV_0_7_0+7 
-	MOVLW       50
-	MOVWF       ?lstr64_FirmV_0_7_0+8 
-	MOVLW       32
-	MOVWF       ?lstr64_FirmV_0_7_0+9 
-	MOVLW       83
-	MOVWF       ?lstr64_FirmV_0_7_0+10 
-	MOVLW       116
-	MOVWF       ?lstr64_FirmV_0_7_0+11 
-	MOVLW       111
-	MOVWF       ?lstr64_FirmV_0_7_0+12 
-	MOVLW       112
-	MOVWF       ?lstr64_FirmV_0_7_0+13 
-	CLRF        ?lstr64_FirmV_0_7_0+14 
 	MOVLW       ?lstr64_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr64_FirmV_0_7_0+0)
@@ -7841,21 +6575,6 @@ L__State8853:
 	CLRF        _OverloadCheckFlag2+0 
 	MOVLW       5
 	MOVWF       _State+0 
-	MOVLW       ?ICS?lstr65_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr65_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr65_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr65_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr65_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       17
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr65_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr65_FirmV_0_7_0+0)
@@ -7914,21 +6633,6 @@ L_State8294:
 	MOVWF       _State+0 
 	CLRF        _OverloadCheckFlag1+0 
 	CLRF        _OverloadCheckFlag2+0 
-	MOVLW       ?ICS?lstr66_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr66_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr66_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr66_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr66_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       26
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr66_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr66_FirmV_0_7_0+0)
@@ -7991,21 +6695,6 @@ L__State8852:
 	MOVWF       _State+0 
 	CLRF        _OverloadCheckFlag1+0 
 	CLRF        _OverloadCheckFlag2+0 
-	MOVLW       ?ICS?lstr67_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr67_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr67_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr67_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr67_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       21
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr67_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr67_FirmV_0_7_0+0)
@@ -8216,10 +6905,10 @@ L__State8851:
 	MOVLW       0
 	XORWF       _AutoCloseTime+1, 0 
 	BTFSS       STATUS+0, 2 
-	GOTO        L__State8938
+	GOTO        L__State8954
 	MOVLW       0
 	XORWF       _AutoCloseTime+0, 0 
-L__State8938:
+L__State8954:
 	BTFSC       STATUS+0, 2 
 	GOTO        L_State8306
 	MOVF        _AutoCloseTime+0, 0 
@@ -8237,21 +6926,6 @@ L__State8938:
 	MOVLW       9
 	MOVWF       FARG_AddTask+0 
 	CALL        _AddTask+0, 0
-	MOVLW       ?ICS?lstr68_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr68_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr68_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr68_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr68_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       21
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr68_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
 	MOVLW       hi_addr(?lstr68_FirmV_0_7_0+0)
@@ -8279,6 +6953,7 @@ L__State8938:
 L_State8306:
 L_State8305:
 ;FirmV_0_7_0.c,1238 :: 		}
+L_end_State8:
 	RETURN      0
 ; end of _State8
 
@@ -8310,11 +6985,11 @@ _LCDUpdater:
 	MOVLW       85
 	MOVWF       R13, 0
 L_LCDUpdater309:
-	DECFSZ      R13, 1, 0
+	DECFSZ      R13, 1, 1
 	BRA         L_LCDUpdater309
-	DECFSZ      R12, 1, 0
+	DECFSZ      R12, 1, 1
 	BRA         L_LCDUpdater309
-	DECFSZ      R11, 1, 0
+	DECFSZ      R11, 1, 1
 	BRA         L_LCDUpdater309
 	NOP
 	NOP
@@ -8449,6 +7124,7 @@ L_LCDUpdater326:
 ;FirmV_0_7_0.c,1274 :: 		}
 L_LCDUpdater312:
 ;FirmV_0_7_0.c,1277 :: 		}
+L_end_LCDUpdater:
 	RETURN      0
 ; end of _LCDUpdater
 
@@ -8499,11 +7175,11 @@ _Init:
 	MOVLW       173
 	MOVWF       R13, 0
 L_Init327:
-	DECFSZ      R13, 1, 0
+	DECFSZ      R13, 1, 1
 	BRA         L_Init327
-	DECFSZ      R12, 1, 0
+	DECFSZ      R12, 1, 1
 	BRA         L_Init327
-	DECFSZ      R11, 1, 0
+	DECFSZ      R11, 1, 1
 	BRA         L_Init327
 	NOP
 	NOP
@@ -8522,11 +7198,11 @@ L_Init327:
 	MOVLW       13
 	MOVWF       R13, 0
 L_Init328:
-	DECFSZ      R13, 1, 0
+	DECFSZ      R13, 1, 1
 	BRA         L_Init328
-	DECFSZ      R12, 1, 0
+	DECFSZ      R12, 1, 1
 	BRA         L_Init328
-	DECFSZ      R11, 1, 0
+	DECFSZ      R11, 1, 1
 	BRA         L_Init328
 	NOP
 	NOP
@@ -8555,25 +7231,25 @@ L_Init328:
 	MOVLW       202
 	MOVWF       TMR0L+0 
 ;FirmV_0_7_0.c,1337 :: 		INT1IP_bit=1;
-	BSF         INT1IP_bit+0, 6 
+	BSF         INT1IP_bit+0, BitPos(INT1IP_bit+0) 
 ;FirmV_0_7_0.c,1338 :: 		INT1E_bit=1;
-	BSF         INT1E_bit+0, 3 
+	BSF         INT1E_bit+0, BitPos(INT1E_bit+0) 
 ;FirmV_0_7_0.c,1339 :: 		INT1F_bit=0;
-	BCF         INT1F_bit+0, 0 
+	BCF         INT1F_bit+0, BitPos(INT1F_bit+0) 
 ;FirmV_0_7_0.c,1340 :: 		INT2IP_bit=1;
-	BSF         INT2IP_bit+0, 7 
+	BSF         INT2IP_bit+0, BitPos(INT2IP_bit+0) 
 ;FirmV_0_7_0.c,1341 :: 		INT2E_bit=1;
-	BSF         INT2E_bit+0, 4 
+	BSF         INT2E_bit+0, BitPos(INT2E_bit+0) 
 ;FirmV_0_7_0.c,1342 :: 		INT2F_bit=0;
-	BCF         INT2F_bit+0, 1 
+	BCF         INT2F_bit+0, BitPos(INT2F_bit+0) 
 ;FirmV_0_7_0.c,1343 :: 		INTEDG1_bit=1;
-	BSF         INTEDG1_bit+0, 5 
+	BSF         INTEDG1_bit+0, BitPos(INTEDG1_bit+0) 
 ;FirmV_0_7_0.c,1344 :: 		INTEDG2_bit=1;
-	BSF         INTEDG2_bit+0, 4 
+	BSF         INTEDG2_bit+0, BitPos(INTEDG2_bit+0) 
 ;FirmV_0_7_0.c,1347 :: 		INT0F_bit=0;
-	BCF         INT0F_bit+0, 1 
+	BCF         INT0F_bit+0, BitPos(INT0F_bit+0) 
 ;FirmV_0_7_0.c,1348 :: 		INT0E_bit=0;
-	BCF         INT0E_bit+0, 4 
+	BCF         INT0E_bit+0, BitPos(INT0E_bit+0) 
 ;FirmV_0_7_0.c,1351 :: 		for(i=0;i<20;i++)
 	CLRF        Init_i_L0+0 
 L_Init329:
@@ -8582,22 +7258,22 @@ L_Init329:
 	BTFSC       STATUS+0, 0 
 	GOTO        L_Init330
 ;FirmV_0_7_0.c,1352 :: 		Tasks[i].Expired=1;
-	MOVF        Init_i_L0+0, 0 
+	MOVLW       7
 	MOVWF       R0 
 	MOVLW       0
 	MOVWF       R1 
-	MOVLW       7
+	MOVF        Init_i_L0+0, 0 
 	MOVWF       R4 
 	MOVLW       0
 	MOVWF       R5 
-	CALL        _Mul_16x16_U+0, 0
+	CALL        _Mul_16X16_U+0, 0
 	MOVLW       _Tasks+0
 	ADDWF       R0, 1 
 	MOVLW       hi_addr(_Tasks+0)
 	ADDWFC      R1, 1 
 	MOVLW       5
 	ADDWF       R0, 0 
-	MOVWF       FSR1L 
+	MOVWF       FSR1 
 	MOVLW       0
 	ADDWFC      R1, 0 
 	MOVWF       FSR1H 
@@ -8625,13 +7301,16 @@ L_Init330:
 ;FirmV_0_7_0.c,1364 :: 		State=0;
 	CLRF        _State+0 
 ;FirmV_0_7_0.c,1367 :: 		UART1_init(115200);
-	MOVLW       21
+	BSF         BAUDCON+0, 3, 0
+	CLRF        SPBRGH+0 
+	MOVLW       86
 	MOVWF       SPBRG+0 
 	BSF         TXSTA+0, 2, 0
 	CALL        _UART1_Init+0, 0
 ;FirmV_0_7_0.c,1370 :: 		LoadConfigs();
 	CALL        _LoadConfigs+0, 0
 ;FirmV_0_7_0.c,1374 :: 		}
+L_end_Init:
 	RETURN      0
 ; end of _Init
 
@@ -8648,22 +7327,22 @@ L_TaskManager332:
 	BTFSC       STATUS+0, 0 
 	GOTO        L_TaskManager333
 ;FirmV_0_7_0.c,1392 :: 		if((Tasks[i].Expired==0)&&(Tasks[i].Time==ms500)&&(Tasks[i].Fired==0))
-	MOVF        TaskManager_i_L0+0, 0 
+	MOVLW       7
 	MOVWF       R0 
 	MOVLW       0
 	MOVWF       R1 
-	MOVLW       7
+	MOVF        TaskManager_i_L0+0, 0 
 	MOVWF       R4 
 	MOVLW       0
 	MOVWF       R5 
-	CALL        _Mul_16x16_U+0, 0
+	CALL        _Mul_16X16_U+0, 0
 	MOVLW       _Tasks+0
 	ADDWF       R0, 1 
 	MOVLW       hi_addr(_Tasks+0)
 	ADDWFC      R1, 1 
 	MOVLW       5
 	ADDWF       R0, 0 
-	MOVWF       FSR0L 
+	MOVWF       FSR0 
 	MOVLW       0
 	ADDWFC      R1, 0 
 	MOVWF       FSR0H 
@@ -8671,22 +7350,22 @@ L_TaskManager332:
 	XORLW       0
 	BTFSS       STATUS+0, 2 
 	GOTO        L_TaskManager337
-	MOVF        TaskManager_i_L0+0, 0 
+	MOVLW       7
 	MOVWF       R0 
 	MOVLW       0
 	MOVWF       R1 
-	MOVLW       7
+	MOVF        TaskManager_i_L0+0, 0 
 	MOVWF       R4 
 	MOVLW       0
 	MOVWF       R5 
-	CALL        _Mul_16x16_U+0, 0
+	CALL        _Mul_16X16_U+0, 0
 	MOVLW       _Tasks+0
 	ADDWF       R0, 1 
 	MOVLW       hi_addr(_Tasks+0)
 	ADDWFC      R1, 1 
 	MOVLW       1
 	ADDWF       R0, 0 
-	MOVWF       FSR0L 
+	MOVWF       FSR0 
 	MOVLW       0
 	ADDWFC      R1, 0 
 	MOVWF       FSR0H 
@@ -8701,36 +7380,36 @@ L_TaskManager332:
 	MOVF        R4, 0 
 	XORWF       _ms500+3, 0 
 	BTFSS       STATUS+0, 2 
-	GOTO        L__TaskManager939
+	GOTO        L__TaskManager958
 	MOVF        R3, 0 
 	XORWF       _ms500+2, 0 
 	BTFSS       STATUS+0, 2 
-	GOTO        L__TaskManager939
+	GOTO        L__TaskManager958
 	MOVF        R2, 0 
 	XORWF       _ms500+1, 0 
 	BTFSS       STATUS+0, 2 
-	GOTO        L__TaskManager939
+	GOTO        L__TaskManager958
 	MOVF        R1, 0 
 	XORWF       _ms500+0, 0 
-L__TaskManager939:
+L__TaskManager958:
 	BTFSS       STATUS+0, 2 
 	GOTO        L_TaskManager337
-	MOVF        TaskManager_i_L0+0, 0 
+	MOVLW       7
 	MOVWF       R0 
 	MOVLW       0
 	MOVWF       R1 
-	MOVLW       7
+	MOVF        TaskManager_i_L0+0, 0 
 	MOVWF       R4 
 	MOVLW       0
 	MOVWF       R5 
-	CALL        _Mul_16x16_U+0, 0
+	CALL        _Mul_16X16_U+0, 0
 	MOVLW       _Tasks+0
 	ADDWF       R0, 1 
 	MOVLW       hi_addr(_Tasks+0)
 	ADDWFC      R1, 1 
 	MOVLW       6
 	ADDWF       R0, 0 
-	MOVWF       FSR0L 
+	MOVWF       FSR0 
 	MOVLW       0
 	ADDWFC      R1, 0 
 	MOVWF       FSR0H 
@@ -8740,22 +7419,22 @@ L__TaskManager939:
 	GOTO        L_TaskManager337
 L__TaskManager867:
 ;FirmV_0_7_0.c,1393 :: 		Tasks[i].Fired=1;
-	MOVF        TaskManager_i_L0+0, 0 
+	MOVLW       7
 	MOVWF       R0 
 	MOVLW       0
 	MOVWF       R1 
-	MOVLW       7
+	MOVF        TaskManager_i_L0+0, 0 
 	MOVWF       R4 
 	MOVLW       0
 	MOVWF       R5 
-	CALL        _Mul_16x16_U+0, 0
+	CALL        _Mul_16X16_U+0, 0
 	MOVLW       _Tasks+0
 	ADDWF       R0, 1 
 	MOVLW       hi_addr(_Tasks+0)
 	ADDWFC      R1, 1 
 	MOVLW       6
 	ADDWF       R0, 0 
-	MOVWF       FSR1L 
+	MOVWF       FSR1 
 	MOVLW       0
 	ADDWFC      R1, 0 
 	MOVWF       FSR1H 
@@ -8768,6 +7447,7 @@ L_TaskManager337:
 	GOTO        L_TaskManager332
 L_TaskManager333:
 ;FirmV_0_7_0.c,1394 :: 		}
+L_end_TaskManager:
 	RETURN      0
 ; end of _TaskManager
 
@@ -8782,22 +7462,22 @@ L_AddTask338:
 	BTFSC       STATUS+0, 0 
 	GOTO        L_AddTask339
 ;FirmV_0_7_0.c,1410 :: 		if(Tasks[i].Expired==1)
-	MOVF        AddTask_i_L0+0, 0 
+	MOVLW       7
 	MOVWF       R0 
 	MOVLW       0
 	MOVWF       R1 
-	MOVLW       7
+	MOVF        AddTask_i_L0+0, 0 
 	MOVWF       R4 
 	MOVLW       0
 	MOVWF       R5 
-	CALL        _Mul_16x16_U+0, 0
+	CALL        _Mul_16X16_U+0, 0
 	MOVLW       _Tasks+0
 	ADDWF       R0, 1 
 	MOVLW       hi_addr(_Tasks+0)
 	ADDWFC      R1, 1 
 	MOVLW       5
 	ADDWF       R0, 0 
-	MOVWF       FSR0L 
+	MOVWF       FSR0 
 	MOVLW       0
 	ADDWFC      R1, 0 
 	MOVWF       FSR0H 
@@ -8806,40 +7486,40 @@ L_AddTask338:
 	BTFSS       STATUS+0, 2 
 	GOTO        L_AddTask341
 ;FirmV_0_7_0.c,1412 :: 		Tasks[i].TaskCode=tcode;
-	MOVF        AddTask_i_L0+0, 0 
+	MOVLW       7
 	MOVWF       R0 
 	MOVLW       0
 	MOVWF       R1 
-	MOVLW       7
+	MOVF        AddTask_i_L0+0, 0 
 	MOVWF       R4 
 	MOVLW       0
 	MOVWF       R5 
-	CALL        _Mul_16x16_U+0, 0
+	CALL        _Mul_16X16_U+0, 0
 	MOVLW       _Tasks+0
 	ADDWF       R0, 0 
-	MOVWF       FSR1L 
+	MOVWF       FSR1 
 	MOVLW       hi_addr(_Tasks+0)
 	ADDWFC      R1, 0 
 	MOVWF       FSR1H 
 	MOVF        FARG_AddTask_tcode+0, 0 
 	MOVWF       POSTINC1+0 
 ;FirmV_0_7_0.c,1413 :: 		Tasks[i].Time=OccTime;
-	MOVF        AddTask_i_L0+0, 0 
+	MOVLW       7
 	MOVWF       R0 
 	MOVLW       0
 	MOVWF       R1 
-	MOVLW       7
+	MOVF        AddTask_i_L0+0, 0 
 	MOVWF       R4 
 	MOVLW       0
 	MOVWF       R5 
-	CALL        _Mul_16x16_U+0, 0
+	CALL        _Mul_16X16_U+0, 0
 	MOVLW       _Tasks+0
 	ADDWF       R0, 1 
 	MOVLW       hi_addr(_Tasks+0)
 	ADDWFC      R1, 1 
 	MOVLW       1
 	ADDWF       R0, 0 
-	MOVWF       FSR1L 
+	MOVWF       FSR1 
 	MOVLW       0
 	ADDWFC      R1, 0 
 	MOVWF       FSR1H 
@@ -8852,43 +7532,43 @@ L_AddTask338:
 	MOVF        FARG_AddTask_OccTime+3, 0 
 	MOVWF       POSTINC1+0 
 ;FirmV_0_7_0.c,1414 :: 		Tasks[i].Expired=0;
-	MOVF        AddTask_i_L0+0, 0 
+	MOVLW       7
 	MOVWF       R0 
 	MOVLW       0
 	MOVWF       R1 
-	MOVLW       7
+	MOVF        AddTask_i_L0+0, 0 
 	MOVWF       R4 
 	MOVLW       0
 	MOVWF       R5 
-	CALL        _Mul_16x16_U+0, 0
+	CALL        _Mul_16X16_U+0, 0
 	MOVLW       _Tasks+0
 	ADDWF       R0, 1 
 	MOVLW       hi_addr(_Tasks+0)
 	ADDWFC      R1, 1 
 	MOVLW       5
 	ADDWF       R0, 0 
-	MOVWF       FSR1L 
+	MOVWF       FSR1 
 	MOVLW       0
 	ADDWFC      R1, 0 
 	MOVWF       FSR1H 
 	CLRF        POSTINC1+0 
 ;FirmV_0_7_0.c,1415 :: 		Tasks[i].Fired=0;
-	MOVF        AddTask_i_L0+0, 0 
+	MOVLW       7
 	MOVWF       R0 
 	MOVLW       0
 	MOVWF       R1 
-	MOVLW       7
+	MOVF        AddTask_i_L0+0, 0 
 	MOVWF       R4 
 	MOVLW       0
 	MOVWF       R5 
-	CALL        _Mul_16x16_U+0, 0
+	CALL        _Mul_16X16_U+0, 0
 	MOVLW       _Tasks+0
 	ADDWF       R0, 1 
 	MOVLW       hi_addr(_Tasks+0)
 	ADDWFC      R1, 1 
 	MOVLW       6
 	ADDWF       R0, 0 
-	MOVWF       FSR1L 
+	MOVWF       FSR1 
 	MOVLW       0
 	ADDWFC      R1, 0 
 	MOVWF       FSR1H 
@@ -8903,6 +7583,7 @@ L_AddTask341:
 	GOTO        L_AddTask338
 L_AddTask339:
 ;FirmV_0_7_0.c,1418 :: 		}
+L_end_AddTask:
 	RETURN      0
 ; end of _AddTask
 
@@ -8941,22 +7622,22 @@ L_EventHandler342:
 	BTFSC       STATUS+0, 0 
 	GOTO        L_EventHandler343
 ;FirmV_0_7_0.c,1439 :: 		if((Tasks[i].Expired==0)&&(Tasks[i].Fired==1))
-	MOVF        EventHandler_i_L0+0, 0 
+	MOVLW       7
 	MOVWF       R0 
 	MOVLW       0
 	MOVWF       R1 
-	MOVLW       7
+	MOVF        EventHandler_i_L0+0, 0 
 	MOVWF       R4 
 	MOVLW       0
 	MOVWF       R5 
-	CALL        _Mul_16x16_U+0, 0
+	CALL        _Mul_16X16_U+0, 0
 	MOVLW       _Tasks+0
 	ADDWF       R0, 1 
 	MOVLW       hi_addr(_Tasks+0)
 	ADDWFC      R1, 1 
 	MOVLW       5
 	ADDWF       R0, 0 
-	MOVWF       FSR0L 
+	MOVWF       FSR0 
 	MOVLW       0
 	ADDWFC      R1, 0 
 	MOVWF       FSR0H 
@@ -8964,22 +7645,22 @@ L_EventHandler342:
 	XORLW       0
 	BTFSS       STATUS+0, 2 
 	GOTO        L_EventHandler347
-	MOVF        EventHandler_i_L0+0, 0 
+	MOVLW       7
 	MOVWF       R0 
 	MOVLW       0
 	MOVWF       R1 
-	MOVLW       7
+	MOVF        EventHandler_i_L0+0, 0 
 	MOVWF       R4 
 	MOVLW       0
 	MOVWF       R5 
-	CALL        _Mul_16x16_U+0, 0
+	CALL        _Mul_16X16_U+0, 0
 	MOVLW       _Tasks+0
 	ADDWF       R0, 1 
 	MOVLW       hi_addr(_Tasks+0)
 	ADDWFC      R1, 1 
 	MOVLW       6
 	ADDWF       R0, 0 
-	MOVWF       FSR0L 
+	MOVWF       FSR0 
 	MOVLW       0
 	ADDWFC      R1, 0 
 	MOVWF       FSR0H 
@@ -8994,22 +7675,22 @@ L__EventHandler868:
 	BTFSS       STATUS+0, 2 
 	GOTO        L_EventHandler348
 ;FirmV_0_7_0.c,1442 :: 		{Events.Task1=Tasks[i].TaskCode; Tasks[i].Expired=1;Tasks[i].Fired=0;}
-	MOVF        EventHandler_i_L0+0, 0 
+	MOVLW       7
 	MOVWF       R0 
 	MOVLW       0
 	MOVWF       R1 
-	MOVLW       7
+	MOVF        EventHandler_i_L0+0, 0 
 	MOVWF       R4 
 	MOVLW       0
 	MOVWF       R5 
-	CALL        _Mul_16x16_U+0, 0
+	CALL        _Mul_16X16_U+0, 0
 	MOVLW       _Tasks+0
 	ADDWF       R0, 0 
 	MOVWF       R2 
 	MOVLW       hi_addr(_Tasks+0)
 	ADDWFC      R1, 0 
 	MOVWF       R3 
-	MOVFF       R2, FSR0L
+	MOVFF       R2, FSR0
 	MOVFF       R3, FSR0H
 	MOVF        POSTINC0+0, 0 
 	MOVWF       R0 
@@ -9017,28 +7698,28 @@ L__EventHandler868:
 	MOVWF       _Events+1 
 	MOVLW       5
 	ADDWF       R2, 0 
-	MOVWF       FSR1L 
+	MOVWF       FSR1 
 	MOVLW       0
 	ADDWFC      R3, 0 
 	MOVWF       FSR1H 
 	MOVLW       1
 	MOVWF       POSTINC1+0 
-	MOVF        EventHandler_i_L0+0, 0 
+	MOVLW       7
 	MOVWF       R0 
 	MOVLW       0
 	MOVWF       R1 
-	MOVLW       7
+	MOVF        EventHandler_i_L0+0, 0 
 	MOVWF       R4 
 	MOVLW       0
 	MOVWF       R5 
-	CALL        _Mul_16x16_U+0, 0
+	CALL        _Mul_16X16_U+0, 0
 	MOVLW       _Tasks+0
 	ADDWF       R0, 1 
 	MOVLW       hi_addr(_Tasks+0)
 	ADDWFC      R1, 1 
 	MOVLW       6
 	ADDWF       R0, 0 
-	MOVWF       FSR1L 
+	MOVWF       FSR1 
 	MOVLW       0
 	ADDWFC      R1, 0 
 	MOVWF       FSR1H 
@@ -9051,22 +7732,22 @@ L_EventHandler348:
 	BTFSS       STATUS+0, 2 
 	GOTO        L_EventHandler350
 ;FirmV_0_7_0.c,1444 :: 		{Events.Task2=Tasks[i].TaskCode;Tasks[i].Expired=1;Tasks[i].Fired=0;}
-	MOVF        EventHandler_i_L0+0, 0 
+	MOVLW       7
 	MOVWF       R0 
 	MOVLW       0
 	MOVWF       R1 
-	MOVLW       7
+	MOVF        EventHandler_i_L0+0, 0 
 	MOVWF       R4 
 	MOVLW       0
 	MOVWF       R5 
-	CALL        _Mul_16x16_U+0, 0
+	CALL        _Mul_16X16_U+0, 0
 	MOVLW       _Tasks+0
 	ADDWF       R0, 0 
 	MOVWF       R2 
 	MOVLW       hi_addr(_Tasks+0)
 	ADDWFC      R1, 0 
 	MOVWF       R3 
-	MOVFF       R2, FSR0L
+	MOVFF       R2, FSR0
 	MOVFF       R3, FSR0H
 	MOVF        POSTINC0+0, 0 
 	MOVWF       R0 
@@ -9074,28 +7755,28 @@ L_EventHandler348:
 	MOVWF       _Events+2 
 	MOVLW       5
 	ADDWF       R2, 0 
-	MOVWF       FSR1L 
+	MOVWF       FSR1 
 	MOVLW       0
 	ADDWFC      R3, 0 
 	MOVWF       FSR1H 
 	MOVLW       1
 	MOVWF       POSTINC1+0 
-	MOVF        EventHandler_i_L0+0, 0 
+	MOVLW       7
 	MOVWF       R0 
 	MOVLW       0
 	MOVWF       R1 
-	MOVLW       7
+	MOVF        EventHandler_i_L0+0, 0 
 	MOVWF       R4 
 	MOVLW       0
 	MOVWF       R5 
-	CALL        _Mul_16x16_U+0, 0
+	CALL        _Mul_16X16_U+0, 0
 	MOVLW       _Tasks+0
 	ADDWF       R0, 1 
 	MOVLW       hi_addr(_Tasks+0)
 	ADDWFC      R1, 1 
 	MOVLW       6
 	ADDWF       R0, 0 
-	MOVWF       FSR1L 
+	MOVWF       FSR1 
 	MOVLW       0
 	ADDWFC      R1, 0 
 	MOVWF       FSR1H 
@@ -9108,22 +7789,22 @@ L_EventHandler350:
 	BTFSS       STATUS+0, 2 
 	GOTO        L_EventHandler352
 ;FirmV_0_7_0.c,1446 :: 		{Events.Task3=Tasks[i].TaskCode;Tasks[i].Expired=1;Tasks[i].Fired=0;}
-	MOVF        EventHandler_i_L0+0, 0 
+	MOVLW       7
 	MOVWF       R0 
 	MOVLW       0
 	MOVWF       R1 
-	MOVLW       7
+	MOVF        EventHandler_i_L0+0, 0 
 	MOVWF       R4 
 	MOVLW       0
 	MOVWF       R5 
-	CALL        _Mul_16x16_U+0, 0
+	CALL        _Mul_16X16_U+0, 0
 	MOVLW       _Tasks+0
 	ADDWF       R0, 0 
 	MOVWF       R2 
 	MOVLW       hi_addr(_Tasks+0)
 	ADDWFC      R1, 0 
 	MOVWF       R3 
-	MOVFF       R2, FSR0L
+	MOVFF       R2, FSR0
 	MOVFF       R3, FSR0H
 	MOVF        POSTINC0+0, 0 
 	MOVWF       R0 
@@ -9131,28 +7812,28 @@ L_EventHandler350:
 	MOVWF       _Events+3 
 	MOVLW       5
 	ADDWF       R2, 0 
-	MOVWF       FSR1L 
+	MOVWF       FSR1 
 	MOVLW       0
 	ADDWFC      R3, 0 
 	MOVWF       FSR1H 
 	MOVLW       1
 	MOVWF       POSTINC1+0 
-	MOVF        EventHandler_i_L0+0, 0 
+	MOVLW       7
 	MOVWF       R0 
 	MOVLW       0
 	MOVWF       R1 
-	MOVLW       7
+	MOVF        EventHandler_i_L0+0, 0 
 	MOVWF       R4 
 	MOVLW       0
 	MOVWF       R5 
-	CALL        _Mul_16x16_U+0, 0
+	CALL        _Mul_16X16_U+0, 0
 	MOVLW       _Tasks+0
 	ADDWF       R0, 1 
 	MOVLW       hi_addr(_Tasks+0)
 	ADDWFC      R1, 1 
 	MOVLW       6
 	ADDWF       R0, 0 
-	MOVWF       FSR1L 
+	MOVWF       FSR1 
 	MOVLW       0
 	ADDWFC      R1, 0 
 	MOVWF       FSR1H 
@@ -9168,6 +7849,7 @@ L_EventHandler347:
 	GOTO        L_EventHandler342
 L_EventHandler343:
 ;FirmV_0_7_0.c,1448 :: 		}
+L_end_EventHandler:
 	RETURN      0
 ; end of _EventHandler
 
@@ -9175,34 +7857,32 @@ _GetKeysState:
 
 ;FirmV_0_7_0.c,1458 :: 		char GetKeysState()
 ;FirmV_0_7_0.c,1460 :: 		unsigned res=0;
-	CLRF        GetKeysState_res_L0+0 
-	CLRF        GetKeysState_res_L0+1 
 ;FirmV_0_7_0.c,1464 :: 		char resch=0,fin;
 	CLRF        GetKeysState_resch_L0+0 
 ;FirmV_0_7_0.c,1465 :: 		resch.b0=~KeyDown;
 	BTFSC       PORTD+0, 5 
-	GOTO        L__GetKeysState940
+	GOTO        L__GetKeysState962
 	BSF         GetKeysState_resch_L0+0, 0 
-	GOTO        L__GetKeysState941
-L__GetKeysState940:
+	GOTO        L__GetKeysState963
+L__GetKeysState962:
 	BCF         GetKeysState_resch_L0+0, 0 
-L__GetKeysState941:
+L__GetKeysState963:
 ;FirmV_0_7_0.c,1466 :: 		resch.b1=~KeyMenu;
 	BTFSC       PORTE+0, 0 
-	GOTO        L__GetKeysState942
+	GOTO        L__GetKeysState964
 	BSF         GetKeysState_resch_L0+0, 1 
-	GOTO        L__GetKeysState943
-L__GetKeysState942:
+	GOTO        L__GetKeysState965
+L__GetKeysState964:
 	BCF         GetKeysState_resch_L0+0, 1 
-L__GetKeysState943:
+L__GetKeysState965:
 ;FirmV_0_7_0.c,1467 :: 		resch.b2=~KeyUp;
 	BTFSC       PORTD+0, 4 
-	GOTO        L__GetKeysState944
+	GOTO        L__GetKeysState966
 	BSF         GetKeysState_resch_L0+0, 2 
-	GOTO        L__GetKeysState945
-L__GetKeysState944:
+	GOTO        L__GetKeysState967
+L__GetKeysState966:
 	BCF         GetKeysState_resch_L0+0, 2 
-L__GetKeysState945:
+L__GetKeysState967:
 ;FirmV_0_7_0.c,1469 :: 		if((resch==0))
 	MOVF        GetKeysState_resch_L0+0, 0 
 	XORLW       0
@@ -9289,18 +7969,18 @@ L_GetKeysState359:
 	MOVF        _ms500+3, 0 
 	XORWF       R4, 0 
 	BTFSS       STATUS+0, 2 
-	GOTO        L__GetKeysState946
+	GOTO        L__GetKeysState968
 	MOVF        _ms500+2, 0 
 	XORWF       R3, 0 
 	BTFSS       STATUS+0, 2 
-	GOTO        L__GetKeysState946
+	GOTO        L__GetKeysState968
 	MOVF        _ms500+1, 0 
 	XORWF       R2, 0 
 	BTFSS       STATUS+0, 2 
-	GOTO        L__GetKeysState946
+	GOTO        L__GetKeysState968
 	MOVF        _ms500+0, 0 
 	XORWF       R1, 0 
-L__GetKeysState946:
+L__GetKeysState968:
 	BTFSS       STATUS+0, 2 
 	GOTO        L_GetKeysState363
 L__GetKeysState872:
@@ -9385,6 +8065,7 @@ L_GetKeysState373:
 	MOVF        GetKeysState_fin_L0+0, 0 
 	MOVWF       R0 
 ;FirmV_0_7_0.c,1511 :: 		}
+L_end_GetKeysState:
 	RETURN      0
 ; end of _GetKeysState
 
@@ -9409,6 +8090,7 @@ L_GetExternalKeysState375:
 	MOVF        GetExternalKeysState_out_L0+0, 0 
 	MOVWF       R0 
 ;FirmV_0_7_0.c,1529 :: 		}
+L_end_GetExternalKeysState:
 	RETURN      0
 ; end of _GetExternalKeysState
 
@@ -9425,11 +8107,12 @@ L__GetLimitSwitchState874:
 ;FirmV_0_7_0.c,1545 :: 		return 1;
 	MOVLW       1
 	MOVWF       R0 
-	RETURN      0
+	GOTO        L_end_GetLimitSwitchState
 L_GetLimitSwitchState378:
 ;FirmV_0_7_0.c,1547 :: 		return 0;
 	CLRF        R0 
 ;FirmV_0_7_0.c,1548 :: 		}
+L_end_GetLimitSwitchState:
 	RETURN      0
 ; end of _GetLimitSwitchState
 
@@ -9440,20 +8123,20 @@ _GetRemoteState:
 	CLRF        GetRemoteState_res_L0+0 
 ;FirmV_0_7_0.c,1560 :: 		res.b0=RemoteAFlag.b0;
 	BTFSC       _RemoteAFlag+0, 0 
-	GOTO        L__GetRemoteState947
+	GOTO        L__GetRemoteState972
 	BCF         GetRemoteState_res_L0+0, 0 
-	GOTO        L__GetRemoteState948
-L__GetRemoteState947:
+	GOTO        L__GetRemoteState973
+L__GetRemoteState972:
 	BSF         GetRemoteState_res_L0+0, 0 
-L__GetRemoteState948:
+L__GetRemoteState973:
 ;FirmV_0_7_0.c,1561 :: 		res.b1=RemoteBFlag.b0;
 	BTFSC       _RemoteBFlag+0, 0 
-	GOTO        L__GetRemoteState949
+	GOTO        L__GetRemoteState974
 	BCF         GetRemoteState_res_L0+0, 1 
-	GOTO        L__GetRemoteState950
-L__GetRemoteState949:
+	GOTO        L__GetRemoteState975
+L__GetRemoteState974:
 	BSF         GetRemoteState_res_L0+0, 1 
-L__GetRemoteState950:
+L__GetRemoteState975:
 ;FirmV_0_7_0.c,1562 :: 		RemoteAFlag=0;
 	CLRF        _RemoteAFlag+0 
 ;FirmV_0_7_0.c,1563 :: 		RemoteBFlag=0;
@@ -9467,30 +8150,31 @@ L__GetRemoteState950:
 	GOTO        L_GetRemoteState380
 ;FirmV_0_7_0.c,1569 :: 		res.b0=res.b0|Events.Keys.b2;//up key
 	BTFSC       GetRemoteState_res_L0+0, 0 
-	GOTO        L__GetRemoteState951
+	GOTO        L__GetRemoteState976
 	BTFSC       _Events+0, 2 
-	GOTO        L__GetRemoteState951
+	GOTO        L__GetRemoteState976
 	BCF         GetRemoteState_res_L0+0, 0 
-	GOTO        L__GetRemoteState952
-L__GetRemoteState951:
+	GOTO        L__GetRemoteState977
+L__GetRemoteState976:
 	BSF         GetRemoteState_res_L0+0, 0 
-L__GetRemoteState952:
+L__GetRemoteState977:
 ;FirmV_0_7_0.c,1570 :: 		res.b1=res.b1|Events.Keys.b0;//down key
 	BTFSC       GetRemoteState_res_L0+0, 1 
-	GOTO        L__GetRemoteState953
+	GOTO        L__GetRemoteState978
 	BTFSC       _Events+0, 0 
-	GOTO        L__GetRemoteState953
+	GOTO        L__GetRemoteState978
 	BCF         GetRemoteState_res_L0+0, 1 
-	GOTO        L__GetRemoteState954
-L__GetRemoteState953:
+	GOTO        L__GetRemoteState979
+L__GetRemoteState978:
 	BSF         GetRemoteState_res_L0+0, 1 
-L__GetRemoteState954:
+L__GetRemoteState979:
 ;FirmV_0_7_0.c,1571 :: 		}
 L_GetRemoteState380:
 ;FirmV_0_7_0.c,1573 :: 		return res;
 	MOVF        GetRemoteState_res_L0+0, 0 
 	MOVWF       R0 
 ;FirmV_0_7_0.c,1574 :: 		}
+L_end_GetRemoteState:
 	RETURN      0
 ; end of _GetRemoteState
 
@@ -9541,20 +8225,20 @@ L_GetOverloadState382:
 	MOVF        _OverloadTreshold1+1, 0 
 	SUBWF       _VCapM1+1, 0 
 	BTFSS       STATUS+0, 2 
-	GOTO        L__GetOverloadState955
+	GOTO        L__GetOverloadState981
 	MOVF        _OverloadTreshold1+0, 0 
 	SUBWF       _VCapM1+0, 0 
-L__GetOverloadState955:
+L__GetOverloadState981:
 	BTFSC       STATUS+0, 0 
 	GOTO        L_GetOverloadState384
 ;FirmV_0_7_0.c,1605 :: 		if(OverloadCounter1<65530)
 	MOVLW       255
 	SUBWF       _OverloadCounter1+1, 0 
 	BTFSS       STATUS+0, 2 
-	GOTO        L__GetOverloadState956
+	GOTO        L__GetOverloadState982
 	MOVLW       250
 	SUBWF       _OverloadCounter1+0, 0 
-L__GetOverloadState956:
+L__GetOverloadState982:
 	BTFSC       STATUS+0, 0 
 	GOTO        L_GetOverloadState385
 ;FirmV_0_7_0.c,1606 :: 		OverloadCounter1=OverloadCounter1+1;
@@ -9570,10 +8254,10 @@ L_GetOverloadState384:
 	MOVF        _OverloadCounter1+1, 0 
 	SUBWF       R0, 0 
 	BTFSS       STATUS+0, 2 
-	GOTO        L__GetOverloadState957
+	GOTO        L__GetOverloadState983
 	MOVF        _OverloadCounter1+0, 0 
 	SUBLW       0
-L__GetOverloadState957:
+L__GetOverloadState983:
 	BTFSC       STATUS+0, 0 
 	GOTO        L_GetOverloadState387
 ;FirmV_0_7_0.c,1611 :: 		OverloadCounter1=OverloadCounter1-1;
@@ -9595,10 +8279,10 @@ L_GetOverloadState388:
 	MOVF        _OverloadCounter1+1, 0 
 	SUBWF       _OverloadDuration1+1, 0 
 	BTFSS       STATUS+0, 2 
-	GOTO        L__GetOverloadState958
+	GOTO        L__GetOverloadState984
 	MOVF        _OverloadCounter1+0, 0 
 	SUBWF       _OverloadDuration1+0, 0 
-L__GetOverloadState958:
+L__GetOverloadState984:
 	BTFSC       STATUS+0, 0 
 	GOTO        L_GetOverloadState389
 ;FirmV_0_7_0.c,1618 :: 		res.b0=1;
@@ -9613,20 +8297,20 @@ L_GetOverloadState389:
 	MOVF        _OverloadTreshold2+1, 0 
 	SUBWF       _VCapM2+1, 0 
 	BTFSS       STATUS+0, 2 
-	GOTO        L__GetOverloadState959
+	GOTO        L__GetOverloadState985
 	MOVF        _OverloadTreshold2+0, 0 
 	SUBWF       _VCapM2+0, 0 
-L__GetOverloadState959:
+L__GetOverloadState985:
 	BTFSC       STATUS+0, 0 
 	GOTO        L_GetOverloadState391
 ;FirmV_0_7_0.c,1627 :: 		if(OverloadCounter2<65530)
 	MOVLW       255
 	SUBWF       _OverloadCounter2+1, 0 
 	BTFSS       STATUS+0, 2 
-	GOTO        L__GetOverloadState960
+	GOTO        L__GetOverloadState986
 	MOVLW       250
 	SUBWF       _OverloadCounter2+0, 0 
-L__GetOverloadState960:
+L__GetOverloadState986:
 	BTFSC       STATUS+0, 0 
 	GOTO        L_GetOverloadState392
 ;FirmV_0_7_0.c,1628 :: 		OverloadCounter2=OverloadCounter2+1;
@@ -9642,10 +8326,10 @@ L_GetOverloadState391:
 	MOVF        _OverloadCounter2+1, 0 
 	SUBWF       R0, 0 
 	BTFSS       STATUS+0, 2 
-	GOTO        L__GetOverloadState961
+	GOTO        L__GetOverloadState987
 	MOVF        _OverloadCounter2+0, 0 
 	SUBLW       0
-L__GetOverloadState961:
+L__GetOverloadState987:
 	BTFSC       STATUS+0, 0 
 	GOTO        L_GetOverloadState394
 ;FirmV_0_7_0.c,1633 :: 		OverloadCounter2=OverloadCounter2-1;
@@ -9667,10 +8351,10 @@ L_GetOverloadState395:
 	MOVF        _OverloadCounter2+1, 0 
 	SUBWF       _OverloadDuration2+1, 0 
 	BTFSS       STATUS+0, 2 
-	GOTO        L__GetOverloadState962
+	GOTO        L__GetOverloadState988
 	MOVF        _OverloadCounter2+0, 0 
 	SUBWF       _OverloadDuration2+0, 0 
-L__GetOverloadState962:
+L__GetOverloadState988:
 	BTFSC       STATUS+0, 0 
 	GOTO        L_GetOverloadState396
 ;FirmV_0_7_0.c,1641 :: 		res.b1=1;
@@ -9680,14 +8364,15 @@ L_GetOverloadState396:
 	MOVF        GetOverloadState_res_L0+0, 0 
 	MOVWF       R0 
 ;FirmV_0_7_0.c,1644 :: 		}
+L_end_GetOverloadState:
 	RETURN      0
 ; end of _GetOverloadState
 
 _GetPhotocellState:
 
 ;FirmV_0_7_0.c,1657 :: 		char GetPhotocellState()
-;FirmV_0_7_0.c,1659 :: 		if(Phcell1==0)
-	BTFSC       PORTD+0, 3 
+;FirmV_0_7_0.c,1659 :: 		if(Phcell2==0)
+	BTFSC       PORTD+0, 2 
 	GOTO        L_GetPhotocellState397
 ;FirmV_0_7_0.c,1660 :: 		{if(PhotocellCount<=20)PhotocellCount=PhotocellCount+1;}
 	MOVF        _PhotocellCount+0, 0 
@@ -9709,11 +8394,12 @@ L_GetPhotocellState399:
 ;FirmV_0_7_0.c,1664 :: 		return 1;
 	MOVLW       1
 	MOVWF       R0 
-	RETURN      0
+	GOTO        L_end_GetPhotocellState
 L_GetPhotocellState400:
 ;FirmV_0_7_0.c,1666 :: 		return 0;
 	CLRF        R0 
 ;FirmV_0_7_0.c,1667 :: 		}
+L_end_GetPhotocellState:
 	RETURN      0
 ; end of _GetPhotocellState
 
@@ -9732,11 +8418,11 @@ _SetMotorSpeed:
 	GOTO        L_SetMotorSpeed404
 L__SetMotorSpeed875:
 ;FirmV_0_7_0.c,1682 :: 		INT0E_bit=1;
-	BSF         INT0E_bit+0, 4 
+	BSF         INT0E_bit+0, BitPos(INT0E_bit+0) 
 	GOTO        L_SetMotorSpeed405
 L_SetMotorSpeed404:
 ;FirmV_0_7_0.c,1684 :: 		INT0E_bit=0;
-	BCF         INT0E_bit+0, 4 
+	BCF         INT0E_bit+0, BitPos(INT0E_bit+0) 
 L_SetMotorSpeed405:
 ;FirmV_0_7_0.c,1686 :: 		Motor1FullSpeed=M1FullSpeed;
 	MOVF        FARG_SetMotorSpeed_M1FullSpeed+0, 0 
@@ -9745,6 +8431,7 @@ L_SetMotorSpeed405:
 	MOVF        FARG_SetMotorSpeed_M2FullSpeed+0, 0 
 	MOVWF       _Motor2FullSpeed+0 
 ;FirmV_0_7_0.c,1688 :: 		}
+L_end_SetMotorSpeed:
 	RETURN      0
 ; end of _SetMotorSpeed
 
@@ -9776,6 +8463,7 @@ L_OverloadInit406:
 ;FirmV_0_7_0.c,1711 :: 		}
 L_OverloadInit407:
 ;FirmV_0_7_0.c,1712 :: 		}
+L_end_OverloadInit:
 	RETURN      0
 ; end of _OverloadInit
 
@@ -9953,6 +8641,7 @@ _SaveConfigs:
 	MOVWF       FARG_SetOverloadParams+0 
 	CALL        _SetOverloadParams+0, 0
 ;FirmV_0_7_0.c,1748 :: 		}
+L_end_SaveConfigs:
 	RETURN      0
 ; end of _SaveConfigs
 
@@ -10138,6 +8827,7 @@ _LoadConfigs:
 	MOVWF       FARG_SetOverloadParams+0 
 	CALL        _SetOverloadParams+0, 0
 ;FirmV_0_7_0.c,1786 :: 		}
+L_end_LoadConfigs:
 	RETURN      0
 ; end of _LoadConfigs
 
@@ -10210,6 +8900,7 @@ _FactorySettings:
 ;FirmV_0_7_0.c,1822 :: 		SaveConfigs();
 	CALL        _SaveConfigs+0, 0
 ;FirmV_0_7_0.c,1823 :: 		}
+L_end_FactorySettings:
 	RETURN      0
 ; end of _FactorySettings
 
@@ -10223,12 +8914,12 @@ _StartMotor:
 	GOTO        L_StartMotor408
 ;FirmV_0_7_0.c,1833 :: 		Motor1Dir=Dir;
 	BTFSC       FARG_StartMotor_Dir+0, 0 
-	GOTO        L__StartMotor963
+	GOTO        L__StartMotor996
 	BCF         PORTC+0, 1 
-	GOTO        L__StartMotor964
-L__StartMotor963:
+	GOTO        L__StartMotor997
+L__StartMotor996:
 	BSF         PORTC+0, 1 
-L__StartMotor964:
+L__StartMotor997:
 ;FirmV_0_7_0.c,1834 :: 		delay_ms(100);
 	MOVLW       6
 	MOVWF       R11, 0
@@ -10237,11 +8928,11 @@ L__StartMotor964:
 	MOVLW       173
 	MOVWF       R13, 0
 L_StartMotor409:
-	DECFSZ      R13, 1, 0
+	DECFSZ      R13, 1, 1
 	BRA         L_StartMotor409
-	DECFSZ      R12, 1, 0
+	DECFSZ      R12, 1, 1
 	BRA         L_StartMotor409
-	DECFSZ      R11, 1, 0
+	DECFSZ      R11, 1, 1
 	BRA         L_StartMotor409
 	NOP
 	NOP
@@ -10259,12 +8950,12 @@ L_StartMotor408:
 	GOTO        L_StartMotor410
 ;FirmV_0_7_0.c,1841 :: 		Motor2Dir=Dir;
 	BTFSC       FARG_StartMotor_Dir+0, 0 
-	GOTO        L__StartMotor965
+	GOTO        L__StartMotor998
 	BCF         PORTC+0, 0 
-	GOTO        L__StartMotor966
-L__StartMotor965:
+	GOTO        L__StartMotor999
+L__StartMotor998:
 	BSF         PORTC+0, 0 
-L__StartMotor966:
+L__StartMotor999:
 ;FirmV_0_7_0.c,1842 :: 		delay_ms(100);
 	MOVLW       6
 	MOVWF       R11, 0
@@ -10273,11 +8964,11 @@ L__StartMotor966:
 	MOVLW       173
 	MOVWF       R13, 0
 L_StartMotor411:
-	DECFSZ      R13, 1, 0
+	DECFSZ      R13, 1, 1
 	BRA         L_StartMotor411
-	DECFSZ      R12, 1, 0
+	DECFSZ      R12, 1, 1
 	BRA         L_StartMotor411
-	DECFSZ      R11, 1, 0
+	DECFSZ      R11, 1, 1
 	BRA         L_StartMotor411
 	NOP
 	NOP
@@ -10289,6 +8980,7 @@ L_StartMotor411:
 ;FirmV_0_7_0.c,1845 :: 		}
 L_StartMotor410:
 ;FirmV_0_7_0.c,1846 :: 		}
+L_end_StartMotor:
 	RETURN      0
 ; end of _StartMotor
 
@@ -10318,6 +9010,7 @@ L_StopMotor412:
 ;FirmV_0_7_0.c,1861 :: 		}
 L_StopMotor413:
 ;FirmV_0_7_0.c,1862 :: 		}
+L_end_StopMotor:
 	RETURN      0
 ; end of _StopMotor
 
@@ -10333,7 +9026,7 @@ _CheckTask:
 	CLRF        _Events+1 
 	MOVLW       1
 	MOVWF       R0 
-	RETURN      0
+	GOTO        L_end_CheckTask
 L_CheckTask414:
 ;FirmV_0_7_0.c,1879 :: 		if(Events.Task2==TaskCode)
 	MOVF        _Events+2, 0 
@@ -10344,7 +9037,7 @@ L_CheckTask414:
 	CLRF        _Events+2 
 	MOVLW       1
 	MOVWF       R0 
-	RETURN      0
+	GOTO        L_end_CheckTask
 L_CheckTask415:
 ;FirmV_0_7_0.c,1882 :: 		if(Events.Task3==TaskCode)
 	MOVF        _Events+3, 0 
@@ -10355,11 +9048,12 @@ L_CheckTask415:
 	CLRF        _Events+3 
 	MOVLW       1
 	MOVWF       R0 
-	RETURN      0
+	GOTO        L_end_CheckTask
 L_CheckTask416:
 ;FirmV_0_7_0.c,1885 :: 		return 0;
 	CLRF        R0 
 ;FirmV_0_7_0.c,1887 :: 		}
+L_end_CheckTask:
 	RETURN      0
 ; end of _CheckTask
 
@@ -10374,22 +9068,22 @@ L_ReturnAutoclose417:
 	BTFSC       STATUS+0, 0 
 	GOTO        L_ReturnAutoclose418
 ;FirmV_0_7_0.c,1901 :: 		if((Tasks[i].Expired==0)&&(Tasks[i].TaskCode==9))
-	MOVF        ReturnAutoclose_i_L0+0, 0 
+	MOVLW       7
 	MOVWF       R0 
 	MOVLW       0
 	MOVWF       R1 
-	MOVLW       7
+	MOVF        ReturnAutoclose_i_L0+0, 0 
 	MOVWF       R4 
 	MOVLW       0
 	MOVWF       R5 
-	CALL        _Mul_16x16_U+0, 0
+	CALL        _Mul_16X16_U+0, 0
 	MOVLW       _Tasks+0
 	ADDWF       R0, 1 
 	MOVLW       hi_addr(_Tasks+0)
 	ADDWFC      R1, 1 
 	MOVLW       5
 	ADDWF       R0, 0 
-	MOVWF       FSR0L 
+	MOVWF       FSR0 
 	MOVLW       0
 	ADDWFC      R1, 0 
 	MOVWF       FSR0H 
@@ -10397,18 +9091,18 @@ L_ReturnAutoclose417:
 	XORLW       0
 	BTFSS       STATUS+0, 2 
 	GOTO        L_ReturnAutoclose422
-	MOVF        ReturnAutoclose_i_L0+0, 0 
+	MOVLW       7
 	MOVWF       R0 
 	MOVLW       0
 	MOVWF       R1 
-	MOVLW       7
+	MOVF        ReturnAutoclose_i_L0+0, 0 
 	MOVWF       R4 
 	MOVLW       0
 	MOVWF       R5 
-	CALL        _Mul_16x16_U+0, 0
+	CALL        _Mul_16X16_U+0, 0
 	MOVLW       _Tasks+0
 	ADDWF       R0, 0 
-	MOVWF       FSR0L 
+	MOVWF       FSR0 
 	MOVLW       hi_addr(_Tasks+0)
 	ADDWFC      R1, 0 
 	MOVWF       FSR0H 
@@ -10420,22 +9114,22 @@ L_ReturnAutoclose417:
 	GOTO        L_ReturnAutoclose422
 L__ReturnAutoclose876:
 ;FirmV_0_7_0.c,1902 :: 		{t=Tasks[i].Time;break;}
-	MOVF        ReturnAutoclose_i_L0+0, 0 
+	MOVLW       7
 	MOVWF       R0 
 	MOVLW       0
 	MOVWF       R1 
-	MOVLW       7
+	MOVF        ReturnAutoclose_i_L0+0, 0 
 	MOVWF       R4 
 	MOVLW       0
 	MOVWF       R5 
-	CALL        _Mul_16x16_U+0, 0
+	CALL        _Mul_16X16_U+0, 0
 	MOVLW       _Tasks+0
 	ADDWF       R0, 1 
 	MOVLW       hi_addr(_Tasks+0)
 	ADDWFC      R1, 1 
 	MOVLW       1
 	ADDWF       R0, 0 
-	MOVWF       FSR0L 
+	MOVWF       FSR0 
 	MOVLW       0
 	ADDWFC      R1, 0 
 	MOVWF       FSR0H 
@@ -10471,6 +9165,7 @@ L_ReturnAutoclose424:
 	MOVF        ReturnAutoclose_i_L0+0, 0 
 	MOVWF       R0 
 ;FirmV_0_7_0.c,1908 :: 		}
+L_end_ReturnAutoclose:
 	RETURN      0
 ; end of _ReturnAutoclose
 
@@ -10485,22 +9180,22 @@ L_GetAutocloseTime425:
 	BTFSC       STATUS+0, 0 
 	GOTO        L_GetAutocloseTime426
 ;FirmV_0_7_0.c,1924 :: 		if((Tasks[i].Expired==0)&&(Tasks[i].TaskCode==9))
-	MOVF        GetAutocloseTime_i_L0+0, 0 
+	MOVLW       7
 	MOVWF       R0 
 	MOVLW       0
 	MOVWF       R1 
-	MOVLW       7
+	MOVF        GetAutocloseTime_i_L0+0, 0 
 	MOVWF       R4 
 	MOVLW       0
 	MOVWF       R5 
-	CALL        _Mul_16x16_U+0, 0
+	CALL        _Mul_16X16_U+0, 0
 	MOVLW       _Tasks+0
 	ADDWF       R0, 1 
 	MOVLW       hi_addr(_Tasks+0)
 	ADDWFC      R1, 1 
 	MOVLW       5
 	ADDWF       R0, 0 
-	MOVWF       FSR0L 
+	MOVWF       FSR0 
 	MOVLW       0
 	ADDWFC      R1, 0 
 	MOVWF       FSR0H 
@@ -10508,18 +9203,18 @@ L_GetAutocloseTime425:
 	XORLW       0
 	BTFSS       STATUS+0, 2 
 	GOTO        L_GetAutocloseTime430
-	MOVF        GetAutocloseTime_i_L0+0, 0 
+	MOVLW       7
 	MOVWF       R0 
 	MOVLW       0
 	MOVWF       R1 
-	MOVLW       7
+	MOVF        GetAutocloseTime_i_L0+0, 0 
 	MOVWF       R4 
 	MOVLW       0
 	MOVWF       R5 
-	CALL        _Mul_16x16_U+0, 0
+	CALL        _Mul_16X16_U+0, 0
 	MOVLW       _Tasks+0
 	ADDWF       R0, 0 
-	MOVWF       FSR0L 
+	MOVWF       FSR0 
 	MOVLW       hi_addr(_Tasks+0)
 	ADDWFC      R1, 0 
 	MOVWF       FSR0H 
@@ -10531,22 +9226,22 @@ L_GetAutocloseTime425:
 	GOTO        L_GetAutocloseTime430
 L__GetAutocloseTime877:
 ;FirmV_0_7_0.c,1925 :: 		{t=Tasks[i].Time;Tasks[i].Expired=1;break;}
-	MOVF        GetAutocloseTime_i_L0+0, 0 
+	MOVLW       7
 	MOVWF       R0 
 	MOVLW       0
 	MOVWF       R1 
-	MOVLW       7
+	MOVF        GetAutocloseTime_i_L0+0, 0 
 	MOVWF       R4 
 	MOVLW       0
 	MOVWF       R5 
-	CALL        _Mul_16x16_U+0, 0
+	CALL        _Mul_16X16_U+0, 0
 	MOVLW       _Tasks+0
 	ADDWF       R0, 1 
 	MOVLW       hi_addr(_Tasks+0)
 	ADDWFC      R1, 1 
 	MOVLW       1
 	ADDWF       R0, 0 
-	MOVWF       FSR0L 
+	MOVWF       FSR0 
 	MOVLW       0
 	ADDWFC      R1, 0 
 	MOVWF       FSR0H 
@@ -10560,7 +9255,7 @@ L__GetAutocloseTime877:
 	MOVWF       GetAutocloseTime_t_L0+3 
 	MOVLW       5
 	ADDWF       R0, 0 
-	MOVWF       FSR1L 
+	MOVWF       FSR1 
 	MOVLW       0
 	ADDWFC      R1, 0 
 	MOVWF       FSR1H 
@@ -10590,6 +9285,7 @@ L_GetAutocloseTime431:
 	MOVF        GetAutocloseTime_i_L0+0, 0 
 	MOVWF       R0 
 ;FirmV_0_7_0.c,1930 :: 		}
+L_end_GetAutocloseTime:
 	RETURN      0
 ; end of _GetAutocloseTime
 
@@ -10604,22 +9300,22 @@ L_ClearTasks432:
 	BTFSC       STATUS+0, 0 
 	GOTO        L_ClearTasks433
 ;FirmV_0_7_0.c,1951 :: 		if((Tasks[i].Expired==0)&&(Tasks[i].TaskCode!=except))
-	MOVF        ClearTasks_i_L0+0, 0 
+	MOVLW       7
 	MOVWF       R0 
 	MOVLW       0
 	MOVWF       R1 
-	MOVLW       7
+	MOVF        ClearTasks_i_L0+0, 0 
 	MOVWF       R4 
 	MOVLW       0
 	MOVWF       R5 
-	CALL        _Mul_16x16_U+0, 0
+	CALL        _Mul_16X16_U+0, 0
 	MOVLW       _Tasks+0
 	ADDWF       R0, 1 
 	MOVLW       hi_addr(_Tasks+0)
 	ADDWFC      R1, 1 
 	MOVLW       5
 	ADDWF       R0, 0 
-	MOVWF       FSR0L 
+	MOVWF       FSR0 
 	MOVLW       0
 	ADDWFC      R1, 0 
 	MOVWF       FSR0H 
@@ -10627,18 +9323,18 @@ L_ClearTasks432:
 	XORLW       0
 	BTFSS       STATUS+0, 2 
 	GOTO        L_ClearTasks437
-	MOVF        ClearTasks_i_L0+0, 0 
+	MOVLW       7
 	MOVWF       R0 
 	MOVLW       0
 	MOVWF       R1 
-	MOVLW       7
+	MOVF        ClearTasks_i_L0+0, 0 
 	MOVWF       R4 
 	MOVLW       0
 	MOVWF       R5 
-	CALL        _Mul_16x16_U+0, 0
+	CALL        _Mul_16X16_U+0, 0
 	MOVLW       _Tasks+0
 	ADDWF       R0, 0 
-	MOVWF       FSR0L 
+	MOVWF       FSR0 
 	MOVLW       hi_addr(_Tasks+0)
 	ADDWFC      R1, 0 
 	MOVWF       FSR0H 
@@ -10650,22 +9346,22 @@ L_ClearTasks432:
 	GOTO        L_ClearTasks437
 L__ClearTasks878:
 ;FirmV_0_7_0.c,1952 :: 		Tasks[i].Expired=1;
-	MOVF        ClearTasks_i_L0+0, 0 
+	MOVLW       7
 	MOVWF       R0 
 	MOVLW       0
 	MOVWF       R1 
-	MOVLW       7
+	MOVF        ClearTasks_i_L0+0, 0 
 	MOVWF       R4 
 	MOVLW       0
 	MOVWF       R5 
-	CALL        _Mul_16x16_U+0, 0
+	CALL        _Mul_16X16_U+0, 0
 	MOVLW       _Tasks+0
 	ADDWF       R0, 1 
 	MOVLW       hi_addr(_Tasks+0)
 	ADDWFC      R1, 1 
 	MOVLW       5
 	ADDWF       R0, 0 
-	MOVWF       FSR1L 
+	MOVWF       FSR1 
 	MOVLW       0
 	ADDWFC      R1, 0 
 	MOVWF       FSR1H 
@@ -10678,6 +9374,7 @@ L_ClearTasks437:
 	GOTO        L_ClearTasks432
 L_ClearTasks433:
 ;FirmV_0_7_0.c,1953 :: 		}
+L_end_ClearTasks:
 	RETURN      0
 ; end of _ClearTasks
 
@@ -10692,21 +9389,6 @@ _Menu0:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine2+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?ICS?lstr69_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr69_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr69_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr69_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr69_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       17
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr69_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr69_FirmV_0_7_0+0)
@@ -10726,21 +9408,6 @@ _Menu0:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?ICS?lstr70_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr70_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr70_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr70_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr70_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       17
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr70_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr70_FirmV_0_7_0+0)
@@ -10761,21 +9428,6 @@ _Menu0:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine2+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?ICS?lstr71_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr71_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr71_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr71_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr71_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       17
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr71_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr71_FirmV_0_7_0+0)
@@ -10795,21 +9447,6 @@ L_Menu0439:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine2+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?ICS?lstr72_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr72_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr72_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr72_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr72_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       17
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr72_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr72_FirmV_0_7_0+0)
@@ -10831,21 +9468,6 @@ L_Menu0438:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?ICS?lstr73_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr73_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr73_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr73_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr73_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       17
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr73_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr73_FirmV_0_7_0+0)
@@ -10876,21 +9498,6 @@ L_Menu0441:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?ICS?lstr74_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr74_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr74_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr74_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr74_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       17
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr74_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr74_FirmV_0_7_0+0)
@@ -10921,21 +9528,6 @@ L_Menu0442:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?ICS?lstr75_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr75_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr75_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr75_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr75_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       17
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr75_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr75_FirmV_0_7_0+0)
@@ -10966,21 +9558,6 @@ L_Menu0443:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?ICS?lstr76_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr76_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr76_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr76_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr76_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       17
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr76_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr76_FirmV_0_7_0+0)
@@ -11011,21 +9588,6 @@ L_Menu0444:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?ICS?lstr77_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr77_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr77_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr77_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr77_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       17
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr77_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr77_FirmV_0_7_0+0)
@@ -11056,21 +9618,6 @@ L_Menu0445:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?ICS?lstr78_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr78_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr78_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr78_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr78_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       17
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr78_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr78_FirmV_0_7_0+0)
@@ -11101,21 +9648,6 @@ L_Menu0446:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?ICS?lstr79_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr79_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr79_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr79_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr79_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       17
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr79_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr79_FirmV_0_7_0+0)
@@ -11146,21 +9678,6 @@ L_Menu0447:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?ICS?lstr80_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr80_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr80_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr80_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr80_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       17
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr80_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr80_FirmV_0_7_0+0)
@@ -11191,21 +9708,6 @@ L_Menu0448:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?ICS?lstr81_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr81_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr81_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr81_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr81_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       17
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr81_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr81_FirmV_0_7_0+0)
@@ -11233,19 +9735,6 @@ L_Menu0448:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine2+7)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       50
-	MOVWF       ?lstr82_FirmV_0_7_0+0 
-	MOVLW       53
-	MOVWF       ?lstr82_FirmV_0_7_0+1 
-	MOVLW       48
-	MOVWF       ?lstr82_FirmV_0_7_0+2 
-	MOVLW       75
-	MOVWF       ?lstr82_FirmV_0_7_0+3 
-	MOVLW       103
-	MOVWF       ?lstr82_FirmV_0_7_0+4 
-	MOVLW       45
-	MOVWF       ?lstr82_FirmV_0_7_0+5 
-	CLRF        ?lstr82_FirmV_0_7_0+6 
 	MOVLW       ?lstr82_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr82_FirmV_0_7_0+0)
@@ -11261,19 +9750,6 @@ L_Menu0450:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine2+7)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       50
-	MOVWF       ?lstr83_FirmV_0_7_0+0 
-	MOVLW       53
-	MOVWF       ?lstr83_FirmV_0_7_0+1 
-	MOVLW       48
-	MOVWF       ?lstr83_FirmV_0_7_0+2 
-	MOVLW       75
-	MOVWF       ?lstr83_FirmV_0_7_0+3 
-	MOVLW       103
-	MOVWF       ?lstr83_FirmV_0_7_0+4 
-	MOVLW       43
-	MOVWF       ?lstr83_FirmV_0_7_0+5 
-	CLRF        ?lstr83_FirmV_0_7_0+6 
 	MOVLW       ?lstr83_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr83_FirmV_0_7_0+0)
@@ -11295,21 +9771,6 @@ L_Menu0449:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?ICS?lstr84_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr84_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr84_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr84_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr84_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       17
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr84_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr84_FirmV_0_7_0+0)
@@ -11337,19 +9798,6 @@ L_Menu0449:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine2+7)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       50
-	MOVWF       ?lstr85_FirmV_0_7_0+0 
-	MOVLW       53
-	MOVWF       ?lstr85_FirmV_0_7_0+1 
-	MOVLW       48
-	MOVWF       ?lstr85_FirmV_0_7_0+2 
-	MOVLW       75
-	MOVWF       ?lstr85_FirmV_0_7_0+3 
-	MOVLW       103
-	MOVWF       ?lstr85_FirmV_0_7_0+4 
-	MOVLW       45
-	MOVWF       ?lstr85_FirmV_0_7_0+5 
-	CLRF        ?lstr85_FirmV_0_7_0+6 
 	MOVLW       ?lstr85_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr85_FirmV_0_7_0+0)
@@ -11365,19 +9813,6 @@ L_Menu0453:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine2+7)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       50
-	MOVWF       ?lstr86_FirmV_0_7_0+0 
-	MOVLW       53
-	MOVWF       ?lstr86_FirmV_0_7_0+1 
-	MOVLW       48
-	MOVWF       ?lstr86_FirmV_0_7_0+2 
-	MOVLW       75
-	MOVWF       ?lstr86_FirmV_0_7_0+3 
-	MOVLW       103
-	MOVWF       ?lstr86_FirmV_0_7_0+4 
-	MOVLW       43
-	MOVWF       ?lstr86_FirmV_0_7_0+5 
-	CLRF        ?lstr86_FirmV_0_7_0+6 
 	MOVLW       ?lstr86_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr86_FirmV_0_7_0+0)
@@ -11399,21 +9834,6 @@ L_Menu0452:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?ICS?lstr87_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr87_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr87_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr87_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr87_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       17
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr87_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr87_FirmV_0_7_0+0)
@@ -11444,21 +9864,6 @@ L_Menu0455:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?ICS?lstr88_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr88_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr88_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr88_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr88_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       17
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr88_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr88_FirmV_0_7_0+0)
@@ -11489,21 +9894,6 @@ L_Menu0456:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?ICS?lstr89_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr89_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr89_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr89_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr89_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       17
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr89_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr89_FirmV_0_7_0+0)
@@ -11534,21 +9924,6 @@ L_Menu0457:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?ICS?lstr90_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr90_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr90_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr90_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr90_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       17
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr90_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr90_FirmV_0_7_0+0)
@@ -11581,21 +9956,6 @@ L_Menu0458:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?ICS?lstr91_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr91_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr91_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr91_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr91_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       17
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr91_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr91_FirmV_0_7_0+0)
@@ -11618,21 +9978,6 @@ L_Menu0459:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?ICS?lstr92_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr92_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr92_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr92_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr92_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       17
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr92_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr92_FirmV_0_7_0+0)
@@ -11653,21 +9998,6 @@ L_Menu0459:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine2+6)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       78
-	MOVWF       ?lstr93_FirmV_0_7_0+0 
-	MOVLW       111
-	MOVWF       ?lstr93_FirmV_0_7_0+1 
-	MOVLW       32
-	MOVWF       ?lstr93_FirmV_0_7_0+2 
-	MOVLW       32
-	MOVWF       ?lstr93_FirmV_0_7_0+3 
-	MOVLW       32
-	MOVWF       ?lstr93_FirmV_0_7_0+4 
-	MOVLW       32
-	MOVWF       ?lstr93_FirmV_0_7_0+5 
-	MOVLW       32
-	MOVWF       ?lstr93_FirmV_0_7_0+6 
-	CLRF        ?lstr93_FirmV_0_7_0+7 
 	MOVLW       ?lstr93_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr93_FirmV_0_7_0+0)
@@ -11683,23 +10013,6 @@ L_Menu0461:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine2+6)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       89
-	MOVWF       ?lstr94_FirmV_0_7_0+0 
-	MOVLW       101
-	MOVWF       ?lstr94_FirmV_0_7_0+1 
-	MOVLW       115
-	MOVWF       ?lstr94_FirmV_0_7_0+2 
-	MOVLW       32
-	MOVWF       ?lstr94_FirmV_0_7_0+3 
-	MOVLW       32
-	MOVWF       ?lstr94_FirmV_0_7_0+4 
-	MOVLW       32
-	MOVWF       ?lstr94_FirmV_0_7_0+5 
-	MOVLW       32
-	MOVWF       ?lstr94_FirmV_0_7_0+6 
-	MOVLW       32
-	MOVWF       ?lstr94_FirmV_0_7_0+7 
-	CLRF        ?lstr94_FirmV_0_7_0+8 
 	MOVLW       ?lstr94_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr94_FirmV_0_7_0+0)
@@ -11721,21 +10034,6 @@ L_Menu0460:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?ICS?lstr95_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr95_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr95_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr95_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr95_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       17
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr95_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr95_FirmV_0_7_0+0)
@@ -11756,21 +10054,6 @@ L_Menu0460:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine2+6)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       78
-	MOVWF       ?lstr96_FirmV_0_7_0+0 
-	MOVLW       111
-	MOVWF       ?lstr96_FirmV_0_7_0+1 
-	MOVLW       32
-	MOVWF       ?lstr96_FirmV_0_7_0+2 
-	MOVLW       32
-	MOVWF       ?lstr96_FirmV_0_7_0+3 
-	MOVLW       32
-	MOVWF       ?lstr96_FirmV_0_7_0+4 
-	MOVLW       32
-	MOVWF       ?lstr96_FirmV_0_7_0+5 
-	MOVLW       32
-	MOVWF       ?lstr96_FirmV_0_7_0+6 
-	CLRF        ?lstr96_FirmV_0_7_0+7 
 	MOVLW       ?lstr96_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr96_FirmV_0_7_0+0)
@@ -11786,23 +10069,6 @@ L_Menu0464:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine2+6)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       89
-	MOVWF       ?lstr97_FirmV_0_7_0+0 
-	MOVLW       101
-	MOVWF       ?lstr97_FirmV_0_7_0+1 
-	MOVLW       115
-	MOVWF       ?lstr97_FirmV_0_7_0+2 
-	MOVLW       32
-	MOVWF       ?lstr97_FirmV_0_7_0+3 
-	MOVLW       32
-	MOVWF       ?lstr97_FirmV_0_7_0+4 
-	MOVLW       32
-	MOVWF       ?lstr97_FirmV_0_7_0+5 
-	MOVLW       32
-	MOVWF       ?lstr97_FirmV_0_7_0+6 
-	MOVLW       32
-	MOVWF       ?lstr97_FirmV_0_7_0+7 
-	CLRF        ?lstr97_FirmV_0_7_0+8 
 	MOVLW       ?lstr97_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr97_FirmV_0_7_0+0)
@@ -11824,21 +10090,6 @@ L_Menu0463:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?ICS?lstr98_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr98_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr98_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr98_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr98_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       17
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr98_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr98_FirmV_0_7_0+0)
@@ -11859,21 +10110,6 @@ L_Menu0463:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine2+6)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       78
-	MOVWF       ?lstr99_FirmV_0_7_0+0 
-	MOVLW       111
-	MOVWF       ?lstr99_FirmV_0_7_0+1 
-	MOVLW       32
-	MOVWF       ?lstr99_FirmV_0_7_0+2 
-	MOVLW       32
-	MOVWF       ?lstr99_FirmV_0_7_0+3 
-	MOVLW       32
-	MOVWF       ?lstr99_FirmV_0_7_0+4 
-	MOVLW       32
-	MOVWF       ?lstr99_FirmV_0_7_0+5 
-	MOVLW       32
-	MOVWF       ?lstr99_FirmV_0_7_0+6 
-	CLRF        ?lstr99_FirmV_0_7_0+7 
 	MOVLW       ?lstr99_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr99_FirmV_0_7_0+0)
@@ -11889,23 +10125,6 @@ L_Menu0467:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine2+6)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       89
-	MOVWF       ?lstr100_FirmV_0_7_0+0 
-	MOVLW       101
-	MOVWF       ?lstr100_FirmV_0_7_0+1 
-	MOVLW       115
-	MOVWF       ?lstr100_FirmV_0_7_0+2 
-	MOVLW       32
-	MOVWF       ?lstr100_FirmV_0_7_0+3 
-	MOVLW       32
-	MOVWF       ?lstr100_FirmV_0_7_0+4 
-	MOVLW       32
-	MOVWF       ?lstr100_FirmV_0_7_0+5 
-	MOVLW       32
-	MOVWF       ?lstr100_FirmV_0_7_0+6 
-	MOVLW       32
-	MOVWF       ?lstr100_FirmV_0_7_0+7 
-	CLRF        ?lstr100_FirmV_0_7_0+8 
 	MOVLW       ?lstr100_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr100_FirmV_0_7_0+0)
@@ -11927,21 +10146,6 @@ L_Menu0466:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?ICS?lstr101_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr101_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr101_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr101_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr101_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       17
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr101_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr101_FirmV_0_7_0+0)
@@ -11962,21 +10166,6 @@ L_Menu0466:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine2+6)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       78
-	MOVWF       ?lstr102_FirmV_0_7_0+0 
-	MOVLW       111
-	MOVWF       ?lstr102_FirmV_0_7_0+1 
-	MOVLW       32
-	MOVWF       ?lstr102_FirmV_0_7_0+2 
-	MOVLW       32
-	MOVWF       ?lstr102_FirmV_0_7_0+3 
-	MOVLW       32
-	MOVWF       ?lstr102_FirmV_0_7_0+4 
-	MOVLW       32
-	MOVWF       ?lstr102_FirmV_0_7_0+5 
-	MOVLW       32
-	MOVWF       ?lstr102_FirmV_0_7_0+6 
-	CLRF        ?lstr102_FirmV_0_7_0+7 
 	MOVLW       ?lstr102_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr102_FirmV_0_7_0+0)
@@ -11992,23 +10181,6 @@ L_Menu0470:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine2+6)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       89
-	MOVWF       ?lstr103_FirmV_0_7_0+0 
-	MOVLW       101
-	MOVWF       ?lstr103_FirmV_0_7_0+1 
-	MOVLW       115
-	MOVWF       ?lstr103_FirmV_0_7_0+2 
-	MOVLW       32
-	MOVWF       ?lstr103_FirmV_0_7_0+3 
-	MOVLW       32
-	MOVWF       ?lstr103_FirmV_0_7_0+4 
-	MOVLW       32
-	MOVWF       ?lstr103_FirmV_0_7_0+5 
-	MOVLW       32
-	MOVWF       ?lstr103_FirmV_0_7_0+6 
-	MOVLW       32
-	MOVWF       ?lstr103_FirmV_0_7_0+7 
-	CLRF        ?lstr103_FirmV_0_7_0+8 
 	MOVLW       ?lstr103_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr103_FirmV_0_7_0+0)
@@ -12030,21 +10202,6 @@ L_Menu0469:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?ICS?lstr104_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr104_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr104_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr104_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr104_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       17
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr104_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr104_FirmV_0_7_0+0)
@@ -12075,21 +10232,6 @@ L_Menu0472:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?ICS?lstr105_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr105_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr105_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr105_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr105_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       17
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr105_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr105_FirmV_0_7_0+0)
@@ -12112,21 +10254,6 @@ L_Menu0473:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?ICS?lstr106_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr106_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr106_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr106_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr106_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       17
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr106_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr106_FirmV_0_7_0+0)
@@ -12143,6 +10270,7 @@ L_Menu0474:
 	MOVLW       101
 	MOVWF       _State+0 
 ;FirmV_0_7_0.c,2065 :: 		}
+L_end_Menu0:
 	RETURN      0
 ; end of _Menu0
 
@@ -12241,6 +10369,7 @@ L_About477:
 	MOVWF       _State+0 
 L_About478:
 ;FirmV_0_7_0.c,2092 :: 		}
+L_end_About:
 	RETURN      0
 ; end of _About
 
@@ -12328,6 +10457,7 @@ L_Menu1485:
 	MOVWF       _State+0 
 L_Menu1486:
 ;FirmV_0_7_0.c,2117 :: 		}
+L_end_Menu1:
 	RETURN      0
 ; end of _Menu1
 
@@ -12699,11 +10829,11 @@ L_Menu2547:
 	XORLW       9
 	BTFSS       STATUS+0, 2 
 	GOTO        L_Menu2554
-;FirmV_0_7_0.c,2221 :: 		{ if((Events.Keys.b0==1)&&(OverloadSens1>1))
+;FirmV_0_7_0.c,2221 :: 		{ if((Events.Keys.b0==1)&&(OverloadSens1>0))
 	BTFSS       _Events+0, 0 
 	GOTO        L_Menu2557
 	MOVF        _OverloadSens1+0, 0 
-	SUBLW       1
+	SUBLW       0
 	BTFSC       STATUS+0, 0 
 	GOTO        L_Menu2557
 L__Menu2900:
@@ -12734,11 +10864,11 @@ L_Menu2554:
 	XORLW       10
 	BTFSS       STATUS+0, 2 
 	GOTO        L_Menu2561
-;FirmV_0_7_0.c,2230 :: 		{ if((Events.Keys.b0==1)&&(OverloadSens2>1))
+;FirmV_0_7_0.c,2230 :: 		{ if((Events.Keys.b0==1)&&(OverloadSens2>0))
 	BTFSS       _Events+0, 0 
 	GOTO        L_Menu2564
 	MOVF        _OverloadSens2+0, 0 
-	SUBLW       1
+	SUBLW       0
 	BTFSC       STATUS+0, 0 
 	GOTO        L_Menu2564
 L__Menu2898:
@@ -12882,10 +11012,10 @@ L_Menu2582:
 	MOVF        _AutoCloseTime+1, 0 
 	SUBWF       R0, 0 
 	BTFSS       STATUS+0, 2 
-	GOTO        L__Menu2967
+	GOTO        L__Menu21009
 	MOVF        _AutoCloseTime+0, 0 
 	SUBLW       0
-L__Menu2967:
+L__Menu21009:
 	BTFSC       STATUS+0, 0 
 	GOTO        L_Menu2592
 L__Menu2890:
@@ -12904,10 +11034,10 @@ L_Menu2592:
 	MOVLW       253
 	SUBWF       _AutoCloseTime+1, 0 
 	BTFSS       STATUS+0, 2 
-	GOTO        L__Menu2968
+	GOTO        L__Menu21010
 	MOVLW       232
 	SUBWF       _AutoCloseTime+0, 0 
-L__Menu2968:
+L__Menu21010:
 	BTFSC       STATUS+0, 0 
 	GOTO        L_Menu2595
 L__Menu2889:
@@ -13219,6 +11349,7 @@ L_Menu2634:
 ;FirmV_0_7_0.c,2344 :: 		}
 L_Menu2635:
 ;FirmV_0_7_0.c,2345 :: 		}
+L_end_Menu2:
 	RETURN      0
 ; end of _Menu2
 
@@ -13230,6 +11361,7 @@ _Menu3:
 ;FirmV_0_7_0.c,2360 :: 		State=0;
 	CLRF        _State+0 
 ;FirmV_0_7_0.c,2361 :: 		}
+L_end_Menu3:
 	RETURN      0
 ; end of _Menu3
 
@@ -13665,21 +11797,6 @@ L_LearnAuto679:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?ICS?lstr107_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr107_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr107_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr107_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr107_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       17
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr107_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr107_FirmV_0_7_0+0)
@@ -13694,21 +11811,6 @@ L_LearnAuto679:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine2+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?ICS?lstr108_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr108_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr108_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr108_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr108_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       17
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr108_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr108_FirmV_0_7_0+0)
@@ -13790,6 +11892,7 @@ L_LearnAuto636:
 	GOTO        L_LearnAuto679
 L_LearnAuto637:
 ;FirmV_0_7_0.c,2460 :: 		}
+L_end_LearnAuto:
 	RETURN      0
 ; end of _LearnAuto
 
@@ -13803,12 +11906,12 @@ _AutoLearnCalculator:
 	MOVLW       0
 	ADDWFC      FARG_AutoLearnCalculator_raw+1, 0 
 	MOVWF       R2 
-	MOVFF       R1, FSR0L
+	MOVFF       R1, FSR0
 	MOVFF       R2, FSR0H
 	MOVLW       10
 	ADDWF       POSTINC0+0, 0 
 	MOVWF       R0 
-	MOVFF       R1, FSR1L
+	MOVFF       R1, FSR1
 	MOVFF       R2, FSR1H
 	MOVF        R0, 0 
 	MOVWF       POSTINC1+0 
@@ -13819,21 +11922,21 @@ _AutoLearnCalculator:
 	MOVLW       0
 	ADDWFC      FARG_AutoLearnCalculator_raw+1, 0 
 	MOVWF       R2 
-	MOVFF       R1, FSR0L
+	MOVFF       R1, FSR0
 	MOVFF       R2, FSR0H
 	MOVLW       10
 	ADDWF       POSTINC0+0, 0 
 	MOVWF       R0 
-	MOVFF       R1, FSR1L
+	MOVFF       R1, FSR1
 	MOVFF       R2, FSR1H
 	MOVF        R0, 0 
 	MOVWF       POSTINC1+0 
 ;FirmV_0_7_0.c,2485 :: 		(*raw).D1CloseTime=(*raw).D1CloseTime+10;
-	MOVFF       FARG_AutoLearnCalculator_raw+0, FSR0L
+	MOVFF       FARG_AutoLearnCalculator_raw+0, FSR0
 	MOVFF       FARG_AutoLearnCalculator_raw+1, FSR0H
 	MOVF        POSTINC0+0, 0 
 	MOVWF       R0 
-	MOVFF       FARG_AutoLearnCalculator_raw+0, FSR1L
+	MOVFF       FARG_AutoLearnCalculator_raw+0, FSR1
 	MOVFF       FARG_AutoLearnCalculator_raw+1, FSR1H
 	MOVLW       10
 	ADDWF       R0, 0 
@@ -13845,19 +11948,19 @@ _AutoLearnCalculator:
 	MOVLW       0
 	ADDWFC      FARG_AutoLearnCalculator_raw+1, 0 
 	MOVWF       R2 
-	MOVFF       R1, FSR0L
+	MOVFF       R1, FSR0
 	MOVFF       R2, FSR0H
 	MOVLW       10
 	ADDWF       POSTINC0+0, 0 
 	MOVWF       R0 
-	MOVFF       R1, FSR1L
+	MOVFF       R1, FSR1
 	MOVFF       R2, FSR1H
 	MOVF        R0, 0 
 	MOVWF       POSTINC1+0 
 ;FirmV_0_7_0.c,2488 :: 		(*raw).D1OpenSoftStart=4;
 	MOVLW       4
 	ADDWF       FARG_AutoLearnCalculator_raw+0, 0 
-	MOVWF       FSR1L 
+	MOVWF       FSR1 
 	MOVLW       0
 	ADDWFC      FARG_AutoLearnCalculator_raw+1, 0 
 	MOVWF       FSR1H 
@@ -13866,7 +11969,7 @@ _AutoLearnCalculator:
 ;FirmV_0_7_0.c,2489 :: 		(*raw).D1CloseSoftStart=4;
 	MOVLW       6
 	ADDWF       FARG_AutoLearnCalculator_raw+0, 0 
-	MOVWF       FSR1L 
+	MOVWF       FSR1 
 	MOVLW       0
 	ADDWFC      FARG_AutoLearnCalculator_raw+1, 0 
 	MOVWF       FSR1H 
@@ -13875,7 +11978,7 @@ _AutoLearnCalculator:
 ;FirmV_0_7_0.c,2490 :: 		(*raw).D2OpenSoftStart=4;
 	MOVLW       8
 	ADDWF       FARG_AutoLearnCalculator_raw+0, 0 
-	MOVWF       FSR1L 
+	MOVWF       FSR1 
 	MOVLW       0
 	ADDWFC      FARG_AutoLearnCalculator_raw+1, 0 
 	MOVWF       FSR1H 
@@ -13884,7 +11987,7 @@ _AutoLearnCalculator:
 ;FirmV_0_7_0.c,2491 :: 		(*raw).D2CloseSoftStart=4;
 	MOVLW       10
 	ADDWF       FARG_AutoLearnCalculator_raw+0, 0 
-	MOVWF       FSR1L 
+	MOVWF       FSR1 
 	MOVLW       0
 	ADDWFC      FARG_AutoLearnCalculator_raw+1, 0 
 	MOVWF       FSR1H 
@@ -13893,7 +11996,7 @@ _AutoLearnCalculator:
 ;FirmV_0_7_0.c,2493 :: 		(*raw).D1OpenSoftStop=10;
 	MOVLW       5
 	ADDWF       FARG_AutoLearnCalculator_raw+0, 0 
-	MOVWF       FSR1L 
+	MOVWF       FSR1 
 	MOVLW       0
 	ADDWFC      FARG_AutoLearnCalculator_raw+1, 0 
 	MOVWF       FSR1H 
@@ -13902,7 +12005,7 @@ _AutoLearnCalculator:
 ;FirmV_0_7_0.c,2494 :: 		(*raw).D2OpenSoftStop=10;
 	MOVLW       9
 	ADDWF       FARG_AutoLearnCalculator_raw+0, 0 
-	MOVWF       FSR1L 
+	MOVWF       FSR1 
 	MOVLW       0
 	ADDWFC      FARG_AutoLearnCalculator_raw+1, 0 
 	MOVWF       FSR1H 
@@ -13911,7 +12014,7 @@ _AutoLearnCalculator:
 ;FirmV_0_7_0.c,2495 :: 		(*raw).D1CloseSoftStop=10;
 	MOVLW       7
 	ADDWF       FARG_AutoLearnCalculator_raw+0, 0 
-	MOVWF       FSR1L 
+	MOVWF       FSR1 
 	MOVLW       0
 	ADDWFC      FARG_AutoLearnCalculator_raw+1, 0 
 	MOVWF       FSR1H 
@@ -13920,13 +12023,14 @@ _AutoLearnCalculator:
 ;FirmV_0_7_0.c,2496 :: 		(*raw).D2CloseSoftStop=10;
 	MOVLW       11
 	ADDWF       FARG_AutoLearnCalculator_raw+0, 0 
-	MOVWF       FSR1L 
+	MOVWF       FSR1 
 	MOVLW       0
 	ADDWFC      FARG_AutoLearnCalculator_raw+1, 0 
 	MOVWF       FSR1H 
 	MOVLW       10
 	MOVWF       POSTINC1+0 
 ;FirmV_0_7_0.c,2498 :: 		}
+L_end_AutoLearnCalculator:
 	RETURN      0
 ; end of _AutoLearnCalculator
 
@@ -13936,14 +12040,14 @@ _SaveLearnData:
 ;FirmV_0_7_0.c,2512 :: 		Door1OpenTime=(*d).D1OpenTime;
 	MOVLW       1
 	ADDWF       FARG_SaveLearnData_d+0, 0 
-	MOVWF       FSR0L 
+	MOVWF       FSR0 
 	MOVLW       0
 	ADDWFC      FARG_SaveLearnData_d+1, 0 
 	MOVWF       FSR0H 
 	MOVF        POSTINC0+0, 0 
 	MOVWF       _Door1OpenTime+0 
 ;FirmV_0_7_0.c,2513 :: 		Door1CloseTime=(*d).D1CloseTime;
-	MOVFF       FARG_SaveLearnData_d+0, FSR0L
+	MOVFF       FARG_SaveLearnData_d+0, FSR0
 	MOVFF       FARG_SaveLearnData_d+1, FSR0H
 	MOVF        POSTINC0+0, 0 
 	MOVWF       _Door1CloseTime+0 
@@ -13955,7 +12059,7 @@ _SaveLearnData:
 ;FirmV_0_7_0.c,2516 :: 		Door2OpenTime=(*d).D2OpenTime;
 	MOVLW       3
 	ADDWF       FARG_SaveLearnData_d+0, 0 
-	MOVWF       FSR0L 
+	MOVWF       FSR0 
 	MOVLW       0
 	ADDWFC      FARG_SaveLearnData_d+1, 0 
 	MOVWF       FSR0H 
@@ -13964,7 +12068,7 @@ _SaveLearnData:
 ;FirmV_0_7_0.c,2517 :: 		Door2CloseTime=(*d).D2CloseTime;
 	MOVLW       2
 	ADDWF       FARG_SaveLearnData_d+0, 0 
-	MOVWF       FSR0L 
+	MOVWF       FSR0 
 	MOVLW       0
 	ADDWFC      FARG_SaveLearnData_d+1, 0 
 	MOVWF       FSR0H 
@@ -13973,13 +12077,13 @@ _SaveLearnData:
 ;FirmV_0_7_0.c,2518 :: 		OpenSoftStartTime=((*d).D1OpenSoftStart+(*d).D2OpenSoftStart)/2;
 	MOVLW       4
 	ADDWF       FARG_SaveLearnData_d+0, 0 
-	MOVWF       FSR0L 
+	MOVWF       FSR0 
 	MOVLW       0
 	ADDWFC      FARG_SaveLearnData_d+1, 0 
 	MOVWF       FSR0H 
 	MOVLW       8
 	ADDWF       FARG_SaveLearnData_d+0, 0 
-	MOVWF       FSR2L 
+	MOVWF       FSR2 
 	MOVLW       0
 	ADDWFC      FARG_SaveLearnData_d+1, 0 
 	MOVWF       FSR2H 
@@ -14003,13 +12107,13 @@ _SaveLearnData:
 ;FirmV_0_7_0.c,2519 :: 		OpenSoftStopTime=((*d).D1OpenSoftStop+(*d).D2OpenSoftStop)/2;
 	MOVLW       5
 	ADDWF       FARG_SaveLearnData_d+0, 0 
-	MOVWF       FSR0L 
+	MOVWF       FSR0 
 	MOVLW       0
 	ADDWFC      FARG_SaveLearnData_d+1, 0 
 	MOVWF       FSR0H 
 	MOVLW       9
 	ADDWF       FARG_SaveLearnData_d+0, 0 
-	MOVWF       FSR2L 
+	MOVWF       FSR2 
 	MOVLW       0
 	ADDWFC      FARG_SaveLearnData_d+1, 0 
 	MOVWF       FSR2H 
@@ -14033,13 +12137,13 @@ _SaveLearnData:
 ;FirmV_0_7_0.c,2520 :: 		CloseSoftStartTime=((*d).D1CloseSoftStart+(*d).D2CloseSoftStart)/2;
 	MOVLW       6
 	ADDWF       FARG_SaveLearnData_d+0, 0 
-	MOVWF       FSR0L 
+	MOVWF       FSR0 
 	MOVLW       0
 	ADDWFC      FARG_SaveLearnData_d+1, 0 
 	MOVWF       FSR0H 
 	MOVLW       10
 	ADDWF       FARG_SaveLearnData_d+0, 0 
-	MOVWF       FSR2L 
+	MOVWF       FSR2 
 	MOVLW       0
 	ADDWFC      FARG_SaveLearnData_d+1, 0 
 	MOVWF       FSR2H 
@@ -14063,13 +12167,13 @@ _SaveLearnData:
 ;FirmV_0_7_0.c,2521 :: 		CloseSoftStopTime=((*d).D1CloseSoftStop+(*d).D2CloseSoftStop)/2;
 	MOVLW       7
 	ADDWF       FARG_SaveLearnData_d+0, 0 
-	MOVWF       FSR0L 
+	MOVWF       FSR0 
 	MOVLW       0
 	ADDWFC      FARG_SaveLearnData_d+1, 0 
 	MOVWF       FSR0H 
 	MOVLW       11
 	ADDWF       FARG_SaveLearnData_d+0, 0 
-	MOVWF       FSR2L 
+	MOVWF       FSR2 
 	MOVLW       0
 	ADDWFC      FARG_SaveLearnData_d+1, 0 
 	MOVWF       FSR2H 
@@ -14100,7 +12204,7 @@ L_SaveLearnData680:
 ;FirmV_0_7_0.c,2527 :: 		OpenSoftStartTime=(*d).D1OpenSoftStart;
 	MOVLW       4
 	ADDWF       FARG_SaveLearnData_d+0, 0 
-	MOVWF       FSR0L 
+	MOVWF       FSR0 
 	MOVLW       0
 	ADDWFC      FARG_SaveLearnData_d+1, 0 
 	MOVWF       FSR0H 
@@ -14109,7 +12213,7 @@ L_SaveLearnData680:
 ;FirmV_0_7_0.c,2528 :: 		OpenSoftStopTime=(*d).D1OpenSoftStop;
 	MOVLW       5
 	ADDWF       FARG_SaveLearnData_d+0, 0 
-	MOVWF       FSR0L 
+	MOVWF       FSR0 
 	MOVLW       0
 	ADDWFC      FARG_SaveLearnData_d+1, 0 
 	MOVWF       FSR0H 
@@ -14118,7 +12222,7 @@ L_SaveLearnData680:
 ;FirmV_0_7_0.c,2529 :: 		CloseSoftStartTime=(*d).D1CloseSoftStart;
 	MOVLW       6
 	ADDWF       FARG_SaveLearnData_d+0, 0 
-	MOVWF       FSR0L 
+	MOVWF       FSR0 
 	MOVLW       0
 	ADDWFC      FARG_SaveLearnData_d+1, 0 
 	MOVWF       FSR0H 
@@ -14127,7 +12231,7 @@ L_SaveLearnData680:
 ;FirmV_0_7_0.c,2530 :: 		CloseSoftStopTime=(*d).D1CloseSoftStop;
 	MOVLW       7
 	ADDWF       FARG_SaveLearnData_d+0, 0 
-	MOVWF       FSR0L 
+	MOVWF       FSR0 
 	MOVLW       0
 	ADDWFC      FARG_SaveLearnData_d+1, 0 
 	MOVWF       FSR0H 
@@ -14138,6 +12242,7 @@ L_SaveLearnData681:
 ;FirmV_0_7_0.c,2533 :: 		SaveConfigs();
 	CALL        _SaveConfigs+0, 0
 ;FirmV_0_7_0.c,2534 :: 		}
+L_end_SaveLearnData:
 	RETURN      0
 ; end of _SaveLearnData
 
@@ -14782,21 +12887,6 @@ L_LearnManual733:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?ICS?lstr109_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr109_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr109_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr109_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr109_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       17
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr109_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr109_FirmV_0_7_0+0)
@@ -14811,21 +12901,6 @@ L_LearnManual733:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine2+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?ICS?lstr110_FirmV_0_7_0+0
-	MOVWF       TBLPTRL 
-	MOVLW       hi_addr(?ICS?lstr110_FirmV_0_7_0+0)
-	MOVWF       TBLPTRH 
-	MOVLW       higher_addr(?ICS?lstr110_FirmV_0_7_0+0)
-	MOVWF       TBLPTRU 
-	MOVLW       ?lstr110_FirmV_0_7_0+0
-	MOVWF       FSR1L 
-	MOVLW       hi_addr(?lstr110_FirmV_0_7_0+0)
-	MOVWF       FSR1H 
-	MOVLW       17
-	MOVWF       R0 
-	MOVLW       1
-	MOVWF       R1 
-	CALL        ___CC2DW+0, 0
 	MOVLW       ?lstr110_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr110_FirmV_0_7_0+0)
@@ -14939,6 +13014,7 @@ L_LearnManual682:
 	GOTO        L_LearnManual733
 L_LearnManual683:
 ;FirmV_0_7_0.c,2673 :: 		}
+L_end_LearnManual:
 	RETURN      0
 ; end of _LearnManual
 
@@ -14970,13 +13046,6 @@ _charValueToStr:
 	MOVLW       0
 	ADDWFC      FARG_charValueToStr_string+1, 0 
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       46
-	MOVWF       ?lstr111_FirmV_0_7_0+0 
-	MOVLW       53
-	MOVWF       ?lstr111_FirmV_0_7_0+1 
-	MOVLW       115
-	MOVWF       ?lstr111_FirmV_0_7_0+2 
-	CLRF        ?lstr111_FirmV_0_7_0+3 
 	MOVLW       ?lstr111_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr111_FirmV_0_7_0+0)
@@ -14995,13 +13064,6 @@ L_charValueToStr734:
 	MOVLW       0
 	ADDWFC      FARG_charValueToStr_string+1, 0 
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       46
-	MOVWF       ?lstr112_FirmV_0_7_0+0 
-	MOVLW       48
-	MOVWF       ?lstr112_FirmV_0_7_0+1 
-	MOVLW       115
-	MOVWF       ?lstr112_FirmV_0_7_0+2 
-	CLRF        ?lstr112_FirmV_0_7_0+3 
 	MOVLW       ?lstr112_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr112_FirmV_0_7_0+0)
@@ -15013,6 +13075,7 @@ L_charValueToStr734:
 	CALL        _memcpy+0, 0
 L_charValueToStr735:
 ;FirmV_0_7_0.c,2701 :: 		}
+L_end_charValueToStr:
 	RETURN      0
 ; end of _charValueToStr
 
@@ -15036,13 +13099,6 @@ _charValueToStr_AC:
 	MOVLW       0
 	ADDWFC      FARG_charValueToStr_AC_string+1, 0 
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       115
-	MOVWF       ?lstr113_FirmV_0_7_0+0 
-	MOVLW       32
-	MOVWF       ?lstr113_FirmV_0_7_0+1 
-	MOVLW       32
-	MOVWF       ?lstr113_FirmV_0_7_0+2 
-	CLRF        ?lstr113_FirmV_0_7_0+3 
 	MOVLW       ?lstr113_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr113_FirmV_0_7_0+0)
@@ -15053,6 +13109,7 @@ _charValueToStr_AC:
 	MOVWF       FARG_memcpy_n+1 
 	CALL        _memcpy+0, 0
 ;FirmV_0_7_0.c,2714 :: 		}
+L_end_charValueToStr_AC:
 	RETURN      0
 ; end of _charValueToStr_AC
 
@@ -15083,10 +13140,10 @@ _intValueToStr:
 	MOVLW       0
 	XORWF       R2, 0 
 	BTFSS       STATUS+0, 2 
-	GOTO        L__intValueToStr969
+	GOTO        L__intValueToStr1019
 	MOVLW       1
 	XORWF       R1, 0 
-L__intValueToStr969:
+L__intValueToStr1019:
 	BTFSS       STATUS+0, 2 
 	GOTO        L_intValueToStr736
 ;FirmV_0_7_0.c,2731 :: 		memcpy(string+5,".5s",4);
@@ -15096,13 +13153,6 @@ L__intValueToStr969:
 	MOVLW       0
 	ADDWFC      FARG_intValueToStr_string+1, 0 
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       46
-	MOVWF       ?lstr114_FirmV_0_7_0+0 
-	MOVLW       53
-	MOVWF       ?lstr114_FirmV_0_7_0+1 
-	MOVLW       115
-	MOVWF       ?lstr114_FirmV_0_7_0+2 
-	CLRF        ?lstr114_FirmV_0_7_0+3 
 	MOVLW       ?lstr114_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr114_FirmV_0_7_0+0)
@@ -15121,13 +13171,6 @@ L_intValueToStr736:
 	MOVLW       0
 	ADDWFC      FARG_intValueToStr_string+1, 0 
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       46
-	MOVWF       ?lstr115_FirmV_0_7_0+0 
-	MOVLW       48
-	MOVWF       ?lstr115_FirmV_0_7_0+1 
-	MOVLW       115
-	MOVWF       ?lstr115_FirmV_0_7_0+2 
-	CLRF        ?lstr115_FirmV_0_7_0+3 
 	MOVLW       ?lstr115_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
 	MOVLW       hi_addr(?lstr115_FirmV_0_7_0+0)
@@ -15139,6 +13182,7 @@ L_intValueToStr736:
 	CALL        _memcpy+0, 0
 L_intValueToStr737:
 ;FirmV_0_7_0.c,2734 :: 		}
+L_end_intValueToStr:
 	RETURN      0
 ; end of _intValueToStr
 
@@ -15756,6 +13800,7 @@ L_SetOverloadParams787:
 	GOTO        L_SetOverloadParams799
 L_SetOverloadParams788:
 ;FirmV_0_7_0.c,2876 :: 		}
+L_end_SetOverloadParams:
 	RETURN      0
 ; end of _SetOverloadParams
 
@@ -16088,5 +14133,6 @@ L_TorqueLogger800:
 	GOTO        L_TorqueLogger806
 L_TorqueLogger801:
 ;FirmV_0_7_0.c,2968 :: 		}
+L_end_TorqueLogger:
 	RETURN      0
 ; end of _TorqueLogger

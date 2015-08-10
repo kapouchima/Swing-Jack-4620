@@ -2218,7 +2218,7 @@ void Menu2()
 
   //overload sensitivity 1
   if(MenuPointer==9)
-    { if((Events.Keys.b0==1)&&(OverloadSens1>1))
+    { if((Events.Keys.b0==1)&&(OverloadSens1>0))
         {OverloadSens1=OverloadSens1-1;Menu0();State=102;}
       if((Events.Keys.b2==1)&&(OverloadSens1<15))
         {OverloadSens1=OverloadSens1+1;Menu0();State=102;}
@@ -2227,7 +2227,7 @@ void Menu2()
     
   //overload sensitivity 2
   if(MenuPointer==10)
-    { if((Events.Keys.b0==1)&&(OverloadSens2>1))
+    { if((Events.Keys.b0==1)&&(OverloadSens2>0))
         {OverloadSens2=OverloadSens2-1;Menu0();State=102;}
       if((Events.Keys.b2==1)&&(OverloadSens2<15))
         {OverloadSens2=OverloadSens2+1;Menu0();State=102;}

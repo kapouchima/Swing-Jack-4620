@@ -123,6 +123,7 @@ L_LCD_Init3:
 ;COGLCDDriver.c,42 :: 		I2C1_Stop();
 	CALL        _I2C1_Stop+0, 0
 ;COGLCDDriver.c,44 :: 		}
+L_end_LCD_Init:
 	RETURN      0
 ; end of _LCD_Init
 
@@ -195,13 +196,14 @@ _SetContrast:
 	MOVLW       251
 	MOVWF       R13, 0
 L_SetContrast4:
-	DECFSZ      R13, 1, 0
+	DECFSZ      R13, 1, 1
 	BRA         L_SetContrast4
-	DECFSZ      R12, 1, 0
+	DECFSZ      R12, 1, 1
 	BRA         L_SetContrast4
 	NOP
 	NOP
 ;COGLCDDriver.c,65 :: 		}
+L_end_SetContrast:
 	RETURN      0
 ; end of _SetContrast
 
@@ -256,14 +258,15 @@ L_LCD_Putch6:
 	MOVLW       251
 	MOVWF       R13, 0
 L_LCD_Putch7:
-	DECFSZ      R13, 1, 0
+	DECFSZ      R13, 1, 1
 	BRA         L_LCD_Putch7
-	DECFSZ      R12, 1, 0
+	DECFSZ      R12, 1, 1
 	BRA         L_LCD_Putch7
 	NOP
 	NOP
 ;COGLCDDriver.c,82 :: 		return;
 ;COGLCDDriver.c,83 :: 		}
+L_end_LCD_Putch:
 	RETURN      0
 ; end of _LCD_Putch
 
@@ -315,7 +318,7 @@ L_LCD_out9:
 L_LCD_out10:
 	MOVF        LCD_out_i_L0+0, 0 
 	ADDWF       FARG_LCD_out_dat+0, 0 
-	MOVWF       FSR0L 
+	MOVWF       FSR0 
 	MOVLW       0
 	ADDWFC      FARG_LCD_out_dat+1, 0 
 	MOVWF       FSR0H 
@@ -331,7 +334,7 @@ L__LCD_out15:
 ;COGLCDDriver.c,99 :: 		{I2C1_wr(dat[i]);i=i+1;}
 	MOVF        LCD_out_i_L0+0, 0 
 	ADDWF       FARG_LCD_out_dat+0, 0 
-	MOVWF       FSR0L 
+	MOVWF       FSR0 
 	MOVLW       0
 	ADDWFC      FARG_LCD_out_dat+1, 0 
 	MOVWF       FSR0H 
@@ -349,13 +352,14 @@ L_LCD_out11:
 	MOVLW       251
 	MOVWF       R13, 0
 L_LCD_out14:
-	DECFSZ      R13, 1, 0
+	DECFSZ      R13, 1, 1
 	BRA         L_LCD_out14
-	DECFSZ      R12, 1, 0
+	DECFSZ      R12, 1, 1
 	BRA         L_LCD_out14
 	NOP
 	NOP
 ;COGLCDDriver.c,103 :: 		return;
 ;COGLCDDriver.c,104 :: 		}
+L_end_LCD_out:
 	RETURN      0
 ; end of _LCD_out

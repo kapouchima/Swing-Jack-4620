@@ -12,7 +12,7 @@ main
 				I2C1_Is_Idle
 			I2C1_Wr
 			I2C1_Stop
-		Mul_16x16_U
+		Mul_16X16_U
 		UART1_Init
 		LoadConfigs
 			EEPROM_Read
@@ -42,10 +42,10 @@ main
 		memcpy
 	ResetTaskEvents
 	TaskManager
-		Mul_16x16_U
+		Mul_16X16_U
 	TorqueLogger
 		WordToStrWithZeros
-			Div_16x16_U
+			Div_16X16_U
 		Logger
 			LongWordToStrWithZeros
 				Div_32x32_U
@@ -64,29 +64,28 @@ main
 			ADC_Read
 				Delay_22us
 		GetPhotocellState
-		Mul_16x16_U
+		Mul_16X16_U
 	StateManager
 		State1
 			ClearTasks
-				Mul_16x16_U
+				Mul_16X16_U
 			AddTask
-				Mul_16x16_U
+				Mul_16X16_U
 		State2
 			ReturnAutoclose
-				Mul_16x16_U
+				Mul_16X16_U
 			charValueToStr_AC
 				ByteToStr
-					Div_8x8_U
+					Div_8X8_U
 				memcpy
 			memcpy
 			CheckTask
 			ClearTasks
-				Mul_16x16_U
+				Mul_16X16_U
 			AddTask
-				Mul_16x16_U
+				Mul_16X16_U
 			GetAutocloseTime
-				Mul_16x16_U
-			__CC2DW
+				Mul_16X16_U
 			Logger
 				LongWordToStrWithZeros
 					Div_32x32_U
@@ -113,12 +112,11 @@ main
 			memcpy
 			SetMotorSpeed
 			OverloadInit
-			__CC2DW
 			StopMotor
 			ClearTasks
-				Mul_16x16_U
+				Mul_16X16_U
 			AddTask
-				Mul_16x16_U
+				Mul_16X16_U
 		State4
 			CheckTask
 			StartMotor
@@ -133,22 +131,20 @@ main
 				UART1_Write
 			memcpy
 			OverloadInit
-			__CC2DW
 			SetMotorSpeed
 			StopMotor
 			ClearTasks
-				Mul_16x16_U
+				Mul_16X16_U
 			AddTask
-				Mul_16x16_U
+				Mul_16X16_U
 		State5
 			CheckTask
 			ClearTasks
-				Mul_16x16_U
+				Mul_16X16_U
 			AddTask
-				Mul_16x16_U
+				Mul_16X16_U
 			GetAutocloseTime
-				Mul_16x16_U
-			__CC2DW
+				Mul_16X16_U
 			Logger
 				LongWordToStrWithZeros
 					Div_32x32_U
@@ -162,13 +158,12 @@ main
 				Div_32x32_U
 		State6
 			ClearTasks
-				Mul_16x16_U
+				Mul_16X16_U
 			AddTask
-				Mul_16x16_U
+				Mul_16X16_U
 			CheckTask
 			GetAutocloseTime
-				Mul_16x16_U
-			__CC2DW
+				Mul_16X16_U
 			Logger
 				LongWordToStrWithZeros
 					Div_32x32_U
@@ -194,13 +189,12 @@ main
 				UART1_Write
 			memcpy
 			OverloadInit
-			__CC2DW
 			SetMotorSpeed
 			StopMotor
 			ClearTasks
-				Mul_16x16_U
+				Mul_16X16_U
 			AddTask
-				Mul_16x16_U
+				Mul_16X16_U
 		State8
 			CheckTask
 			StartMotor
@@ -215,44 +209,41 @@ main
 				UART1_Write
 			memcpy
 			OverloadInit
-			__CC2DW
 			SetMotorSpeed
 			StopMotor
 			ClearTasks
-				Mul_16x16_U
+				Mul_16X16_U
 			AddTask
-				Mul_16x16_U
+				Mul_16X16_U
 		State00
 			StartMotor
 			StopMotor
 		Menu0
-			__CC2DW
 			memcpy
 			charValueToStr
 				ByteToStr
-					Div_8x8_U
+					Div_8X8_U
 				memcpy
 			ByteToStr
-				Div_8x8_U
+				Div_8X8_U
 			intValueToStr
 				WordToStr
-					Div_16x16_U
+					Div_16X16_U
 				memcpy
 		Menu1
 			memcpy
 		Menu2
 			Menu0
-				__CC2DW
 				memcpy
 				charValueToStr
 					ByteToStr
-						Div_8x8_U
+						Div_8X8_U
 					memcpy
 				ByteToStr
-					Div_8x8_U
+					Div_8X8_U
 				intValueToStr
 					WordToStr
-						Div_16x16_U
+						Div_16X16_U
 					memcpy
 			memcpy
 			FactorySettings
@@ -273,7 +264,7 @@ main
 		LearnAuto
 			StartMotor
 			AddTask
-				Mul_16x16_U
+				Mul_16X16_U
 			StopMotor
 			CheckTask
 			AutoLearnCalculator
@@ -281,12 +272,11 @@ main
 				SaveConfigs
 					EEPROM_Write
 					SetOverloadParams
-			__CC2DW
 			memcpy
 		LearnManual
 			StartMotor
 			AddTask
-				Mul_16x16_U
+				Mul_16X16_U
 			StopMotor
 			CheckTask
 			SetMotorSpeed
@@ -294,9 +284,8 @@ main
 				SaveConfigs
 					EEPROM_Write
 					SetOverloadParams
-			__CC2DW
 			memcpy
 		About
 			memcpy
 interrupt
-	Div_8x8_U
+	Div_8X8_U
