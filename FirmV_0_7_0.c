@@ -39,6 +39,7 @@
 #define DebouncingFix 5
 #define LockForceTime 2
 #define RelaseTime 1
+#define NoiseEliminatorTreshold 3
 
 #include <built_in.h>
 
@@ -108,10 +109,10 @@ unsigned char D2CloseSoftStop;
 unsigned long ms500=0;
 char msCounter=0,ms20A=0,ms20B,Flag20ms=1,Flag500ms=1,State=0,LCDUpdateFlag=0,LCDFlashFlag=0,RemotePulse1=0,RemotePulse2=0;
 char PrevRemotePulseTime1=0,PrevRemotePulseTime2=0,RemoteAFlag=0,RemoteBFlag=0,Motor1FullSpeed=1,Motor2FullSpeed=1,BuzzCounter=0;
-char Motor1Start=0,Motor2Start=0,ZCCounter=0,PhotocellOpenFlag=0,ActiveDoors=0,BuzzFlag=0,LongBuzzFlag=0;
+char Motor1Start=0,Motor2Start=0,ZCCounter=0,PhotocellOpenFlag=0,ActiveDoors=0,BuzzFlag=0,LongBuzzFlag=0,PrevAC=0;
 char OverloadCheckFlag1=0,OverloadCheckFlag2=0,OpenDone=3,CloseDone=3,M1isSlow=0,M2isSlow=0,PassFlag=0,LearnPhase,AboutCounter=0;
-char _AC=0,PhotocellCount=0,MenuPointer=0,DebouncingDelay=0,LCDFlash=0,Pressed=0,OverloadSens1=7,OverloadSens2=7,LearningMode=0,KeyFlag=0,LCDLines=1;
-char t[11],FlashFlag=0;
+char _AC=0,PhotocellCount=0,MenuPointer=0,DebouncingDelayPress=0,DebouncingDelayUnpress=0,LCDFlash=0,Pressed=0,OverloadSens1=7,OverloadSens2=7,LearningMode=0,KeyFlag=0,LCDLines=1;
+char t[11],FlashFlag=0,KeyNoiseEliminator=0;
 unsigned int  OverloadCounter1=0,OverloadCounter2=0;
 unsigned long temp;
 unsigned VCapM1,VCapM2;
@@ -210,12 +211,12 @@ void interrupt()
   msCounter=msCounter+1;
   LCDBackLight=1;
   Flag20ms=1;
-  if(ms20A==255)
+  if(ms20A>=25)
     {ms20A=0;RemotePulse1=0;}
   else
     ms20A=ms20A+1;
 
-  if(ms20B==255)
+  if(ms20B>=25)
     {ms20B=0;RemotePulse2=0;}
   else
     ms20B=ms20B+1;
@@ -417,8 +418,11 @@ while(1)
        {Buzzer=1;BuzzCounter=0;}
        
        
-     if(DebouncingDelay<DebouncingFix)
-       DebouncingDelay=DebouncingDelay+1;
+     if(DebouncingDelayPress<DebouncingFix)
+       DebouncingDelayPress=DebouncingDelayPress+1;
+     if(DebouncingDelayUnpress<DebouncingFix)
+       DebouncingDelayUnpress=DebouncingDelayUnpress+1;
+       
      LCDUpdater();
      if(KeyFlag<200)
        KeyFlag=KeyFlag+1;
@@ -427,6 +431,9 @@ while(1)
 
   if(Flag500ms==1)
   {
+    if(KeyNoiseEliminator<NoiseEliminatorTreshold)
+      KeyNoiseEliminator=KeyNoiseEliminator+1;
+      
     if(FlashFlag)
       FlasherLamp=!FlasherLamp;// Buzzer=!Buzzer;
     else
@@ -608,6 +615,7 @@ void State1()
     OpenDone=3;
     OverloadCheckFlag1=0;
     OverloadCheckFlag2=0;
+    KeyNoiseEliminator=0;
     State=3;
     PassFlag=0;
   }
@@ -627,7 +635,7 @@ void State1()
 
 void State2()
 {
-  char delay=2,PrevAC=0;
+  char delay=2;
 
   Flasher=0;
   FlashFlag=0;
@@ -711,6 +719,7 @@ void State2()
     CloseDone=3;
     OverloadCheckFlag1=0;
     OverloadCheckFlag2=0;
+    KeyNoiseEliminator=0;
     State=4;
   }
 
@@ -787,17 +796,21 @@ void State3()
   if((Door2OpenTime==0)||(ActiveDoors==1))
     OpenDone.b1=0;
 
-  if((Events.Photocell.b0==1)&&(OpenPhEnable))
-    {StopMotor(1); StopMotor(2);OverloadCheckFlag1=0;OverloadCheckFlag2=0; State=5;Logger("S3 Photocell Int",1);ClearTasks(9);
-    memcpy(LCDLine1,_stop,16);memcpy(LCDLine2,_ErrPhoto,16);LCDUpdateFlag=1;LCDLines=2;}
+  if(KeyNoiseEliminator>=NoiseEliminatorTreshold)
+  {
   
-  if(Events.Remote!=0)
-    {StopMotor(1); StopMotor(2);OverloadCheckFlag1=0;OverloadCheckFlag2=0; State=5;Logger("S3 Remote Stoped",1);ClearTasks(9);
-    memcpy(LCDLine1,_stop,16);memcpy(LCDLine2,_ErrRemote,16);LCDUpdateFlag=1;LCDLines=2;}
-    
-  if((Events.Limiter==1)&&(LimiterEnable))
-    {StopMotor(1); StopMotor(2);OverloadCheckFlag1=0;OverloadCheckFlag2=0; State=5;Logger("S3 Limit Switch Stoped",1);ClearTasks(9);
-    memcpy(LCDLine1,_stop,16);memcpy(LCDLine2,_ErrLimit,16);LCDUpdateFlag=1;LCDLines=2;}
+    if((Events.Photocell.b0==1)&&(OpenPhEnable))
+      {StopMotor(1); StopMotor(2);OverloadCheckFlag1=0;OverloadCheckFlag2=0; State=5;Logger("S3 Photocell Int",1);ClearTasks(9);
+      memcpy(LCDLine1,_stop,16);memcpy(LCDLine2,_ErrPhoto,16);LCDUpdateFlag=1;LCDLines=2;}
+
+    if(Events.Remote!=0)
+      {StopMotor(1); StopMotor(2);OverloadCheckFlag1=0;OverloadCheckFlag2=0; State=5;Logger("S3 Remote Stoped",1);ClearTasks(9);
+      memcpy(LCDLine1,_stop,16);memcpy(LCDLine2,_ErrRemote,16);LCDUpdateFlag=1;LCDLines=2;}
+
+    if((Events.Limiter==1)&&(LimiterEnable))
+      {StopMotor(1); StopMotor(2);OverloadCheckFlag1=0;OverloadCheckFlag2=0; State=5;Logger("S3 Limit Switch Stoped",1);ClearTasks(9);
+      memcpy(LCDLine1,_stop,16);memcpy(LCDLine2,_ErrLimit,16);LCDUpdateFlag=1;LCDLines=2;}
+  }
 
   if(OpenDone==0)
     if(LockEnable)
@@ -807,10 +820,10 @@ void State3()
     {AddTask(ms500+1,13);OpenDone.b2=1;}
 
   if(CheckTask(13))
-    {State=2; PassFlag=0;ClearTasks(9);memcpy(LCDLine1,_open,16);memcpy(LCDLine2,_blank,16);LCDUpdateFlag=1;LCDLines=2;}
+    {State=2; PrevAC=0;PassFlag=0;ClearTasks(9);memcpy(LCDLine1,_open,16);memcpy(LCDLine2,_blank,16);LCDUpdateFlag=1;LCDLines=2;}
 
   if((State==5)||(State==6))
-    {ClearTasks(0);if(AutoCloseTime!=0){AddTask(ms500+AutoCloseTime,9);Logger("S3 Autoclose Renewed",1);memcpy(LCDLine2,_autoclose,16);LCDUpdateFlag=1;LCDLines=2;}}
+    {ClearTasks(0);if(AutoCloseTime!=0){AddTask(ms500+AutoCloseTime,9);PrevAC=0;Logger("S3 Autoclose Renewed",1);memcpy(LCDLine2,_autoclose,16);LCDUpdateFlag=1;LCDLines=2;}}
 
 }
 
@@ -873,17 +886,22 @@ FlashFlag=1;
   if((Door2OpenTime==0)||(ActiveDoors==1))
     CloseDone.b1=0;
 
-  if((Events.Photocell.b0==1))
-    {StopMotor(1); StopMotor(2); OverloadCheckFlag1=0;OverloadCheckFlag2=0;State=6;PhotocellOpenFlag=1;Logger("S4 Photocell Int",1);ClearTasks(9);
-    memcpy(LCDLine1,_stop,16);memcpy(LCDLine2,_ErrPhoto,16);LCDUpdateFlag=1;LCDLines=2;}
-    
-  if((Events.Limiter==1)&&(LimiterEnable))
-    {StopMotor(1); StopMotor(2); State=6;OverloadCheckFlag1=0;OverloadCheckFlag2=0;Logger("S4 Limit Switch Stop",1);ClearTasks(9);
-    memcpy(LCDLine1,_stop,16);memcpy(LCDLine2,_ErrLimit,16);LCDUpdateFlag=1;LCDLines=2;}
+  if(KeyNoiseEliminator>=NoiseEliminatorTreshold)
+  {
 
-  if((Events.Remote!=0))
-    {StopMotor(1); StopMotor(2); State=6;OverloadCheckFlag1=0;OverloadCheckFlag2=0;Logger("S4 Remote Pressed",1);ClearTasks(9);
-    memcpy(LCDLine1,_stop,16);memcpy(LCDLine2,_ErrRemote,16);LCDUpdateFlag=1;LCDLines=2;}
+    if((Events.Photocell.b0==1))
+      {StopMotor(1); StopMotor(2); OverloadCheckFlag1=0;OverloadCheckFlag2=0;State=6;PhotocellOpenFlag=1;Logger("S4 Photocell Int",1);ClearTasks(9);
+      memcpy(LCDLine1,_stop,16);memcpy(LCDLine2,_ErrPhoto,16);LCDUpdateFlag=1;LCDLines=2;}
+
+    if((Events.Limiter==1)&&(LimiterEnable))
+      {StopMotor(1); StopMotor(2); State=6;OverloadCheckFlag1=0;OverloadCheckFlag2=0;Logger("S4 Limit Switch Stop",1);ClearTasks(9);
+      memcpy(LCDLine1,_stop,16);memcpy(LCDLine2,_ErrLimit,16);LCDUpdateFlag=1;LCDLines=2;}
+
+    if((Events.Remote!=0))
+      {StopMotor(1); StopMotor(2); State=6;OverloadCheckFlag1=0;OverloadCheckFlag2=0;Logger("S4 Remote Pressed",1);ClearTasks(9);
+      memcpy(LCDLine1,_stop,16);memcpy(LCDLine2,_ErrRemote,16);LCDUpdateFlag=1;LCDLines=2;}
+  }
+
 
   if(CloseDone==0)
     if(LockEnable)
@@ -896,10 +914,10 @@ FlashFlag=1;
     StartMotor(2,_Open);
 
   if(CheckTask(13))
-    {State=1; PassFlag=0;ClearTasks(9);memcpy(LCDLine1,_close,16);memcpy(LCDLine2,_Blank,16);LCDUpdateFlag=1;LCDLines=1;}
+    {State=1; PassFlag=0;PrevAC=0;ClearTasks(9);memcpy(LCDLine1,_close,16);memcpy(LCDLine2,_Blank,16);LCDUpdateFlag=1;LCDLines=1;}
 
   if((State==5)||(State==6))
-    {ClearTasks(0);if(AutoCloseTime!=0){AddTask(ms500+AutoCloseTime,9);Logger("S4 Autoclose Renewed",1);memcpy(LCDLine2,_autoclose,16);LCDUpdateFlag=1;LCDLines=2;}}
+    {ClearTasks(0);if(AutoCloseTime!=0){PrevAC=0;AddTask(ms500+AutoCloseTime,9);Logger("S4 Autoclose Renewed",1);memcpy(LCDLine2,_autoclose,16);LCDUpdateFlag=1;LCDLines=2;}}
 
 }
 
@@ -921,6 +939,16 @@ void State5()
   char delay=2;
   Flasher=0;
   FlashFlag=0;
+  
+  if(ReturnAutoclose()!=PrevAC)
+  {
+    LCDFlashFlag=0;
+    PrevAC=ReturnAutoclose();
+    charValueToStr_AC(PrevAC,LCDLine2+11);
+    memcpy(LCDLine2,"Close after",11);
+    LCDUpdateFlag=1;
+  }
+  
   if((Events.Remote!=0)||(CheckTask(9)==1))
   {
     if((Door2CloseTime==0)||(ActiveDoors==1))
@@ -963,6 +991,7 @@ void State5()
     CloseDone=3;
     OverloadCheckFlag1=0;
     OverloadCheckFlag2=0;
+    KeyNoiseEliminator=0;
     State=7;
   }
 
@@ -1000,10 +1029,21 @@ void State5()
 void State6()
 {
   //char t[11];
-  //unsigned long temp;
+  //unsigned long AutoCloseTemp;
   char delay=3;
   Flasher=0;
   FlashFlag=0;
+  
+  if(ReturnAutoclose()!=PrevAC)
+  {
+    LCDFlashFlag=0;
+    PrevAC=ReturnAutoclose();
+    charValueToStr_AC(PrevAC,LCDLine2+11);
+    memcpy(LCDLine2,"Close after",11);
+    LCDUpdateFlag=1;
+  }
+  
+  
   if((Events.Remote!=0)||(PhotocellOpenFlag))
   {
     PhotocellOpenFlag=0;
@@ -1028,38 +1068,61 @@ void State6()
       AddTask(ms500+ActionTimeDiff+OverloadDelay+delay,11); //overload check
       AddTask(ms500+Door2OpenTime+ActionTimeDiff+delay,4);//Stop motor
     }
+    
+    
     OpenDone=3;
     OverloadCheckFlag1=0;
     OverloadCheckFlag2=0;
     PassFlag=0;
+    KeyNoiseEliminator=0;
     State=8;
   }
 
 
   if(CheckTask(9)==1)
   {
-    ClearTasks(9);
-    temp=ms500+delay;
-    AddTask(temp,1);
-    AddTask(temp,5);
-    M1isSlow=0;//speed up
-    temp=ms500+OverloadDelay+delay;
-    AddTask(temp,10); //overload check
-    temp=ms500+Door1CloseTime+delay;
-    AddTask(temp,3);//Stop motor
-
+    if((Door2CloseTime==0)||(ActiveDoors==1))
+    {
+      ClearTasks(9);
+      temp=ms500+delay;
+      AddTask(temp,1);
+      AddTask(temp,5);
+      M1isSlow=0;//speed up
+      temp=ms500+OverloadDelay+delay;
+      AddTask(temp,10); //overload check
+      temp=ms500+Door1CloseTime+delay;
+      AddTask(temp,3);//Stop motor
+    }
     if((Door2CloseTime!=0)&&(ActiveDoors==2))
     {
-      AddTask(ms500+ActionTimeDiff+delay,2);
-      AddTask(ms500+ActionTimeDiff+delay,6);
+      ClearTasks(9);
+      temp=ms500+delay;
+      AddTask(temp,2);
+      AddTask(temp,6);
+      M1isSlow=0;//speed up
+      temp=ms500+OverloadDelay+delay;
+      AddTask(temp,11); //overload check
+      temp=ms500+Door1CloseTime+delay;
+      AddTask(temp,4);//Stop motor
+
+      //------------
+
+
+      temp=ms500+ActionTimeDiff+delay;
+      AddTask(temp,1);
+      temp=ms500+ActionTimeDiff+delay;
+      AddTask(temp,5);
       M2isSlow=0;//speed up
-      AddTask(ms500+ActionTimeDiff+OverloadDelay+delay,11); //overload check
-      AddTask(ms500+Door1CloseTime+ActionTimeDiff+delay,4);//Stop motor
+      temp=ms500+ActionTimeDiff+OverloadDelay+delay;
+      AddTask(temp,10); //overload check
+      temp=ms500+Door2CloseTime+delay+ActionTimeDiff;
+      AddTask(temp,3);//Stop motor
     }
     CloseDone=3;
     OverloadCheckFlag1=0;
     OverloadCheckFlag2=0;
     PassFlag=0;
+    KeyNoiseEliminator=0;
     State=7;
   }
 
@@ -1127,18 +1190,23 @@ void State7()
   if((Door2OpenTime==0)||(ActiveDoors==1))
     CloseDone.b1=0;
 
-  if((Events.Photocell.b0==1))
-    {StopMotor(1); StopMotor(2); OverloadCheckFlag1=0;OverloadCheckFlag2=0;State=6;PhotocellOpenFlag=1;Logger("S7 Photocell Int",1);ClearTasks(9);
-    memcpy(LCDLine1,_stop,16);memcpy(LCDLine2,_ErrPhoto,16);LCDUpdateFlag=1;LCDLines=2;}
 
-  if((Events.Remote!=0))
-    {StopMotor(1); StopMotor(2); State=6;OverloadCheckFlag1=0;OverloadCheckFlag2=0;Logger("S7 Remote Pressed",1);ClearTasks(9);
-    memcpy(LCDLine1,_stop,16);memcpy(LCDLine2,_ErrRemote,16);LCDUpdateFlag=1;LCDLines=2;}
-    
-  if((Events.Limiter==1)&&(LimiterEnable))
-    {StopMotor(1); StopMotor(2); State=6;OverloadCheckFlag1=0;OverloadCheckFlag2=0;Logger("S7 Limit Switch Stop",1);ClearTasks(9);
-    memcpy(LCDLine1,_stop,16);memcpy(LCDLine2,_ErrLimit,16);LCDUpdateFlag=1;LCDLines=2;}
+  if(KeyNoiseEliminator>=NoiseEliminatorTreshold)
+  {
+    if((Events.Photocell.b0==1))
+      {StopMotor(1); StopMotor(2); OverloadCheckFlag1=0;OverloadCheckFlag2=0;State=6;PhotocellOpenFlag=1;Logger("S7 Photocell Int",1);ClearTasks(9);
+      memcpy(LCDLine1,_stop,16);memcpy(LCDLine2,_ErrPhoto,16);LCDUpdateFlag=1;LCDLines=2;}
 
+    if((Events.Remote!=0))
+      {StopMotor(1); StopMotor(2); State=6;OverloadCheckFlag1=0;OverloadCheckFlag2=0;Logger("S7 Remote Pressed",1);ClearTasks(9);
+      memcpy(LCDLine1,_stop,16);memcpy(LCDLine2,_ErrRemote,16);LCDUpdateFlag=1;LCDLines=2;}
+
+    if((Events.Limiter==1)&&(LimiterEnable))
+      {StopMotor(1); StopMotor(2); State=6;OverloadCheckFlag1=0;OverloadCheckFlag2=0;Logger("S7 Limit Switch Stop",1);ClearTasks(9);
+      memcpy(LCDLine1,_stop,16);memcpy(LCDLine2,_ErrLimit,16);LCDUpdateFlag=1;LCDLines=2;}
+  }
+  
+  
   if(CloseDone==0)
     if(LockEnable)
     {StartMotor(1,_Open);AddTask(ms500+1,14);SetMotorSpeed(1,Motor2FullSpeed);OverloadCheckFlag1=0; M1isSlow=0;SetMotorSpeed(Motor1FullSpeed,1);OverloadCheckFlag2=0; M2isSlow=0;
@@ -1150,10 +1218,10 @@ void State7()
     StartMotor(2,_Open);
 
   if(CheckTask(13))
-    {State=1; PassFlag=0;ClearTasks(9);memcpy(LCDLine1,_close,16);memcpy(LCDLine2,_Blank,16);LCDUpdateFlag=1;LCDLines=1;}
+    {State=1; PassFlag=0;PrevAC=0;ClearTasks(9);memcpy(LCDLine1,_close,16);memcpy(LCDLine2,_Blank,16);LCDUpdateFlag=1;LCDLines=1;}
 
   if((State==5)||(State==6))
-    {ClearTasks(0);if(AutoCloseTime!=0){AddTask(ms500+AutoCloseTime,9);Logger("S7 Autoclose Renewed",1);memcpy(LCDLine2,_autoclose,16);LCDUpdateFlag=1;LCDLines=2;}}
+    {ClearTasks(0);if(AutoCloseTime!=0){AddTask(ms500+AutoCloseTime,9);PrevAC=0;Logger("S7 Autoclose Renewed",1);memcpy(LCDLine2,_autoclose,16);LCDUpdateFlag=1;LCDLines=2;}}
 
 
 }
@@ -1208,31 +1276,39 @@ void State8()
   if((Door2OpenTime==0)||(ActiveDoors==1))
     OpenDone.b1=0;
 
-  if((Events.Photocell.b0==1)&&(OpenPhEnable))
-    {StopMotor(1); StopMotor(2);OverloadCheckFlag1=0;OverloadCheckFlag2=0; State=5;Logger("S8 Photocell Int",1);ClearTasks(9);
-    memcpy(LCDLine1,_stop,16);memcpy(LCDLine2,_ErrPhoto,16);LCDUpdateFlag=1;LCDLines=2;}
 
-  if((Events.Remote!=0))
-    {StopMotor(1); StopMotor(2); State=5;OverloadCheckFlag1=0;OverloadCheckFlag2=0; Logger("S8 Motors Stoped (Remote)",1);ClearTasks(9);
-    memcpy(LCDLine1,_stop,16);memcpy(LCDLine2,_ErrRemote,16);LCDUpdateFlag=1;LCDLines=2;}
+  if(KeyNoiseEliminator>=NoiseEliminatorTreshold)
+  {
+    if((Events.Photocell.b0==1)&&(OpenPhEnable))
+      {StopMotor(1); StopMotor(2);OverloadCheckFlag1=0;OverloadCheckFlag2=0; State=5;Logger("S8 Photocell Int",1);ClearTasks(9);
+      memcpy(LCDLine1,_stop,16);memcpy(LCDLine2,_ErrPhoto,16);LCDUpdateFlag=1;LCDLines=2;}
 
-  if((Events.Limiter==1)&&(LimiterEnable))
-    {StopMotor(1); StopMotor(2); State=5;OverloadCheckFlag1=0;OverloadCheckFlag2=0; Logger("S8 Limit Switch Stop",1);ClearTasks(9);
-    memcpy(LCDLine1,_stop,16);memcpy(LCDLine2,_ErrLimit,16);LCDUpdateFlag=1;LCDLines=2;}
+    if((Events.Remote!=0))
+      {StopMotor(1); StopMotor(2); State=5;OverloadCheckFlag1=0;OverloadCheckFlag2=0; Logger("S8 Motors Stoped (Remote)",1);ClearTasks(9);
+      memcpy(LCDLine1,_stop,16);memcpy(LCDLine2,_ErrRemote,16);LCDUpdateFlag=1;LCDLines=2;}
 
+    if((Events.Limiter==1)&&(LimiterEnable))
+      {StopMotor(1); StopMotor(2); State=5;OverloadCheckFlag1=0;OverloadCheckFlag2=0; Logger("S8 Limit Switch Stop",1);ClearTasks(9);
+      memcpy(LCDLine1,_stop,16);memcpy(LCDLine2,_ErrLimit,16);LCDUpdateFlag=1;LCDLines=2;}
+  }
+  
   if(OpenDone==0)
-    if(LockEnable)
-    {StartMotor(1,_Close);StartMotor(2,_Close);SetMotorSpeed(1,Motor2FullSpeed);OverloadCheckFlag1=0; M1isSlow=0;SetMotorSpeed(Motor1FullSpeed,1);OverloadCheckFlag2=0; M2isSlow=0;
-    AddTask(ms500+RelaseTime,3);AddTask(ms500+RelaseTime,4);AddTask(ms500+1+RelaseTime,13);OpenDone.b2=1;}
-    else
-    {AddTask(ms500+1,13);OpenDone.b2=1;}
+    {
+      if(AutoCloseTime!=0)
+        {AddTask(ms500+AutoCloseTime,9);}
+      if(LockEnable)
+      {StartMotor(1,_Close);StartMotor(2,_Close);SetMotorSpeed(1,Motor2FullSpeed);OverloadCheckFlag1=0; M1isSlow=0;SetMotorSpeed(Motor1FullSpeed,1);OverloadCheckFlag2=0; M2isSlow=0;
+      AddTask(ms500+RelaseTime,3);AddTask(ms500+RelaseTime,4);AddTask(ms500+1+RelaseTime,13);OpenDone.b2=1;}
+      else
+      {AddTask(ms500+1,13);OpenDone.b2=1;}
+    }
 
 
   if(CheckTask(13))
-    {State=2; PassFlag=0;ClearTasks(9);memcpy(LCDLine1,_open,16);memcpy(LCDLine2,_Blank,16);LCDUpdateFlag=1;LCDLines=1;}
+    {State=2; PassFlag=0;PrevAC=0;ClearTasks(9);memcpy(LCDLine1,_open,16);memcpy(LCDLine2,_Blank,16);LCDUpdateFlag=1;LCDLines=2;}
 
   if((State==5)||(State==6))
-    {ClearTasks(0);if(AutoCloseTime!=0){AddTask(ms500+AutoCloseTime,9);Logger("S8 Autoclose Renewed",1);memcpy(LCDLine2,_autoclose,16);LCDUpdateFlag=1;LCDLines=2;}}
+    {ClearTasks(0);if(AutoCloseTime!=0){AddTask(ms500+AutoCloseTime,9);PrevAC=0;Logger("S8 Autoclose Renewed",1);memcpy(LCDLine2,_autoclose,16);LCDUpdateFlag=1;LCDLines=2;}}
 
 
 }
@@ -1465,24 +1541,21 @@ char resch=0,fin;
   resch.b0=~KeyDown;
   resch.b1=~KeyMenu;
   resch.b2=~KeyUp;
+
+if(DebouncingDelayUnpress<DebouncingFix)
+  resch=0;
   
 if((resch==0))
 {
   if(Pressed==0)
     {Repeat=0;RepeatCount=0;Pressed=0;fin=0;RepeatRate=0;}
   if(Pressed==1)
-    if(DebouncingDelay>=DebouncingFix)
-      {Repeat=0;RepeatCount=0;Pressed=0;fin=0;RepeatRate=0;}
+    if(DebouncingDelayPress>=DebouncingFix)
+      {Repeat=0;RepeatCount=0;Pressed=0;fin=0;RepeatRate=0;DebouncingDelayUnpress=0;}
 }
 
-/*
-if(RepeatCount<=6)
-  {RepeatSpeed=20;}
-if((RepeatCount>6)&&(RepeatCount<=20))
-  {RepeatSpeed=10;}
-if(RepeatCount>20)
-  {RepeatSpeed=5;}
-*/
+
+
 
 if((Repeat==1)&&(KeyFlag>=RepeatSpeed))
   {RepeatRate=1;KeyFlag=0;if(RepeatCount<25)RepeatCount=RepeatCount+1;}
@@ -1500,9 +1573,8 @@ if((resch!=0)&&(Pressed==1)&&(Repeat==1))
 
 
 if((resch!=0)&&(Pressed==0))
-  {fin=resch; Pressed=1;PressTime=ms500;DebouncingDelay=0;}
+  {fin=resch; Pressed=1;PressTime=ms500;DebouncingDelayPress=0;}
 
-  //fin=resch;
   
 if(fin != 0)
   BuzzFlag=1;
@@ -1561,8 +1633,7 @@ res.b0=RemoteAFlag.b0;
 res.b1=RemoteBFlag.b0;
 RemoteAFlag=0;
 RemoteBFlag=0;
-res.b0=res.b0;
-res.b1=res.b1;
+
 
 if(State<20)
 {

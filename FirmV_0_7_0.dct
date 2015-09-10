@@ -463,7 +463,8 @@ dc2b0
 dc2b0_bit
 dc2b1
 dc2b1_bit
-debouncingdelay
+debouncingdelaypress
+debouncingdelayunpress
 dec2bcd
 dec2bcd16
 decrypt
@@ -772,6 +773,7 @@ kbi2_bit
 kbi3
 kbi3_bit
 keyflag
+keynoiseeliminator
 keypad_init
 keypad_key_click
 keypad_key_press
@@ -1131,6 +1133,7 @@ preinc0
 preinc1
 preinc2
 pressed
+prevac
 prevremotepulsetime1
 prevremotepulsetime2
 printout

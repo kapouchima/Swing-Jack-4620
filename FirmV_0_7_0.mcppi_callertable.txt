@@ -138,6 +138,13 @@ main
 			AddTask
 				Mul_16X16_U
 		State5
+			ReturnAutoclose
+				Mul_16X16_U
+			charValueToStr_AC
+				ByteToStr
+					Div_8X8_U
+				memcpy
+			memcpy
 			CheckTask
 			ClearTasks
 				Mul_16X16_U
@@ -157,6 +164,13 @@ main
 			LongWordToStrWithZeros
 				Div_32x32_U
 		State6
+			ReturnAutoclose
+				Mul_16X16_U
+			charValueToStr_AC
+				ByteToStr
+					Div_8X8_U
+				memcpy
+			memcpy
 			ClearTasks
 				Mul_16X16_U
 			AddTask

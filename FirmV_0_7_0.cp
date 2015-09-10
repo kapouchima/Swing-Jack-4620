@@ -8,7 +8,7 @@ void SetContrast(unsigned char);
 void LCD_Putch(unsigned char, unsigned char ,unsigned char);
 void LCD_out(unsigned char,unsigned char,unsigned char*);
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic/include/built_in.h"
-#line 46 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 47 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 typedef struct
 {
 char TaskCode;
@@ -74,10 +74,10 @@ unsigned char D2CloseSoftStop;
 unsigned long ms500=0;
 char msCounter=0,ms20A=0,ms20B,Flag20ms=1,Flag500ms=1,State=0,LCDUpdateFlag=0,LCDFlashFlag=0,RemotePulse1=0,RemotePulse2=0;
 char PrevRemotePulseTime1=0,PrevRemotePulseTime2=0,RemoteAFlag=0,RemoteBFlag=0,Motor1FullSpeed=1,Motor2FullSpeed=1,BuzzCounter=0;
-char Motor1Start=0,Motor2Start=0,ZCCounter=0,PhotocellOpenFlag=0,ActiveDoors=0,BuzzFlag=0,LongBuzzFlag=0;
+char Motor1Start=0,Motor2Start=0,ZCCounter=0,PhotocellOpenFlag=0,ActiveDoors=0,BuzzFlag=0,LongBuzzFlag=0,PrevAC=0;
 char OverloadCheckFlag1=0,OverloadCheckFlag2=0,OpenDone=3,CloseDone=3,M1isSlow=0,M2isSlow=0,PassFlag=0,LearnPhase,AboutCounter=0;
-char _AC=0,PhotocellCount=0,MenuPointer=0,DebouncingDelay=0,LCDFlash=0,Pressed=0,OverloadSens1=7,OverloadSens2=7,LearningMode=0,KeyFlag=0,LCDLines=1;
-char t[11],FlashFlag=0;
+char _AC=0,PhotocellCount=0,MenuPointer=0,DebouncingDelayPress=0,DebouncingDelayUnpress=0,LCDFlash=0,Pressed=0,OverloadSens1=7,OverloadSens2=7,LearningMode=0,KeyFlag=0,LCDLines=1;
+char t[11],FlashFlag=0,KeyNoiseEliminator=0;
 unsigned int OverloadCounter1=0,OverloadCounter2=0;
 unsigned long temp;
 unsigned VCapM1,VCapM2;
@@ -90,7 +90,7 @@ char LCDLine1[17]="                ";
 char LCDLine2[17]="                ";
 Task Tasks[20];
 Eve Events;
-#line 142 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 143 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void Init();
 void TaskManager();
 void AddTask(unsigned long,char);
@@ -142,7 +142,7 @@ void charValueToStr_AC(char, char *);
 void intValueToStr(unsigned,char*);
 void SetOverloadParams(char,char,char,char);
 void TorqueLogger();
-#line 206 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 207 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void interrupt()
 {
  if(TMR0IF_bit)
@@ -150,12 +150,12 @@ void interrupt()
  msCounter=msCounter+1;
   porta.b4 =1;
  Flag20ms=1;
- if(ms20A==255)
+ if(ms20A>=25)
  {ms20A=0;RemotePulse1=0;}
  else
  ms20A=ms20A+1;
 
- if(ms20B==255)
+ if(ms20B>=25)
  {ms20B=0;RemotePulse2=0;}
  else
  ms20B=ms20B+1;
@@ -237,7 +237,7 @@ void interrupt()
  INT0F_bit=0;
  }
 }
-#line 312 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 313 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void ResetTaskEvents()
 {
  Events.Task1=0;
@@ -271,7 +271,7 @@ void Decrypt()
  Sipher[14]=Crypto[1][14]+0x0D;
  Sipher[15]=Crypto[1][15]+0x0D;
 }
-#line 356 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 357 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void Logger(char* text, char TimeStampFlag)
 {
  char time[11];
@@ -285,7 +285,7 @@ void Logger(char* text, char TimeStampFlag)
  uart1_write(0x0D);
  uart1_write(0x0A);
 }
-#line 385 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 386 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void main() {
 
 
@@ -321,8 +321,11 @@ while(1)
  { portb.b7 =1;BuzzCounter=0;}
 
 
- if(DebouncingDelay< 5 )
- DebouncingDelay=DebouncingDelay+1;
+ if(DebouncingDelayPress< 5 )
+ DebouncingDelayPress=DebouncingDelayPress+1;
+ if(DebouncingDelayUnpress< 5 )
+ DebouncingDelayUnpress=DebouncingDelayUnpress+1;
+
  LCDUpdater();
  if(KeyFlag<200)
  KeyFlag=KeyFlag+1;
@@ -331,6 +334,9 @@ while(1)
 
  if(Flag500ms==1)
  {
+ if(KeyNoiseEliminator< 3 )
+ KeyNoiseEliminator=KeyNoiseEliminator+1;
+
  if(FlashFlag)
   portb.b5 =! portb.b5 ;
  else
@@ -345,7 +351,7 @@ while(1)
 }
 
 }
-#line 468 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 475 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void StateManager()
 {
 
@@ -489,14 +495,15 @@ void State1()
  OpenDone=3;
  OverloadCheckFlag1=0;
  OverloadCheckFlag2=0;
+ KeyNoiseEliminator=0;
  State=3;
  PassFlag=0;
  }
 }
-#line 628 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 636 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void State2()
 {
- char delay=2,PrevAC=0;
+ char delay=2;
 
   portd.b7 =0;
  FlashFlag=0;
@@ -580,6 +587,7 @@ void State2()
  CloseDone=3;
  OverloadCheckFlag1=0;
  OverloadCheckFlag2=0;
+ KeyNoiseEliminator=0;
  State=4;
  }
 
@@ -593,7 +601,7 @@ void State2()
  {temp=ms500+CloseAfterPass;AddTask(temp,9);PassFlag=0;longwordtostrwithzeros(temp,t);Logger("S2 Insert 9 at:",1);Logger(t,1);}
 
 }
-#line 741 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 750 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void State3()
 {
   portd.b7 =1;
@@ -643,6 +651,9 @@ void State3()
  if((Door2OpenTime==0)||(ActiveDoors==1))
  OpenDone.b1=0;
 
+ if(KeyNoiseEliminator>= 3 )
+ {
+
  if((Events.Photocell.b0==1)&&(OpenPhEnable))
  {StopMotor(1); StopMotor(2);OverloadCheckFlag1=0;OverloadCheckFlag2=0; State=5;Logger("S3 Photocell Int",1);ClearTasks(9);
  memcpy(LCDLine1,_stop,16);memcpy(LCDLine2,_ErrPhoto,16);LCDUpdateFlag=1;LCDLines=2;}
@@ -654,6 +665,7 @@ void State3()
  if((Events.Limiter==1)&&(LimiterEnable))
  {StopMotor(1); StopMotor(2);OverloadCheckFlag1=0;OverloadCheckFlag2=0; State=5;Logger("S3 Limit Switch Stoped",1);ClearTasks(9);
  memcpy(LCDLine1,_stop,16);memcpy(LCDLine2,_ErrLimit,16);LCDUpdateFlag=1;LCDLines=2;}
+ }
 
  if(OpenDone==0)
  if(LockEnable)
@@ -663,13 +675,13 @@ void State3()
  {AddTask(ms500+1,13);OpenDone.b2=1;}
 
  if(CheckTask(13))
- {State=2; PassFlag=0;ClearTasks(9);memcpy(LCDLine1,_open,16);memcpy(LCDLine2,_blank,16);LCDUpdateFlag=1;LCDLines=2;}
+ {State=2; PrevAC=0;PassFlag=0;ClearTasks(9);memcpy(LCDLine1,_open,16);memcpy(LCDLine2,_blank,16);LCDUpdateFlag=1;LCDLines=2;}
 
  if((State==5)||(State==6))
- {ClearTasks(0);if(AutoCloseTime!=0){AddTask(ms500+AutoCloseTime,9);Logger("S3 Autoclose Renewed",1);memcpy(LCDLine2,_autoclose,16);LCDUpdateFlag=1;LCDLines=2;}}
+ {ClearTasks(0);if(AutoCloseTime!=0){AddTask(ms500+AutoCloseTime,9);PrevAC=0;Logger("S3 Autoclose Renewed",1);memcpy(LCDLine2,_autoclose,16);LCDUpdateFlag=1;LCDLines=2;}}
 
 }
-#line 829 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 842 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void State4()
 {
  portd.b7 =1;
@@ -717,6 +729,9 @@ FlashFlag=1;
  if((Door2OpenTime==0)||(ActiveDoors==1))
  CloseDone.b1=0;
 
+ if(KeyNoiseEliminator>= 3 )
+ {
+
  if((Events.Photocell.b0==1))
  {StopMotor(1); StopMotor(2); OverloadCheckFlag1=0;OverloadCheckFlag2=0;State=6;PhotocellOpenFlag=1;Logger("S4 Photocell Int",1);ClearTasks(9);
  memcpy(LCDLine1,_stop,16);memcpy(LCDLine2,_ErrPhoto,16);LCDUpdateFlag=1;LCDLines=2;}
@@ -728,6 +743,8 @@ FlashFlag=1;
  if((Events.Remote!=0))
  {StopMotor(1); StopMotor(2); State=6;OverloadCheckFlag1=0;OverloadCheckFlag2=0;Logger("S4 Remote Pressed",1);ClearTasks(9);
  memcpy(LCDLine1,_stop,16);memcpy(LCDLine2,_ErrRemote,16);LCDUpdateFlag=1;LCDLines=2;}
+ }
+
 
  if(CloseDone==0)
  if(LockEnable)
@@ -740,18 +757,28 @@ FlashFlag=1;
  StartMotor(2, 1 );
 
  if(CheckTask(13))
- {State=1; PassFlag=0;ClearTasks(9);memcpy(LCDLine1,_close,16);memcpy(LCDLine2,_Blank,16);LCDUpdateFlag=1;LCDLines=1;}
+ {State=1; PassFlag=0;PrevAC=0;ClearTasks(9);memcpy(LCDLine1,_close,16);memcpy(LCDLine2,_Blank,16);LCDUpdateFlag=1;LCDLines=1;}
 
  if((State==5)||(State==6))
- {ClearTasks(0);if(AutoCloseTime!=0){AddTask(ms500+AutoCloseTime,9);Logger("S4 Autoclose Renewed",1);memcpy(LCDLine2,_autoclose,16);LCDUpdateFlag=1;LCDLines=2;}}
+ {ClearTasks(0);if(AutoCloseTime!=0){PrevAC=0;AddTask(ms500+AutoCloseTime,9);Logger("S4 Autoclose Renewed",1);memcpy(LCDLine2,_autoclose,16);LCDUpdateFlag=1;LCDLines=2;}}
 
 }
-#line 919 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 937 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void State5()
 {
  char delay=2;
   portd.b7 =0;
  FlashFlag=0;
+
+ if(ReturnAutoclose()!=PrevAC)
+ {
+ LCDFlashFlag=0;
+ PrevAC=ReturnAutoclose();
+ charValueToStr_AC(PrevAC,LCDLine2+11);
+ memcpy(LCDLine2,"Close after",11);
+ LCDUpdateFlag=1;
+ }
+
  if((Events.Remote!=0)||(CheckTask(9)==1))
  {
  if((Door2CloseTime==0)||(ActiveDoors==1))
@@ -794,6 +821,7 @@ void State5()
  CloseDone=3;
  OverloadCheckFlag1=0;
  OverloadCheckFlag2=0;
+ KeyNoiseEliminator=0;
  State=7;
  }
 
@@ -809,7 +837,7 @@ void State5()
  }
 
 }
-#line 1000 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 1029 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void State6()
 {
 
@@ -817,6 +845,17 @@ void State6()
  char delay=3;
   portd.b7 =0;
  FlashFlag=0;
+
+ if(ReturnAutoclose()!=PrevAC)
+ {
+ LCDFlashFlag=0;
+ PrevAC=ReturnAutoclose();
+ charValueToStr_AC(PrevAC,LCDLine2+11);
+ memcpy(LCDLine2,"Close after",11);
+ LCDUpdateFlag=1;
+ }
+
+
  if((Events.Remote!=0)||(PhotocellOpenFlag))
  {
  PhotocellOpenFlag=0;
@@ -841,15 +880,20 @@ void State6()
  AddTask(ms500+ActionTimeDiff+ 6 +delay,11);
  AddTask(ms500+Door2OpenTime+ActionTimeDiff+delay,4);
  }
+
+
  OpenDone=3;
  OverloadCheckFlag1=0;
  OverloadCheckFlag2=0;
  PassFlag=0;
+ KeyNoiseEliminator=0;
  State=8;
  }
 
 
  if(CheckTask(9)==1)
+ {
+ if((Door2CloseTime==0)||(ActiveDoors==1))
  {
  ClearTasks(9);
  temp=ms500+delay;
@@ -860,19 +904,37 @@ void State6()
  AddTask(temp,10);
  temp=ms500+Door1CloseTime+delay;
  AddTask(temp,3);
-
+ }
  if((Door2CloseTime!=0)&&(ActiveDoors==2))
  {
- AddTask(ms500+ActionTimeDiff+delay,2);
- AddTask(ms500+ActionTimeDiff+delay,6);
+ ClearTasks(9);
+ temp=ms500+delay;
+ AddTask(temp,2);
+ AddTask(temp,6);
+ M1isSlow=0;
+ temp=ms500+ 6 +delay;
+ AddTask(temp,11);
+ temp=ms500+Door1CloseTime+delay;
+ AddTask(temp,4);
+
+
+
+
+ temp=ms500+ActionTimeDiff+delay;
+ AddTask(temp,1);
+ temp=ms500+ActionTimeDiff+delay;
+ AddTask(temp,5);
  M2isSlow=0;
- AddTask(ms500+ActionTimeDiff+ 6 +delay,11);
- AddTask(ms500+Door1CloseTime+ActionTimeDiff+delay,4);
+ temp=ms500+ActionTimeDiff+ 6 +delay;
+ AddTask(temp,10);
+ temp=ms500+Door2CloseTime+delay+ActionTimeDiff;
+ AddTask(temp,3);
  }
  CloseDone=3;
  OverloadCheckFlag1=0;
  OverloadCheckFlag2=0;
  PassFlag=0;
+ KeyNoiseEliminator=0;
  State=7;
  }
 
@@ -887,7 +949,7 @@ void State6()
  }
 
 }
-#line 1098 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 1161 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void State7()
 {
   portd.b7 =1;
@@ -920,6 +982,9 @@ void State7()
  if((Door2OpenTime==0)||(ActiveDoors==1))
  CloseDone.b1=0;
 
+
+ if(KeyNoiseEliminator>= 3 )
+ {
  if((Events.Photocell.b0==1))
  {StopMotor(1); StopMotor(2); OverloadCheckFlag1=0;OverloadCheckFlag2=0;State=6;PhotocellOpenFlag=1;Logger("S7 Photocell Int",1);ClearTasks(9);
  memcpy(LCDLine1,_stop,16);memcpy(LCDLine2,_ErrPhoto,16);LCDUpdateFlag=1;LCDLines=2;}
@@ -931,6 +996,8 @@ void State7()
  if((Events.Limiter==1)&&(LimiterEnable))
  {StopMotor(1); StopMotor(2); State=6;OverloadCheckFlag1=0;OverloadCheckFlag2=0;Logger("S7 Limit Switch Stop",1);ClearTasks(9);
  memcpy(LCDLine1,_stop,16);memcpy(LCDLine2,_ErrLimit,16);LCDUpdateFlag=1;LCDLines=2;}
+ }
+
 
  if(CloseDone==0)
  if(LockEnable)
@@ -943,14 +1010,14 @@ void State7()
  StartMotor(2, 1 );
 
  if(CheckTask(13))
- {State=1; PassFlag=0;ClearTasks(9);memcpy(LCDLine1,_close,16);memcpy(LCDLine2,_Blank,16);LCDUpdateFlag=1;LCDLines=1;}
+ {State=1; PassFlag=0;PrevAC=0;ClearTasks(9);memcpy(LCDLine1,_close,16);memcpy(LCDLine2,_Blank,16);LCDUpdateFlag=1;LCDLines=1;}
 
  if((State==5)||(State==6))
- {ClearTasks(0);if(AutoCloseTime!=0){AddTask(ms500+AutoCloseTime,9);Logger("S7 Autoclose Renewed",1);memcpy(LCDLine2,_autoclose,16);LCDUpdateFlag=1;LCDLines=2;}}
+ {ClearTasks(0);if(AutoCloseTime!=0){AddTask(ms500+AutoCloseTime,9);PrevAC=0;Logger("S7 Autoclose Renewed",1);memcpy(LCDLine2,_autoclose,16);LCDUpdateFlag=1;LCDLines=2;}}
 
 
 }
-#line 1176 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 1244 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void State8()
 {
   portd.b7 =1;
@@ -986,6 +1053,9 @@ void State8()
  if((Door2OpenTime==0)||(ActiveDoors==1))
  OpenDone.b1=0;
 
+
+ if(KeyNoiseEliminator>= 3 )
+ {
  if((Events.Photocell.b0==1)&&(OpenPhEnable))
  {StopMotor(1); StopMotor(2);OverloadCheckFlag1=0;OverloadCheckFlag2=0; State=5;Logger("S8 Photocell Int",1);ClearTasks(9);
  memcpy(LCDLine1,_stop,16);memcpy(LCDLine2,_ErrPhoto,16);LCDUpdateFlag=1;LCDLines=2;}
@@ -997,20 +1067,25 @@ void State8()
  if((Events.Limiter==1)&&(LimiterEnable))
  {StopMotor(1); StopMotor(2); State=5;OverloadCheckFlag1=0;OverloadCheckFlag2=0; Logger("S8 Limit Switch Stop",1);ClearTasks(9);
  memcpy(LCDLine1,_stop,16);memcpy(LCDLine2,_ErrLimit,16);LCDUpdateFlag=1;LCDLines=2;}
+ }
 
  if(OpenDone==0)
+ {
+ if(AutoCloseTime!=0)
+ {AddTask(ms500+AutoCloseTime,9);}
  if(LockEnable)
  {StartMotor(1, 0 );StartMotor(2, 0 );SetMotorSpeed(1,Motor2FullSpeed);OverloadCheckFlag1=0; M1isSlow=0;SetMotorSpeed(Motor1FullSpeed,1);OverloadCheckFlag2=0; M2isSlow=0;
  AddTask(ms500+ 1 ,3);AddTask(ms500+ 1 ,4);AddTask(ms500+1+ 1 ,13);OpenDone.b2=1;}
  else
  {AddTask(ms500+1,13);OpenDone.b2=1;}
+ }
 
 
  if(CheckTask(13))
- {State=2; PassFlag=0;ClearTasks(9);memcpy(LCDLine1,_open,16);memcpy(LCDLine2,_Blank,16);LCDUpdateFlag=1;LCDLines=1;}
+ {State=2; PassFlag=0;PrevAC=0;ClearTasks(9);memcpy(LCDLine1,_open,16);memcpy(LCDLine2,_Blank,16);LCDUpdateFlag=1;LCDLines=2;}
 
  if((State==5)||(State==6))
- {ClearTasks(0);if(AutoCloseTime!=0){AddTask(ms500+AutoCloseTime,9);Logger("S8 Autoclose Renewed",1);memcpy(LCDLine2,_autoclose,16);LCDUpdateFlag=1;LCDLines=2;}}
+ {ClearTasks(0);if(AutoCloseTime!=0){AddTask(ms500+AutoCloseTime,9);PrevAC=0;Logger("S8 Autoclose Renewed",1);memcpy(LCDLine2,_autoclose,16);LCDUpdateFlag=1;LCDLines=2;}}
 
 
 }
@@ -1053,7 +1128,7 @@ void LCDUpdater()
 
 
 }
-#line 1297 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 1373 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void Init()
 {
 char i=0;
@@ -1132,7 +1207,7 @@ LoadConfigs();
 
 
 }
-#line 1388 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 1464 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void TaskManager()
 {
 char i=0;
@@ -1140,7 +1215,7 @@ for(i=0;i<20;i++)
  if((Tasks[i].Expired==0)&&(Tasks[i].Time==ms500)&&(Tasks[i].Fired==0))
  Tasks[i].Fired=1;
 }
-#line 1406 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 1482 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void AddTask(unsigned long OccTime,char tcode)
 {
 char i;
@@ -1204,15 +1279,21 @@ char resch=0,fin;
  resch.b1=~ porte.b0 ;
  resch.b2=~ portd.b4 ;
 
+if(DebouncingDelayUnpress< 5 )
+ resch=0;
+
 if((resch==0))
 {
  if(Pressed==0)
  {Repeat=0;RepeatCount=0;Pressed=0;fin=0;RepeatRate=0;}
  if(Pressed==1)
- if(DebouncingDelay>= 5 )
- {Repeat=0;RepeatCount=0;Pressed=0;fin=0;RepeatRate=0;}
+ if(DebouncingDelayPress>= 5 )
+ {Repeat=0;RepeatCount=0;Pressed=0;fin=0;RepeatRate=0;DebouncingDelayUnpress=0;}
 }
-#line 1487 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+
+
+
+
 if((Repeat==1)&&(KeyFlag>=RepeatSpeed))
  {RepeatRate=1;KeyFlag=0;if(RepeatCount<25)RepeatCount=RepeatCount+1;}
 
@@ -1229,8 +1310,7 @@ if((resch!=0)&&(Pressed==1)&&(Repeat==1))
 
 
 if((resch!=0)&&(Pressed==0))
- {fin=resch; Pressed=1;PressTime=ms500;DebouncingDelay=0;}
-
+ {fin=resch; Pressed=1;PressTime=ms500;DebouncingDelayPress=0;}
 
 
 if(fin != 0)
@@ -1256,7 +1336,7 @@ char GetExternalKeysState()
  out.b1=1;
  return out;
 }
-#line 1542 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 1614 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 char GetLimitSwitchState()
 {
  if(( portd.b0 ==0)||( portd.b1 ==0))
@@ -1279,8 +1359,7 @@ res.b0=RemoteAFlag.b0;
 res.b1=RemoteBFlag.b0;
 RemoteAFlag=0;
 RemoteBFlag=0;
-res.b0=res.b0;
-res.b1=res.b1;
+
 
 if(State<20)
 {
@@ -1360,7 +1439,7 @@ if (OverloadCounter2>OverloadDuration2)
 
 return res;
 }
-#line 1657 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 1728 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 char GetPhotocellState()
 {
 if( portd.b2 ==0)
@@ -1372,7 +1451,7 @@ if(PhotocellCount>=20)
 else
  return 0;
 }
-#line 1679 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 1750 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void SetMotorSpeed(char M1FullSpeed,char M2FullSpeed)
 {
 if((M1FullSpeed==0)||(M2FullSpeed==0))
@@ -1443,7 +1522,7 @@ void SaveConfigs()
  SetOverloadParams(OverloadSens1,OverloadTime1,OverloadSens2,OverloadTime2);
 
 }
-#line 1761 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 1832 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void LoadConfigs()
 {
  Door1OpenTime=EEPROM_Read(1);
@@ -1470,7 +1549,7 @@ void LoadConfigs()
  SetOverloadParams(OverloadSens1,OverloadTime1,OverloadSens2,OverloadTime2);
 
 }
-#line 1799 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 1870 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void FactorySettings()
 {
  Door1OpenTime=20;
@@ -1535,7 +1614,7 @@ void StopMotor(char Mx)
   portb.b4 =0;
  }
 }
-#line 1874 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 1945 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 char CheckTask(char TaskCode)
 {
  if(Events.Task1==TaskCode)
@@ -1593,7 +1672,7 @@ char GetAutocloseTime()
  if(i>=20) i=0;
  return i;
 }
-#line 1947 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 2018 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void ClearTasks(char except)
 {
  char i;
@@ -1601,7 +1680,7 @@ void ClearTasks(char except)
  if((Tasks[i].Expired==0)&&(Tasks[i].TaskCode!=except))
  Tasks[i].Expired=1;
 }
-#line 1968 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 2039 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void Menu0()
 {
  LCDLines=2;
@@ -1980,13 +2059,13 @@ void Menu2()
  LongBuzzFlag=1;
  }
 }
-#line 2357 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 2428 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void Menu3()
 {
  SaveConfigs();
  State=0;
 }
-#line 2375 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 2446 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void LearnAuto()
 {
  static unsigned long startT,stopT;
@@ -2073,7 +2152,7 @@ void LearnAuto()
 
 
 }
-#line 2480 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 2551 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void AutoLearnCalculator(Learn *raw)
 {
 
@@ -2093,7 +2172,7 @@ void AutoLearnCalculator(Learn *raw)
  (*raw).D2CloseSoftStop=10;
 
 }
-#line 2510 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 2581 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void SaveLearnData(Learn *d,char DCount)
 {
  Door1OpenTime=(*d).D1OpenTime;
@@ -2119,7 +2198,7 @@ void SaveLearnData(Learn *d,char DCount)
 
  SaveConfigs();
 }
-#line 2549 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 2620 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void LearnManual()
 {
 
@@ -2245,7 +2324,7 @@ void LearnManual()
  break;
  }
 }
-#line 2694 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 2765 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void charValueToStr(char val, char * string)
 {
  bytetostr(val>>1,string);
@@ -2267,7 +2346,7 @@ void charValueToStr_AC(char val, char * string)
  bytetostr(val>>1,string);
  memcpy(string+3,"s  ",4);
 }
-#line 2727 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 2798 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void intValueToStr(unsigned val, char * string)
 {
  wordtostr(val>>1,string);
@@ -2276,7 +2355,7 @@ void intValueToStr(unsigned val, char * string)
  else
  memcpy(string+5,".0s",4);
 }
-#line 2746 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 2817 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void SetOverloadParams(char p1, char d1,char p2, char d2)
 {
 
@@ -2408,7 +2487,7 @@ void SetOverloadParams(char p1, char d1,char p2, char d2)
  case 10: OverloadDuration2=5000; break;
  }
 }
-#line 2897 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 2968 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void TorqueLogger()
 {
  char txt[10];
