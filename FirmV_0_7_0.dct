@@ -246,6 +246,8 @@ atan2
 atof
 atoi
 atol
+autoclosepause
+autoclosepauseflag
 autoclosetime
 autolearncalculator
 b0

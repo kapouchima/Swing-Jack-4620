@@ -112,7 +112,7 @@ char PrevRemotePulseTime1=0,PrevRemotePulseTime2=0,RemoteAFlag=0,RemoteBFlag=0,M
 char Motor1Start=0,Motor2Start=0,ZCCounter=0,PhotocellOpenFlag=0,ActiveDoors=0,BuzzFlag=0,LongBuzzFlag=0,PrevAC=0;
 char OverloadCheckFlag1=0,OverloadCheckFlag2=0,OpenDone=3,CloseDone=3,M1isSlow=0,M2isSlow=0,PassFlag=0,LearnPhase,AboutCounter=0;
 char _AC=0,PhotocellCount=0,MenuPointer=0,DebouncingDelayPress=0,DebouncingDelayUnpress=0,LCDFlash=0,Pressed=0,OverloadSens1=7,OverloadSens2=7,LearningMode=0,KeyFlag=0,LCDLines=1;
-char t[11],FlashFlag=0,KeyNoiseEliminator=0;
+char t[11],FlashFlag=0,KeyNoiseEliminator=0,AutoClosePauseFlag=0;
 unsigned int  OverloadCounter1=0,OverloadCounter2=0;
 unsigned long temp;
 unsigned VCapM1,VCapM2;
@@ -191,6 +191,7 @@ void charValueToStr_AC(char, char *);
 void intValueToStr(unsigned,char*);
 void SetOverloadParams(char,char,char,char);
 void TorqueLogger();
+void AutoClosePause();
 
 
 
@@ -431,6 +432,8 @@ while(1)
 
   if(Flag500ms==1)
   {
+    AutoClosePause();
+  
     if(KeyNoiseEliminator<NoiseEliminatorTreshold)
       KeyNoiseEliminator=KeyNoiseEliminator+1;
       
@@ -610,7 +613,7 @@ void State1()
     }
 
     if(AutoCloseTime!=0)
-      {temp=AutoCloseTemp+AutoCloseTime;AddTask(temp,9);}
+      {AutoClosePauseFlag=0; temp=AutoCloseTemp+AutoCloseTime;AddTask(temp,9);}
 
     OpenDone=3;
     OverloadCheckFlag1=0;
@@ -724,13 +727,14 @@ void State2()
   }
 
   if((Events.Photocell.b0==1)&&(AutoCloseTime!=0)&&(PassFlag==0))
-    {PassFlag=1; _AC=GetAutocloseTime();Logger("S2 Auto Close Deleted",1);}
+    {PassFlag=1;AutoClosePauseFlag=1;("S2 Auto Close Paused",1);}
+    //{PassFlag=1; _AC=GetAutocloseTime();Logger("S2 Auto Close Deleted",1);}
 
   if((PassFlag==1)&&(Events.Photocell.b0==0)&&(AutoCloseTime!=0))
     if(CloseAfterPass==0)
-      {temp=ms500+_AC;AddTask(temp,9);PassFlag=0;longwordtostrwithzeros(temp,t);Logger("S2 Insert 9 at:",1);Logger(t,1);}
+      {PassFlag=0;AutoClosePauseFlag=0;("S2 Auto Close Resumed",1);}
     else
-      {temp=ms500+CloseAfterPass;AddTask(temp,9);PassFlag=0;longwordtostrwithzeros(temp,t);Logger("S2 Insert 9 at:",1);Logger(t,1);}
+      {_AC=GetAutocloseTime();AutoClosePauseFlag=0;temp=ms500+CloseAfterPass;AddTask(temp,9);PassFlag=0;longwordtostrwithzeros(temp,t);Logger("S2 Insert 9 at:",1);Logger(t,1);}
 
 }
 
@@ -823,7 +827,7 @@ void State3()
     {State=2; PrevAC=0;PassFlag=0;ClearTasks(9);memcpy(LCDLine1,_open,16);memcpy(LCDLine2,_blank,16);LCDUpdateFlag=1;LCDLines=2;}
 
   if((State==5)||(State==6))
-    {ClearTasks(0);if(AutoCloseTime!=0){AddTask(ms500+AutoCloseTime,9);PrevAC=0;Logger("S3 Autoclose Renewed",1);memcpy(LCDLine2,_autoclose,16);LCDUpdateFlag=1;LCDLines=2;}}
+    {ClearTasks(0);if(AutoCloseTime!=0){AddTask(ms500+AutoCloseTime,9);AutoClosePauseFlag=0;PrevAC=0;Logger("S3 Autoclose Renewed",1);memcpy(LCDLine2,_autoclose,16);LCDUpdateFlag=1;LCDLines=2;}}
 
 }
 
@@ -917,7 +921,7 @@ FlashFlag=1;
     {State=1; PassFlag=0;PrevAC=0;ClearTasks(9);memcpy(LCDLine1,_close,16);memcpy(LCDLine2,_Blank,16);LCDUpdateFlag=1;LCDLines=1;}
 
   if((State==5)||(State==6))
-    {ClearTasks(0);if(AutoCloseTime!=0){PrevAC=0;AddTask(ms500+AutoCloseTime,9);Logger("S4 Autoclose Renewed",1);memcpy(LCDLine2,_autoclose,16);LCDUpdateFlag=1;LCDLines=2;}}
+    {ClearTasks(0);if(AutoCloseTime!=0){PrevAC=0;AddTask(ms500+AutoCloseTime,9);AutoClosePauseFlag=0;Logger("S4 Autoclose Renewed",1);memcpy(LCDLine2,_autoclose,16);LCDUpdateFlag=1;LCDLines=2;}}
 
 }
 
@@ -996,14 +1000,12 @@ void State5()
   }
 
   if((Events.Photocell.b0==1)&&(AutoCloseTime!=0)&&(PassFlag==0))
-    {PassFlag=1; _AC=GetAutocloseTime();Logger("S5 Auto Close Deleted",1);}
+    {PassFlag=1; AutoClosePauseFlag=1;Logger("S5 Auto Close Paused",1);}
 
   if((PassFlag==1)&&(Events.Photocell.b0==0)&&(AutoCloseTime!=0))
     {
       if(1)//CloseAfterPass==0
-        {temp=ms500+_AC;AddTask(temp,9);PassFlag=0;longwordtostrwithzeros(temp,t);Logger("S5 Insert 9 at:",1);Logger(t,1);}
-      else
-        {temp=ms500+CloseAfterPass;AddTask(temp,9);PassFlag=0;longwordtostrwithzeros(temp,t);Logger("S5 Insert 9 at:",1);Logger(t,1);}
+        {AutoClosePauseFlag=0;PassFlag=0;Logger("S5 Auto Close Resumed",1);}
     }
 
 }
@@ -1049,7 +1051,7 @@ void State6()
     PhotocellOpenFlag=0;
     Flasher=1;
     FlashFlag=1;
-    ClearTasks(9);
+    ClearTasks(0);
     if(Lockenable)
       AddTask(ms500+1,12);
     temp=ms500+delay;
@@ -1127,13 +1129,11 @@ void State6()
   }
 
     if((Events.Photocell.b0==1)&&(AutoCloseTime!=0)&&(PassFlag==0))
-    {PassFlag=1; _AC=GetAutocloseTime();Logger("S6 Auto Close Deleted",1);}
+    {PassFlag=1; AutoClosePauseFlag=1;Logger("S6 Auto Close Paused",1);}
 
   if((PassFlag==1)&&(Events.Photocell.b0==0)&&(AutoCloseTime!=0))
     {if(1) //CloseAfterPass==0
-      {temp=ms500+_AC;AddTask(temp,9);PassFlag=0;longwordtostrwithzeros(temp,t);Logger("S6 Insert 9 at:",1);Logger(t,1);}
-     else
-      {temp=ms500+CloseAfterPass;AddTask(temp,9);PassFlag=0;longwordtostrwithzeros(temp,t);Logger("S6 Insert 9 at:",1);Logger(t,1);}
+      {AutoClosePauseFlag=0;PassFlag=0;Logger("S6 Auto Close Resumed",1);}
     }
 
 }
@@ -1221,7 +1221,7 @@ void State7()
     {State=1; PassFlag=0;PrevAC=0;ClearTasks(9);memcpy(LCDLine1,_close,16);memcpy(LCDLine2,_Blank,16);LCDUpdateFlag=1;LCDLines=1;}
 
   if((State==5)||(State==6))
-    {ClearTasks(0);if(AutoCloseTime!=0){AddTask(ms500+AutoCloseTime,9);PrevAC=0;Logger("S7 Autoclose Renewed",1);memcpy(LCDLine2,_autoclose,16);LCDUpdateFlag=1;LCDLines=2;}}
+    {ClearTasks(0);if(AutoCloseTime!=0){AddTask(ms500+AutoCloseTime,9);AutoClosePauseFlag=0;PrevAC=0;Logger("S7 Autoclose Renewed",1);memcpy(LCDLine2,_autoclose,16);LCDUpdateFlag=1;LCDLines=2;}}
 
 
 }
@@ -1308,7 +1308,7 @@ void State8()
     {State=2; PassFlag=0;PrevAC=0;ClearTasks(9);memcpy(LCDLine1,_open,16);memcpy(LCDLine2,_Blank,16);LCDUpdateFlag=1;LCDLines=2;}
 
   if((State==5)||(State==6))
-    {ClearTasks(0);if(AutoCloseTime!=0){AddTask(ms500+AutoCloseTime,9);PrevAC=0;Logger("S8 Autoclose Renewed",1);memcpy(LCDLine2,_autoclose,16);LCDUpdateFlag=1;LCDLines=2;}}
+    {ClearTasks(0);if(AutoCloseTime!=0){AddTask(ms500+AutoCloseTime,9);AutoClosePauseFlag=0;PrevAC=0;Logger("S8 Autoclose Renewed",1);memcpy(LCDLine2,_autoclose,16);LCDUpdateFlag=1;LCDLines=2;}}
 
 
 }
@@ -3036,4 +3036,31 @@ void TorqueLogger()
       break;
 
   }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void AutoClosePause()
+{
+  char i;
+  if(AutoClosePauseFlag)
+    for(i=0;i<20;i++)
+      if((Tasks[i].Expired==0)&&(Tasks[i].TaskCode==9))
+        {Tasks[i].Time=Tasks[i].Time+1;}
 }

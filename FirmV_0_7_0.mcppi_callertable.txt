@@ -40,6 +40,8 @@ main
 			I2C1_Wr
 			I2C1_Stop
 		memcpy
+	AutoClosePause
+		Mul_16X16_U
 	ResetTaskEvents
 	TaskManager
 		Mul_16X16_U
@@ -86,6 +88,8 @@ main
 				Mul_16X16_U
 			GetAutocloseTime
 				Mul_16X16_U
+			LongWordToStrWithZeros
+				Div_32x32_U
 			Logger
 				LongWordToStrWithZeros
 					Div_32x32_U
@@ -95,8 +99,6 @@ main
 				UART1_Write_Text
 					UART1_Write
 				UART1_Write
-			LongWordToStrWithZeros
-				Div_32x32_U
 		State3
 			CheckTask
 			StartMotor
@@ -150,8 +152,6 @@ main
 				Mul_16X16_U
 			AddTask
 				Mul_16X16_U
-			GetAutocloseTime
-				Mul_16X16_U
 			Logger
 				LongWordToStrWithZeros
 					Div_32x32_U
@@ -161,8 +161,6 @@ main
 				UART1_Write_Text
 					UART1_Write
 				UART1_Write
-			LongWordToStrWithZeros
-				Div_32x32_U
 		State6
 			ReturnAutoclose
 				Mul_16X16_U
@@ -176,8 +174,6 @@ main
 			AddTask
 				Mul_16X16_U
 			CheckTask
-			GetAutocloseTime
-				Mul_16X16_U
 			Logger
 				LongWordToStrWithZeros
 					Div_32x32_U
@@ -187,8 +183,6 @@ main
 				UART1_Write_Text
 					UART1_Write
 				UART1_Write
-			LongWordToStrWithZeros
-				Div_32x32_U
 		State7
 			CheckTask
 			StartMotor
