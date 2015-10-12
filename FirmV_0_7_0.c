@@ -620,6 +620,7 @@ void State1()
     OverloadCheckFlag2=0;
     KeyNoiseEliminator=0;
     State=3;
+    AutoClosePauseFlag=0;
     PassFlag=0;
   }
 }
@@ -723,6 +724,7 @@ void State2()
     OverloadCheckFlag1=0;
     OverloadCheckFlag2=0;
     KeyNoiseEliminator=0;
+    AutoClosePauseFlag=0;
     State=4;
   }
 
@@ -894,7 +896,7 @@ FlashFlag=1;
   {
 
     if((Events.Photocell.b0==1))
-      {StopMotor(1); StopMotor(2); OverloadCheckFlag1=0;OverloadCheckFlag2=0;State=6;PhotocellOpenFlag=1;Logger("S4 Photocell Int",1);ClearTasks(9);
+      {StopMotor(1); StopMotor(2); OverloadCheckFlag1=0;OverloadCheckFlag2=0;State=6;PhotocellOpenFlag=1;Logger("S4 Photocell Int",1);ClearTasks(0);
       memcpy(LCDLine1,_stop,16);memcpy(LCDLine2,_ErrPhoto,16);LCDUpdateFlag=1;LCDLines=2;}
 
     if((Events.Limiter==1)&&(LimiterEnable))
@@ -996,6 +998,7 @@ void State5()
     OverloadCheckFlag1=0;
     OverloadCheckFlag2=0;
     KeyNoiseEliminator=0;
+    AutoClosePauseFlag=0;
     State=7;
   }
 
@@ -1077,6 +1080,7 @@ void State6()
     OverloadCheckFlag2=0;
     PassFlag=0;
     KeyNoiseEliminator=0;
+    AutoClosePauseFlag=0;
     State=8;
   }
 
@@ -1125,6 +1129,7 @@ void State6()
     OverloadCheckFlag2=0;
     PassFlag=0;
     KeyNoiseEliminator=0;
+    AutoClosePauseFlag=0;
     State=7;
   }
 
@@ -3059,7 +3064,7 @@ void TorqueLogger()
 void AutoClosePause()
 {
   char i;
-  if(AutoClosePauseFlag)
+  if((AutoClosePauseFlag) && (Events.Photocell.b0==1))
     for(i=0;i<20;i++)
       if((Tasks[i].Expired==0)&&(Tasks[i].TaskCode==9))
         {Tasks[i].Time=Tasks[i].Time+1;}

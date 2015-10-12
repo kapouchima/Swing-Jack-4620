@@ -10,18 +10,18 @@ diagnostics: 231	123	Compiled Successfully	__Lib_MemManager.c
 diagnostics: 0	122	Compilation Started	__Lib_GlcdFonts.c
 diagnostics: 1207	123	Compiled Successfully	__Lib_GlcdFonts.c
 diagnostics: 0	122	Compilation Started	coglcddriver.h
-warning: 1443	1509	Generated baud rate is 114943 bps (error = 0.22 percent)	FirmV_0_7_0.c
-hint: 1537	1163	Variable 't' has been declared, but not used	FirmV_0_7_0.c
-hint: 1539	1163	Variable 'PmsCounter' has been declared, but not used	FirmV_0_7_0.c
-diagnostics: 3066	123	Compiled Successfully	FirmV_0_7_0.c
-hint: 1536	1164	Variable 'res' has been eliminated by optimizer	FirmV_0_7_0.c
-hint: 2448	1164	Variable 'stopT' has been eliminated by optimizer	FirmV_0_7_0.c
+warning: 1448	1509	Generated baud rate is 114943 bps (error = 0.22 percent)	FirmV_0_7_0.c
+hint: 1542	1163	Variable 't' has been declared, but not used	FirmV_0_7_0.c
+hint: 1544	1163	Variable 'PmsCounter' has been declared, but not used	FirmV_0_7_0.c
+diagnostics: 3071	123	Compiled Successfully	FirmV_0_7_0.c
+hint: 1541	1164	Variable 'res' has been eliminated by optimizer	FirmV_0_7_0.c
+hint: 2453	1164	Variable 'stopT' has been eliminated by optimizer	FirmV_0_7_0.c
 diagnostics: 0	122	Compilation Started	COGLCDDriver.c
 diagnostics: 104	123	Compiled Successfully	COGLCDDriver.c
 diagnostics: 0	127	All files Compiled in 281 ms	 
 hint: 0	1144	Used RAM (bytes): 2465 (62%)  Free RAM (bytes): 1482 (38%)	Used RAM (bytes): 2465 (62%)  Free RAM (bytes): 1482 (38%)
-hint: 0	1144	Used ROM (bytes): 32687 (50%)  Free ROM (bytes): 32849 (50%)	Used ROM (bytes): 32687 (50%)  Free ROM (bytes): 32849 (50%)
+hint: 0	1144	Used ROM (bytes): 32699 (50%)  Free ROM (bytes): 32837 (50%)	Used ROM (bytes): 32699 (50%)  Free ROM (bytes): 32837 (50%)
 diagnostics: 0	125	Project Linked Successfully	FirmV_0_7_0.mcppi
-diagnostics: 0	128	Linked in 125 ms	 
-diagnostics: 0	129	Project 'FirmV_0_7_0.mcppi' completed: 578 ms	 
-diagnostics: 0	103	Finished successfully: 13 Sep 2015, 14:50:07	FirmV_0_7_0.mcppi
+diagnostics: 0	128	Linked in 124 ms	 
+diagnostics: 0	129	Project 'FirmV_0_7_0.mcppi' completed: 577 ms	 
+diagnostics: 0	103	Finished successfully: 14 Sep 2015, 10:57:32	FirmV_0_7_0.mcppi
