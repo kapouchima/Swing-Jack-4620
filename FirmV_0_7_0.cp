@@ -8,7 +8,7 @@ void SetContrast(unsigned char);
 void LCD_Putch(unsigned char, unsigned char ,unsigned char);
 void LCD_out(unsigned char,unsigned char,unsigned char*);
 #line 1 "c:/users/public/documents/mikroelektronika/mikroc pro for pic/include/built_in.h"
-#line 47 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 50 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 typedef struct
 {
 char TaskCode;
@@ -90,7 +90,7 @@ char LCDLine1[17]="                ";
 char LCDLine2[17]="                ";
 Task Tasks[20];
 Eve Events;
-#line 143 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 146 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void Init();
 void TaskManager();
 void AddTask(unsigned long,char);
@@ -143,7 +143,7 @@ void intValueToStr(unsigned,char*);
 void SetOverloadParams(char,char,char,char);
 void TorqueLogger();
 void AutoClosePause();
-#line 208 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 211 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void interrupt()
 {
  if(TMR0IF_bit)
@@ -238,7 +238,7 @@ void interrupt()
  INT0F_bit=0;
  }
 }
-#line 314 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 317 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void ResetTaskEvents()
 {
  Events.Task1=0;
@@ -272,7 +272,7 @@ void Decrypt()
  Sipher[14]=Crypto[1][14]+0x0D;
  Sipher[15]=Crypto[1][15]+0x0D;
 }
-#line 358 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 361 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void Logger(char* text, char TimeStampFlag)
 {
  char time[11];
@@ -286,7 +286,7 @@ void Logger(char* text, char TimeStampFlag)
  uart1_write(0x0D);
  uart1_write(0x0A);
 }
-#line 387 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 390 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void main() {
 
 
@@ -295,6 +295,13 @@ void main() {
 Init();
 
 Decrypt();
+
+memcpy(LCDLine1, "Firmware V1.1.0 " ,16);
+LCDLines=2;
+LCDUpdateFlag=1;
+LCDUpdater();
+delay_ms(500);
+
 
  portb.b7 =1;
 Logger("Start ...",1);
@@ -354,7 +361,7 @@ while(1)
 }
 
 }
-#line 478 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 488 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void StateManager()
 {
 
@@ -504,7 +511,7 @@ void State1()
  PassFlag=0;
  }
 }
-#line 640 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 650 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void State2()
 {
  char delay=2;
@@ -607,7 +614,7 @@ void State2()
  {_AC=GetAutocloseTime();AutoClosePauseFlag=0;temp=ms500+CloseAfterPass;AddTask(temp,9);PassFlag=0;longwordtostrwithzeros(temp,t);Logger("S2 Insert 9 at:",1);Logger(t,1);}
 
 }
-#line 756 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 766 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void State3()
 {
   portd.b7 =1;
@@ -687,7 +694,7 @@ void State3()
  {ClearTasks(0);if(AutoCloseTime!=0){AddTask(ms500+AutoCloseTime,9);AutoClosePauseFlag=0;PrevAC=0;Logger("S3 Autoclose Renewed",1);memcpy(LCDLine2,_autoclose,16);LCDUpdateFlag=1;LCDLines=2;}}
 
 }
-#line 848 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 858 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void State4()
 {
  portd.b7 =1;
@@ -769,7 +776,7 @@ FlashFlag=1;
  {ClearTasks(0);if(AutoCloseTime!=0){PrevAC=0;AddTask(ms500+AutoCloseTime,9);AutoClosePauseFlag=0;Logger("S4 Autoclose Renewed",1);memcpy(LCDLine2,_autoclose,16);LCDUpdateFlag=1;LCDLines=2;}}
 
 }
-#line 943 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 953 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void State5()
 {
  char delay=2;
@@ -789,7 +796,7 @@ void State5()
  {
  if((Door2CloseTime==0)||(ActiveDoors==1))
  {
- ClearTasks(9);
+ ClearTasks(0);
  temp=ms500+delay;
  AddTask(temp,1);
  AddTask(temp,5);
@@ -842,7 +849,7 @@ void State5()
  }
 
 }
-#line 1034 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 1044 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void State6()
 {
 
@@ -901,7 +908,7 @@ void State6()
  {
  if((Door2CloseTime==0)||(ActiveDoors==1))
  {
- ClearTasks(9);
+ ClearTasks(0);
  temp=ms500+delay;
  AddTask(temp,1);
  AddTask(temp,5);
@@ -913,7 +920,7 @@ void State6()
  }
  if((Door2CloseTime!=0)&&(ActiveDoors==2))
  {
- ClearTasks(9);
+ ClearTasks(0);
  temp=ms500+delay;
  AddTask(temp,2);
  AddTask(temp,6);
@@ -954,7 +961,7 @@ void State6()
  }
 
 }
-#line 1166 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 1176 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void State7()
 {
   portd.b7 =1;
@@ -1022,7 +1029,7 @@ void State7()
 
 
 }
-#line 1249 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 1259 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void State8()
 {
   portd.b7 =1;
@@ -1133,7 +1140,7 @@ void LCDUpdater()
 
 
 }
-#line 1378 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 1388 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void Init()
 {
 char i=0;
@@ -1212,7 +1219,7 @@ LoadConfigs();
 
 
 }
-#line 1469 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 1479 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void TaskManager()
 {
 char i=0;
@@ -1220,7 +1227,7 @@ for(i=0;i<20;i++)
  if((Tasks[i].Expired==0)&&(Tasks[i].Time==ms500)&&(Tasks[i].Fired==0))
  Tasks[i].Fired=1;
 }
-#line 1487 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 1497 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void AddTask(unsigned long OccTime,char tcode)
 {
 char i;
@@ -1341,7 +1348,7 @@ char GetExternalKeysState()
  out.b1=1;
  return out;
 }
-#line 1619 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 1629 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 char GetLimitSwitchState()
 {
  if(( portd.b0 ==0)||( portd.b1 ==0))
@@ -1444,7 +1451,7 @@ if (OverloadCounter2>OverloadDuration2)
 
 return res;
 }
-#line 1733 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 1743 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 char GetPhotocellState()
 {
 if( portd.b2 ==0)
@@ -1456,7 +1463,7 @@ if(PhotocellCount>=20)
 else
  return 0;
 }
-#line 1755 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 1765 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void SetMotorSpeed(char M1FullSpeed,char M2FullSpeed)
 {
 if((M1FullSpeed==0)||(M2FullSpeed==0))
@@ -1527,7 +1534,7 @@ void SaveConfigs()
  SetOverloadParams(OverloadSens1,OverloadTime1,OverloadSens2,OverloadTime2);
 
 }
-#line 1837 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 1847 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void LoadConfigs()
 {
  Door1OpenTime=EEPROM_Read(1);
@@ -1554,7 +1561,7 @@ void LoadConfigs()
  SetOverloadParams(OverloadSens1,OverloadTime1,OverloadSens2,OverloadTime2);
 
 }
-#line 1875 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 1885 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void FactorySettings()
 {
  Door1OpenTime=20;
@@ -1619,7 +1626,7 @@ void StopMotor(char Mx)
   portb.b4 =0;
  }
 }
-#line 1950 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 1960 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 char CheckTask(char TaskCode)
 {
  if(Events.Task1==TaskCode)
@@ -1677,7 +1684,7 @@ char GetAutocloseTime()
  if(i>=20) i=0;
  return i;
 }
-#line 2023 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 2033 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void ClearTasks(char except)
 {
  char i;
@@ -1685,7 +1692,7 @@ void ClearTasks(char except)
  if((Tasks[i].Expired==0)&&(Tasks[i].TaskCode!=except))
  Tasks[i].Expired=1;
 }
-#line 2044 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 2054 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void Menu0()
 {
  LCDLines=2;
@@ -2064,13 +2071,13 @@ void Menu2()
  LongBuzzFlag=1;
  }
 }
-#line 2433 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 2443 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void Menu3()
 {
  SaveConfigs();
  State=0;
 }
-#line 2451 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 2461 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void LearnAuto()
 {
  static unsigned long startT,stopT;
@@ -2157,7 +2164,7 @@ void LearnAuto()
 
 
 }
-#line 2556 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 2566 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void AutoLearnCalculator(Learn *raw)
 {
 
@@ -2177,7 +2184,7 @@ void AutoLearnCalculator(Learn *raw)
  (*raw).D2CloseSoftStop=10;
 
 }
-#line 2586 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 2596 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void SaveLearnData(Learn *d,char DCount)
 {
  Door1OpenTime=(*d).D1OpenTime;
@@ -2203,7 +2210,7 @@ void SaveLearnData(Learn *d,char DCount)
 
  SaveConfigs();
 }
-#line 2625 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 2635 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void LearnManual()
 {
 
@@ -2329,7 +2336,7 @@ void LearnManual()
  break;
  }
 }
-#line 2770 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 2780 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void charValueToStr(char val, char * string)
 {
  bytetostr(val>>1,string);
@@ -2351,7 +2358,7 @@ void charValueToStr_AC(char val, char * string)
  bytetostr(val>>1,string);
  memcpy(string+3,"s  ",4);
 }
-#line 2803 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 2813 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void intValueToStr(unsigned val, char * string)
 {
  wordtostr(val>>1,string);
@@ -2360,7 +2367,7 @@ void intValueToStr(unsigned val, char * string)
  else
  memcpy(string+5,".0s",4);
 }
-#line 2822 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 2832 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void SetOverloadParams(char p1, char d1,char p2, char d2)
 {
 
@@ -2492,7 +2499,7 @@ void SetOverloadParams(char p1, char d1,char p2, char d2)
  case 10: OverloadDuration2=5000; break;
  }
 }
-#line 2973 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 2983 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void TorqueLogger()
 {
  char txt[10];
@@ -2565,7 +2572,7 @@ void TorqueLogger()
 
  }
 }
-#line 3064 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
+#line 3074 "C:/Users/Kapouchima/Documents/PIC Projects/Swing Jack/Swing-Jack-4620/FirmV_0_7_0.c"
 void AutoClosePause()
 {
  char i;

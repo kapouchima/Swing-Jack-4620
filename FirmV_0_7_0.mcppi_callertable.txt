@@ -18,15 +18,6 @@ main
 			EEPROM_Read
 			SetOverloadParams
 	Decrypt
-	Logger
-		LongWordToStrWithZeros
-			Div_32x32_U
-		UART_Write_Text
-			UART_Write
-				____DoIFC
-		UART1_Write_Text
-			UART1_Write
-		UART1_Write
 	memcpy
 	LCDUpdater
 		LCD_Init
@@ -40,6 +31,15 @@ main
 			I2C1_Wr
 			I2C1_Stop
 		memcpy
+	Logger
+		LongWordToStrWithZeros
+			Div_32x32_U
+		UART_Write_Text
+			UART_Write
+				____DoIFC
+		UART1_Write_Text
+			UART1_Write
+		UART1_Write
 	AutoClosePause
 		Mul_16X16_U
 	ResetTaskEvents

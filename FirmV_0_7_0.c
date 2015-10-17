@@ -1,3 +1,6 @@
+#define FirmwareVersion "Firmware V1.1.0 "
+
+
 #include "COGLCDDriver.h"
 
 
@@ -392,6 +395,13 @@ PhotocellRel=1;
 Init();
 
 Decrypt();
+
+memcpy(LCDLine1,FirmwareVersion,16);
+LCDLines=2;
+LCDUpdateFlag=1;
+LCDUpdater();
+delay_ms(500);
+
 
 Buzzer=1;
 Logger("Start ...",1);
@@ -959,7 +969,7 @@ void State5()
   {
     if((Door2CloseTime==0)||(ActiveDoors==1))
     {
-      ClearTasks(9);
+      ClearTasks(0);
       temp=ms500+delay;
       AddTask(temp,1);
       AddTask(temp,5);
@@ -1089,7 +1099,7 @@ void State6()
   {
     if((Door2CloseTime==0)||(ActiveDoors==1))
     {
-      ClearTasks(9);
+      ClearTasks(0);
       temp=ms500+delay;
       AddTask(temp,1);
       AddTask(temp,5);
@@ -1101,7 +1111,7 @@ void State6()
     }
     if((Door2CloseTime!=0)&&(ActiveDoors==2))
     {
-      ClearTasks(9);
+      ClearTasks(0);
       temp=ms500+delay;
       AddTask(temp,2);
       AddTask(temp,6);
