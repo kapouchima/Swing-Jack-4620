@@ -597,12 +597,12 @@ void State2()
  }
 
  if((Events.Photocell.b0==1)&&(AutoCloseTime!=0)&&(PassFlag==0))
- {PassFlag=1;AutoClosePauseFlag=1;("S2 Auto Close Paused",1);}
+ {PassFlag=1;AutoClosePauseFlag=1;Logger("S2 Auto Close Paused",1);}
 
 
  if((PassFlag==1)&&(Events.Photocell.b0==0)&&(AutoCloseTime!=0))
  if(CloseAfterPass==0)
- {PassFlag=0;AutoClosePauseFlag=0;("S2 Auto Close Resumed",1);}
+ {PassFlag=0;AutoClosePauseFlag=0;Logger("S2 Auto Close Resumed",1);}
  else
  {_AC=GetAutocloseTime();AutoClosePauseFlag=0;temp=ms500+CloseAfterPass;AddTask(temp,9);PassFlag=0;longwordtostrwithzeros(temp,t);Logger("S2 Insert 9 at:",1);Logger(t,1);}
 

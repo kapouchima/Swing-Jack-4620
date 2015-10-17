@@ -2561,11 +2561,18 @@ L__State2962:
 	BTFSS       STATUS+0, 2 
 	GOTO        L_State2123
 L__State2837:
-;FirmV_0_7_0.c,732 :: 		{PassFlag=1;AutoClosePauseFlag=1;("S2 Auto Close Paused",1);}
+;FirmV_0_7_0.c,732 :: 		{PassFlag=1;AutoClosePauseFlag=1;Logger("S2 Auto Close Paused",1);}
 	MOVLW       1
 	MOVWF       _PassFlag+0 
 	MOVLW       1
 	MOVWF       _AutoClosePauseFlag+0 
+	MOVLW       ?lstr4_FirmV_0_7_0+0
+	MOVWF       FARG_Logger_text+0 
+	MOVLW       hi_addr(?lstr4_FirmV_0_7_0+0)
+	MOVWF       FARG_Logger_text+1 
+	MOVLW       1
+	MOVWF       FARG_Logger_TimeStampFlag+0 
+	CALL        _Logger+0, 0
 L_State2123:
 ;FirmV_0_7_0.c,735 :: 		if((PassFlag==1)&&(Events.Photocell.b0==0)&&(AutoCloseTime!=0))
 	MOVF        _PassFlag+0, 0 
@@ -2589,9 +2596,16 @@ L__State2836:
 	XORLW       0
 	BTFSS       STATUS+0, 2 
 	GOTO        L_State2127
-;FirmV_0_7_0.c,737 :: 		{PassFlag=0;AutoClosePauseFlag=0;("S2 Auto Close Resumed",1);}
+;FirmV_0_7_0.c,737 :: 		{PassFlag=0;AutoClosePauseFlag=0;Logger("S2 Auto Close Resumed",1);}
 	CLRF        _PassFlag+0 
 	CLRF        _AutoClosePauseFlag+0 
+	MOVLW       ?lstr5_FirmV_0_7_0+0
+	MOVWF       FARG_Logger_text+0 
+	MOVLW       hi_addr(?lstr5_FirmV_0_7_0+0)
+	MOVWF       FARG_Logger_text+1 
+	MOVLW       1
+	MOVWF       FARG_Logger_TimeStampFlag+0 
+	CALL        _Logger+0, 0
 	GOTO        L_State2128
 L_State2127:
 ;FirmV_0_7_0.c,739 :: 		{_AC=GetAutocloseTime();AutoClosePauseFlag=0;temp=ms500+CloseAfterPass;AddTask(temp,9);PassFlag=0;longwordtostrwithzeros(temp,t);Logger("S2 Insert 9 at:",1);Logger(t,1);}
@@ -2644,9 +2658,9 @@ L_State2127:
 	MOVLW       hi_addr(_t+0)
 	MOVWF       FARG_LongWordToStrWithZeros_output+1 
 	CALL        _LongWordToStrWithZeros+0, 0
-	MOVLW       ?lstr4_FirmV_0_7_0+0
+	MOVLW       ?lstr6_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr4_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr6_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -2686,9 +2700,9 @@ _State3:
 	MOVLW       1
 	MOVWF       FARG_StartMotor+0 
 	CALL        _StartMotor+0, 0
-	MOVLW       ?lstr5_FirmV_0_7_0+0
+	MOVLW       ?lstr7_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr5_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr7_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -2738,9 +2752,9 @@ L_State3129:
 	MOVLW       1
 	MOVWF       FARG_StartMotor+0 
 	CALL        _StartMotor+0, 0
-	MOVLW       ?lstr6_FirmV_0_7_0+0
+	MOVLW       ?lstr8_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr6_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr8_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -2762,9 +2776,9 @@ L_State3130:
 	CALL        _SetMotorSpeed+0, 0
 	CLRF        _OverloadCheckFlag1+0 
 	CLRF        _M1isSlow+0 
-	MOVLW       ?lstr7_FirmV_0_7_0+0
+	MOVLW       ?lstr9_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr7_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr9_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -2784,9 +2798,9 @@ L_State3131:
 	CALL        _SetMotorSpeed+0, 0
 	MOVLW       1
 	MOVWF       _M1isSlow+0 
-	MOVLW       ?lstr8_FirmV_0_7_0+0
+	MOVLW       ?lstr10_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr8_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr10_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -2807,9 +2821,9 @@ L_State3132:
 	CALL        _SetMotorSpeed+0, 0
 	CLRF        _OverloadCheckFlag2+0 
 	CLRF        _M2isSlow+0 
-	MOVLW       ?lstr9_FirmV_0_7_0+0
+	MOVLW       ?lstr11_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr9_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr11_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -2829,9 +2843,9 @@ L_State3133:
 	CALL        _SetMotorSpeed+0, 0
 	MOVLW       1
 	MOVWF       _M2isSlow+0 
-	MOVLW       ?lstr10_FirmV_0_7_0+0
+	MOVLW       ?lstr12_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr10_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr12_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -2850,9 +2864,9 @@ L_State3134:
 	MOVLW       1
 	MOVWF       FARG_OverloadInit+0 
 	CALL        _OverloadInit+0, 0
-	MOVLW       ?lstr11_FirmV_0_7_0+0
+	MOVLW       ?lstr13_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr11_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr13_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -2871,9 +2885,9 @@ L_State3135:
 	MOVLW       2
 	MOVWF       FARG_OverloadInit+0 
 	CALL        _OverloadInit+0, 0
-	MOVLW       ?lstr12_FirmV_0_7_0+0
+	MOVLW       ?lstr14_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr12_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr14_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -2891,9 +2905,9 @@ L_State3136:
 	MOVLW       1
 	MOVWF       FARG_StopMotor+0 
 	CALL        _StopMotor+0, 0
-	MOVLW       ?lstr13_FirmV_0_7_0+0
+	MOVLW       ?lstr15_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr13_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr15_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -2911,9 +2925,9 @@ L_State3137:
 	MOVLW       2
 	MOVWF       FARG_StopMotor+0 
 	CALL        _StopMotor+0, 0
-	MOVLW       ?lstr14_FirmV_0_7_0+0
+	MOVLW       ?lstr16_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr14_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr16_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -2952,9 +2966,9 @@ L__State3846:
 	MOVWF       _State+0 
 	CLRF        _OverloadCheckFlag1+0 
 	CLRF        _OverloadCheckFlag2+0 
-	MOVLW       ?lstr15_FirmV_0_7_0+0
+	MOVLW       ?lstr17_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr15_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr17_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -3017,9 +3031,9 @@ L__State3845:
 	MOVWF       _State+0 
 	CLRF        _OverloadCheckFlag1+0 
 	CLRF        _OverloadCheckFlag2+0 
-	MOVLW       ?lstr16_FirmV_0_7_0+0
+	MOVLW       ?lstr18_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr16_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr18_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -3096,9 +3110,9 @@ L__State3843:
 	CLRF        _OverloadCheckFlag2+0 
 	MOVLW       5
 	MOVWF       _State+0 
-	MOVLW       ?lstr17_FirmV_0_7_0+0
+	MOVLW       ?lstr19_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr17_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr19_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -3154,9 +3168,9 @@ L_State3152:
 	CLRF        _OverloadCheckFlag2+0 
 	MOVLW       5
 	MOVWF       _State+0 
-	MOVLW       ?lstr18_FirmV_0_7_0+0
+	MOVLW       ?lstr20_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr18_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr20_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -3216,9 +3230,9 @@ L__State3842:
 	CLRF        _OverloadCheckFlag2+0 
 	MOVLW       5
 	MOVWF       _State+0 
-	MOVLW       ?lstr19_FirmV_0_7_0+0
+	MOVLW       ?lstr21_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr19_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr21_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -3452,9 +3466,9 @@ L__State3965:
 	CALL        _AddTask+0, 0
 	CLRF        _AutoClosePauseFlag+0 
 	CLRF        _PrevAC+0 
-	MOVLW       ?lstr20_FirmV_0_7_0+0
+	MOVLW       ?lstr22_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr20_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr22_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -3503,9 +3517,9 @@ _State4:
 	MOVWF       FARG_StartMotor+0 
 	CLRF        FARG_StartMotor+0 
 	CALL        _StartMotor+0, 0
-	MOVLW       ?lstr21_FirmV_0_7_0+0
+	MOVLW       ?lstr23_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr21_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr23_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -3523,9 +3537,9 @@ L_State4165:
 	MOVWF       FARG_StartMotor+0 
 	CLRF        FARG_StartMotor+0 
 	CALL        _StartMotor+0, 0
-	MOVLW       ?lstr22_FirmV_0_7_0+0
+	MOVLW       ?lstr24_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr22_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr24_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -3574,9 +3588,9 @@ L_State4166:
 	MOVLW       1
 	MOVWF       FARG_OverloadInit+0 
 	CALL        _OverloadInit+0, 0
-	MOVLW       ?lstr23_FirmV_0_7_0+0
+	MOVLW       ?lstr25_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr23_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr25_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -3595,9 +3609,9 @@ L_State4167:
 	MOVLW       2
 	MOVWF       FARG_OverloadInit+0 
 	CALL        _OverloadInit+0, 0
-	MOVLW       ?lstr24_FirmV_0_7_0+0
+	MOVLW       ?lstr26_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr24_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr26_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -3618,9 +3632,9 @@ L_State4168:
 	CALL        _SetMotorSpeed+0, 0
 	CLRF        _OverloadCheckFlag1+0 
 	CLRF        _M1isSlow+0 
-	MOVLW       ?lstr25_FirmV_0_7_0+0
+	MOVLW       ?lstr27_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr25_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr27_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -3641,9 +3655,9 @@ L_State4169:
 	CLRF        _OverloadCheckFlag1+0 
 	MOVLW       1
 	MOVWF       _M1isSlow+0 
-	MOVLW       ?lstr26_FirmV_0_7_0+0
+	MOVLW       ?lstr28_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr26_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr28_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -3663,9 +3677,9 @@ L_State4170:
 	MOVWF       FARG_SetMotorSpeed+0 
 	CALL        _SetMotorSpeed+0, 0
 	CLRF        _M2isSlow+0 
-	MOVLW       ?lstr27_FirmV_0_7_0+0
+	MOVLW       ?lstr29_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr27_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr29_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -3685,9 +3699,9 @@ L_State4171:
 	CALL        _SetMotorSpeed+0, 0
 	MOVLW       1
 	MOVWF       _M2isSlow+0 
-	MOVLW       ?lstr28_FirmV_0_7_0+0
+	MOVLW       ?lstr30_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr28_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr30_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -3705,9 +3719,9 @@ L_State4172:
 	MOVLW       1
 	MOVWF       FARG_StopMotor+0 
 	CALL        _StopMotor+0, 0
-	MOVLW       ?lstr29_FirmV_0_7_0+0
+	MOVLW       ?lstr31_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr29_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr31_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -3725,9 +3739,9 @@ L_State4173:
 	MOVLW       2
 	MOVWF       FARG_StopMotor+0 
 	CALL        _StopMotor+0, 0
-	MOVLW       ?lstr30_FirmV_0_7_0+0
+	MOVLW       ?lstr32_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr30_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr32_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -3756,9 +3770,9 @@ L__State4851:
 	MOVWF       _State+0 
 	CLRF        _OverloadCheckFlag1+0 
 	CLRF        _OverloadCheckFlag2+0 
-	MOVLW       ?lstr31_FirmV_0_7_0+0
+	MOVLW       ?lstr33_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr31_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr33_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -3821,9 +3835,9 @@ L__State4850:
 	MOVWF       _State+0 
 	CLRF        _OverloadCheckFlag1+0 
 	CLRF        _OverloadCheckFlag2+0 
-	MOVLW       ?lstr32_FirmV_0_7_0+0
+	MOVLW       ?lstr34_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr32_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr34_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -3898,9 +3912,9 @@ L_State4183:
 	MOVWF       _State+0 
 	MOVLW       1
 	MOVWF       _PhotocellOpenFlag+0 
-	MOVLW       ?lstr33_FirmV_0_7_0+0
+	MOVLW       ?lstr35_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr33_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr35_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -3959,9 +3973,9 @@ L__State4848:
 	MOVWF       _State+0 
 	CLRF        _OverloadCheckFlag1+0 
 	CLRF        _OverloadCheckFlag2+0 
-	MOVLW       ?lstr34_FirmV_0_7_0+0
+	MOVLW       ?lstr36_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr34_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr36_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -4017,9 +4031,9 @@ L_State4188:
 	MOVWF       _State+0 
 	CLRF        _OverloadCheckFlag1+0 
 	CLRF        _OverloadCheckFlag2+0 
-	MOVLW       ?lstr35_FirmV_0_7_0+0
+	MOVLW       ?lstr37_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr35_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr37_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -4285,9 +4299,9 @@ L__State4967:
 	MOVWF       FARG_AddTask+0 
 	CALL        _AddTask+0, 0
 	CLRF        _AutoClosePauseFlag+0 
-	MOVLW       ?lstr36_FirmV_0_7_0+0
+	MOVLW       ?lstr38_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr36_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr38_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -4351,9 +4365,9 @@ _State5:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine2+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr37_FirmV_0_7_0+0
+	MOVLW       ?lstr39_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr37_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr39_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       11
 	MOVWF       FARG_memcpy_n+0 
@@ -4870,9 +4884,9 @@ L__State5853:
 	MOVWF       _PassFlag+0 
 	MOVLW       1
 	MOVWF       _AutoClosePauseFlag+0 
-	MOVLW       ?lstr38_FirmV_0_7_0+0
+	MOVLW       ?lstr40_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr38_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr40_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -4898,9 +4912,9 @@ L__State5852:
 ;FirmV_0_7_0.c,1011 :: 		{AutoClosePauseFlag=0;PassFlag=0;Logger("S5 Auto Close Resumed",1);}
 	CLRF        _AutoClosePauseFlag+0 
 	CLRF        _PassFlag+0 
-	MOVLW       ?lstr39_FirmV_0_7_0+0
+	MOVLW       ?lstr41_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr39_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr41_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -4947,9 +4961,9 @@ _State6:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine2+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr40_FirmV_0_7_0+0
+	MOVLW       ?lstr42_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr40_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr42_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       11
 	MOVWF       FARG_memcpy_n+0 
@@ -5760,9 +5774,9 @@ L__State6858:
 	MOVWF       _PassFlag+0 
 	MOVLW       1
 	MOVWF       _AutoClosePauseFlag+0 
-	MOVLW       ?lstr41_FirmV_0_7_0+0
+	MOVLW       ?lstr43_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr41_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr43_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -5788,9 +5802,9 @@ L__State6857:
 ;FirmV_0_7_0.c,1141 :: 		{AutoClosePauseFlag=0;PassFlag=0;Logger("S6 Auto Close Resumed",1);}
 	CLRF        _AutoClosePauseFlag+0 
 	CLRF        _PassFlag+0 
-	MOVLW       ?lstr42_FirmV_0_7_0+0
+	MOVLW       ?lstr44_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr42_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr44_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -5822,9 +5836,9 @@ _State7:
 	MOVWF       FARG_StartMotor+0 
 	CLRF        FARG_StartMotor+0 
 	CALL        _StartMotor+0, 0
-	MOVLW       ?lstr43_FirmV_0_7_0+0
+	MOVLW       ?lstr45_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr43_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr45_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -5842,9 +5856,9 @@ L_State7238:
 	MOVWF       FARG_StartMotor+0 
 	CLRF        FARG_StartMotor+0 
 	CALL        _StartMotor+0, 0
-	MOVLW       ?lstr44_FirmV_0_7_0+0
+	MOVLW       ?lstr46_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr44_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr46_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -5893,9 +5907,9 @@ L_State7239:
 	MOVLW       1
 	MOVWF       FARG_OverloadInit+0 
 	CALL        _OverloadInit+0, 0
-	MOVLW       ?lstr45_FirmV_0_7_0+0
+	MOVLW       ?lstr47_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr45_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr47_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -5914,9 +5928,9 @@ L_State7240:
 	MOVLW       2
 	MOVWF       FARG_OverloadInit+0 
 	CALL        _OverloadInit+0, 0
-	MOVLW       ?lstr46_FirmV_0_7_0+0
+	MOVLW       ?lstr48_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr46_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr48_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -5936,9 +5950,9 @@ L_State7241:
 	MOVWF       FARG_SetMotorSpeed+0 
 	CALL        _SetMotorSpeed+0, 0
 	CLRF        _M1isSlow+0 
-	MOVLW       ?lstr47_FirmV_0_7_0+0
+	MOVLW       ?lstr49_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr47_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr49_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -5958,9 +5972,9 @@ L_State7242:
 	MOVWF       FARG_SetMotorSpeed+0 
 	CALL        _SetMotorSpeed+0, 0
 	CLRF        _M2isSlow+0 
-	MOVLW       ?lstr48_FirmV_0_7_0+0
+	MOVLW       ?lstr50_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr48_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr50_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -5991,9 +6005,9 @@ L__State7869:
 	MOVLW       1
 	MOVWF       FARG_StopMotor+0 
 	CALL        _StopMotor+0, 0
-	MOVLW       ?lstr49_FirmV_0_7_0+0
+	MOVLW       ?lstr51_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr49_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr51_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -6024,9 +6038,9 @@ L__State7866:
 	MOVLW       2
 	MOVWF       FARG_StopMotor+0 
 	CALL        _StopMotor+0, 0
-	MOVLW       ?lstr50_FirmV_0_7_0+0
+	MOVLW       ?lstr52_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr50_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr52_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -6067,9 +6081,9 @@ L_State7260:
 	MOVWF       _State+0 
 	MOVLW       1
 	MOVWF       _PhotocellOpenFlag+0 
-	MOVLW       ?lstr51_FirmV_0_7_0+0
+	MOVLW       ?lstr53_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr51_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr53_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -6125,9 +6139,9 @@ L_State7262:
 	MOVWF       _State+0 
 	CLRF        _OverloadCheckFlag1+0 
 	CLRF        _OverloadCheckFlag2+0 
-	MOVLW       ?lstr52_FirmV_0_7_0+0
+	MOVLW       ?lstr54_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr52_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr54_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -6187,9 +6201,9 @@ L__State7864:
 	MOVWF       _State+0 
 	CLRF        _OverloadCheckFlag1+0 
 	CLRF        _OverloadCheckFlag2+0 
-	MOVLW       ?lstr53_FirmV_0_7_0+0
+	MOVLW       ?lstr55_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr53_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr55_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -6455,9 +6469,9 @@ L__State7975:
 	CALL        _AddTask+0, 0
 	CLRF        _AutoClosePauseFlag+0 
 	CLRF        _PrevAC+0 
-	MOVLW       ?lstr54_FirmV_0_7_0+0
+	MOVLW       ?lstr56_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr54_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr56_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -6507,9 +6521,9 @@ _State8:
 	MOVLW       1
 	MOVWF       FARG_StartMotor+0 
 	CALL        _StartMotor+0, 0
-	MOVLW       ?lstr55_FirmV_0_7_0+0
+	MOVLW       ?lstr57_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr55_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr57_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -6559,9 +6573,9 @@ L_State8276:
 	MOVLW       1
 	MOVWF       FARG_StartMotor+0 
 	CALL        _StartMotor+0, 0
-	MOVLW       ?lstr56_FirmV_0_7_0+0
+	MOVLW       ?lstr58_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr56_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr58_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -6581,9 +6595,9 @@ L_State8277:
 	MOVLW       1
 	MOVWF       FARG_OverloadInit+0 
 	CALL        _OverloadInit+0, 0
-	MOVLW       ?lstr57_FirmV_0_7_0+0
+	MOVLW       ?lstr59_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr57_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr59_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -6602,9 +6616,9 @@ L_State8278:
 	MOVLW       2
 	MOVWF       FARG_OverloadInit+0 
 	CALL        _OverloadInit+0, 0
-	MOVLW       ?lstr58_FirmV_0_7_0+0
+	MOVLW       ?lstr60_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr58_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr60_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -6624,9 +6638,9 @@ L_State8279:
 	MOVWF       FARG_SetMotorSpeed+0 
 	CALL        _SetMotorSpeed+0, 0
 	CLRF        _M1isSlow+0 
-	MOVLW       ?lstr59_FirmV_0_7_0+0
+	MOVLW       ?lstr61_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr59_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr61_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -6646,9 +6660,9 @@ L_State8280:
 	MOVWF       FARG_SetMotorSpeed+0 
 	CALL        _SetMotorSpeed+0, 0
 	CLRF        _M2isSlow+0 
-	MOVLW       ?lstr60_FirmV_0_7_0+0
+	MOVLW       ?lstr62_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr60_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr62_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -6679,9 +6693,9 @@ L__State8879:
 	MOVLW       1
 	MOVWF       FARG_StopMotor+0 
 	CALL        _StopMotor+0, 0
-	MOVLW       ?lstr61_FirmV_0_7_0+0
+	MOVLW       ?lstr63_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr61_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr63_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -6712,9 +6726,9 @@ L__State8876:
 	MOVLW       2
 	MOVWF       FARG_StopMotor+0 
 	CALL        _StopMotor+0, 0
-	MOVLW       ?lstr62_FirmV_0_7_0+0
+	MOVLW       ?lstr64_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr62_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr64_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -6767,9 +6781,9 @@ L__State8874:
 	CLRF        _OverloadCheckFlag2+0 
 	MOVLW       5
 	MOVWF       _State+0 
-	MOVLW       ?lstr63_FirmV_0_7_0+0
+	MOVLW       ?lstr65_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr63_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr65_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -6825,9 +6839,9 @@ L_State8303:
 	MOVWF       _State+0 
 	CLRF        _OverloadCheckFlag1+0 
 	CLRF        _OverloadCheckFlag2+0 
-	MOVLW       ?lstr64_FirmV_0_7_0+0
+	MOVLW       ?lstr66_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr64_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr66_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -6887,9 +6901,9 @@ L__State8873:
 	MOVWF       _State+0 
 	CLRF        _OverloadCheckFlag1+0 
 	CLRF        _OverloadCheckFlag2+0 
-	MOVLW       ?lstr65_FirmV_0_7_0+0
+	MOVLW       ?lstr67_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr65_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr67_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -7151,9 +7165,9 @@ L__State8978:
 	CALL        _AddTask+0, 0
 	CLRF        _AutoClosePauseFlag+0 
 	CLRF        _PrevAC+0 
-	MOVLW       ?lstr66_FirmV_0_7_0+0
+	MOVLW       ?lstr68_FirmV_0_7_0+0
 	MOVWF       FARG_Logger_text+0 
-	MOVLW       hi_addr(?lstr66_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr68_FirmV_0_7_0+0)
 	MOVWF       FARG_Logger_text+1 
 	MOVLW       1
 	MOVWF       FARG_Logger_TimeStampFlag+0 
@@ -9621,9 +9635,9 @@ _Menu0:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine2+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr67_FirmV_0_7_0+0
+	MOVLW       ?lstr69_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr67_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr69_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       16
 	MOVWF       FARG_memcpy_n+0 
@@ -9640,9 +9654,9 @@ _Menu0:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr68_FirmV_0_7_0+0
+	MOVLW       ?lstr70_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr68_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr70_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       16
 	MOVWF       FARG_memcpy_n+0 
@@ -9660,9 +9674,9 @@ _Menu0:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine2+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr69_FirmV_0_7_0+0
+	MOVLW       ?lstr71_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr69_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr71_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       16
 	MOVWF       FARG_memcpy_n+0 
@@ -9679,9 +9693,9 @@ L_Menu0450:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine2+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr70_FirmV_0_7_0+0
+	MOVLW       ?lstr72_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr70_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr72_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       16
 	MOVWF       FARG_memcpy_n+0 
@@ -9700,9 +9714,9 @@ L_Menu0449:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr71_FirmV_0_7_0+0
+	MOVLW       ?lstr73_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr71_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr73_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       16
 	MOVWF       FARG_memcpy_n+0 
@@ -9730,9 +9744,9 @@ L_Menu0452:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr72_FirmV_0_7_0+0
+	MOVLW       ?lstr74_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr72_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr74_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       16
 	MOVWF       FARG_memcpy_n+0 
@@ -9760,9 +9774,9 @@ L_Menu0453:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr73_FirmV_0_7_0+0
+	MOVLW       ?lstr75_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr73_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr75_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       16
 	MOVWF       FARG_memcpy_n+0 
@@ -9790,9 +9804,9 @@ L_Menu0454:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr74_FirmV_0_7_0+0
+	MOVLW       ?lstr76_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr74_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr76_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       16
 	MOVWF       FARG_memcpy_n+0 
@@ -9820,9 +9834,9 @@ L_Menu0455:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr75_FirmV_0_7_0+0
+	MOVLW       ?lstr77_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr75_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr77_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       16
 	MOVWF       FARG_memcpy_n+0 
@@ -9850,9 +9864,9 @@ L_Menu0456:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr76_FirmV_0_7_0+0
+	MOVLW       ?lstr78_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr76_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr78_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       16
 	MOVWF       FARG_memcpy_n+0 
@@ -9880,9 +9894,9 @@ L_Menu0457:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr77_FirmV_0_7_0+0
+	MOVLW       ?lstr79_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr77_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr79_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       16
 	MOVWF       FARG_memcpy_n+0 
@@ -9910,9 +9924,9 @@ L_Menu0458:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr78_FirmV_0_7_0+0
+	MOVLW       ?lstr80_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr78_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr80_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       16
 	MOVWF       FARG_memcpy_n+0 
@@ -9940,9 +9954,9 @@ L_Menu0459:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr79_FirmV_0_7_0+0
+	MOVLW       ?lstr81_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr79_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr81_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       16
 	MOVWF       FARG_memcpy_n+0 
@@ -9967,9 +9981,9 @@ L_Menu0459:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine2+7)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr80_FirmV_0_7_0+0
+	MOVLW       ?lstr82_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr80_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr82_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       6
 	MOVWF       FARG_memcpy_n+0 
@@ -9982,9 +9996,9 @@ L_Menu0461:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine2+7)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr81_FirmV_0_7_0+0
+	MOVLW       ?lstr83_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr81_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr83_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       6
 	MOVWF       FARG_memcpy_n+0 
@@ -10003,9 +10017,9 @@ L_Menu0460:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr82_FirmV_0_7_0+0
+	MOVLW       ?lstr84_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr82_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr84_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       16
 	MOVWF       FARG_memcpy_n+0 
@@ -10030,9 +10044,9 @@ L_Menu0460:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine2+7)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr83_FirmV_0_7_0+0
+	MOVLW       ?lstr85_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr83_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr85_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       6
 	MOVWF       FARG_memcpy_n+0 
@@ -10045,9 +10059,9 @@ L_Menu0464:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine2+7)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr84_FirmV_0_7_0+0
+	MOVLW       ?lstr86_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr84_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr86_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       6
 	MOVWF       FARG_memcpy_n+0 
@@ -10066,9 +10080,9 @@ L_Menu0463:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr85_FirmV_0_7_0+0
+	MOVLW       ?lstr87_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr85_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr87_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       16
 	MOVWF       FARG_memcpy_n+0 
@@ -10096,9 +10110,9 @@ L_Menu0466:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr86_FirmV_0_7_0+0
+	MOVLW       ?lstr88_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr86_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr88_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       16
 	MOVWF       FARG_memcpy_n+0 
@@ -10126,9 +10140,9 @@ L_Menu0467:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr87_FirmV_0_7_0+0
+	MOVLW       ?lstr89_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr87_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr89_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       16
 	MOVWF       FARG_memcpy_n+0 
@@ -10156,9 +10170,9 @@ L_Menu0468:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr88_FirmV_0_7_0+0
+	MOVLW       ?lstr90_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr88_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr90_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       16
 	MOVWF       FARG_memcpy_n+0 
@@ -10188,9 +10202,9 @@ L_Menu0469:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr89_FirmV_0_7_0+0
+	MOVLW       ?lstr91_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr89_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr91_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       16
 	MOVWF       FARG_memcpy_n+0 
@@ -10210,9 +10224,9 @@ L_Menu0470:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr90_FirmV_0_7_0+0
+	MOVLW       ?lstr92_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr90_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr92_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       16
 	MOVWF       FARG_memcpy_n+0 
@@ -10230,9 +10244,9 @@ L_Menu0470:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine2+6)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr91_FirmV_0_7_0+0
+	MOVLW       ?lstr93_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr91_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr93_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       7
 	MOVWF       FARG_memcpy_n+0 
@@ -10245,9 +10259,9 @@ L_Menu0472:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine2+6)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr92_FirmV_0_7_0+0
+	MOVLW       ?lstr94_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr92_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr94_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       8
 	MOVWF       FARG_memcpy_n+0 
@@ -10266,9 +10280,9 @@ L_Menu0471:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr93_FirmV_0_7_0+0
+	MOVLW       ?lstr95_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr93_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr95_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       16
 	MOVWF       FARG_memcpy_n+0 
@@ -10286,9 +10300,9 @@ L_Menu0471:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine2+6)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr94_FirmV_0_7_0+0
+	MOVLW       ?lstr96_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr94_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr96_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       7
 	MOVWF       FARG_memcpy_n+0 
@@ -10301,9 +10315,9 @@ L_Menu0475:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine2+6)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr95_FirmV_0_7_0+0
+	MOVLW       ?lstr97_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr95_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr97_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       8
 	MOVWF       FARG_memcpy_n+0 
@@ -10322,9 +10336,9 @@ L_Menu0474:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr96_FirmV_0_7_0+0
+	MOVLW       ?lstr98_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr96_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr98_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       16
 	MOVWF       FARG_memcpy_n+0 
@@ -10342,9 +10356,9 @@ L_Menu0474:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine2+6)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr97_FirmV_0_7_0+0
+	MOVLW       ?lstr99_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr97_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr99_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       7
 	MOVWF       FARG_memcpy_n+0 
@@ -10357,9 +10371,9 @@ L_Menu0478:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine2+6)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr98_FirmV_0_7_0+0
+	MOVLW       ?lstr100_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr98_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr100_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       8
 	MOVWF       FARG_memcpy_n+0 
@@ -10378,9 +10392,9 @@ L_Menu0477:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr99_FirmV_0_7_0+0
+	MOVLW       ?lstr101_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr99_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr101_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       16
 	MOVWF       FARG_memcpy_n+0 
@@ -10398,9 +10412,9 @@ L_Menu0477:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine2+6)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr100_FirmV_0_7_0+0
+	MOVLW       ?lstr102_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr100_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr102_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       7
 	MOVWF       FARG_memcpy_n+0 
@@ -10413,9 +10427,9 @@ L_Menu0481:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine2+6)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr101_FirmV_0_7_0+0
+	MOVLW       ?lstr103_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr101_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr103_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       8
 	MOVWF       FARG_memcpy_n+0 
@@ -10434,9 +10448,9 @@ L_Menu0480:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr102_FirmV_0_7_0+0
+	MOVLW       ?lstr104_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr102_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr104_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       16
 	MOVWF       FARG_memcpy_n+0 
@@ -10464,9 +10478,9 @@ L_Menu0483:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr103_FirmV_0_7_0+0
+	MOVLW       ?lstr105_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr103_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr105_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       16
 	MOVWF       FARG_memcpy_n+0 
@@ -10486,9 +10500,9 @@ L_Menu0484:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr104_FirmV_0_7_0+0
+	MOVLW       ?lstr106_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr104_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr106_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       16
 	MOVWF       FARG_memcpy_n+0 
@@ -12029,9 +12043,9 @@ L_LearnAuto690:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr105_FirmV_0_7_0+0
+	MOVLW       ?lstr107_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr105_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr107_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       16
 	MOVWF       FARG_memcpy_n+0 
@@ -12043,9 +12057,9 @@ L_LearnAuto690:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine2+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr106_FirmV_0_7_0+0
+	MOVLW       ?lstr108_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr106_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr108_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       16
 	MOVWF       FARG_memcpy_n+0 
@@ -13119,9 +13133,9 @@ L_LearnManual744:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine1+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr107_FirmV_0_7_0+0
+	MOVLW       ?lstr109_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr107_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr109_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       16
 	MOVWF       FARG_memcpy_n+0 
@@ -13133,9 +13147,9 @@ L_LearnManual744:
 	MOVWF       FARG_memcpy_d1+0 
 	MOVLW       hi_addr(_LCDLine2+0)
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr108_FirmV_0_7_0+0
+	MOVLW       ?lstr110_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr108_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr110_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       16
 	MOVWF       FARG_memcpy_n+0 
@@ -13278,9 +13292,9 @@ _charValueToStr:
 	MOVLW       0
 	ADDWFC      FARG_charValueToStr_string+1, 0 
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr109_FirmV_0_7_0+0
+	MOVLW       ?lstr111_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr109_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr111_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       4
 	MOVWF       FARG_memcpy_n+0 
@@ -13296,9 +13310,9 @@ L_charValueToStr745:
 	MOVLW       0
 	ADDWFC      FARG_charValueToStr_string+1, 0 
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr110_FirmV_0_7_0+0
+	MOVLW       ?lstr112_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr110_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr112_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       4
 	MOVWF       FARG_memcpy_n+0 
@@ -13331,9 +13345,9 @@ _charValueToStr_AC:
 	MOVLW       0
 	ADDWFC      FARG_charValueToStr_AC_string+1, 0 
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr111_FirmV_0_7_0+0
+	MOVLW       ?lstr113_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr111_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr113_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       4
 	MOVWF       FARG_memcpy_n+0 
@@ -13385,9 +13399,9 @@ L__intValueToStr1043:
 	MOVLW       0
 	ADDWFC      FARG_intValueToStr_string+1, 0 
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr112_FirmV_0_7_0+0
+	MOVLW       ?lstr114_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr112_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr114_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       4
 	MOVWF       FARG_memcpy_n+0 
@@ -13403,9 +13417,9 @@ L_intValueToStr747:
 	MOVLW       0
 	ADDWFC      FARG_intValueToStr_string+1, 0 
 	MOVWF       FARG_memcpy_d1+1 
-	MOVLW       ?lstr113_FirmV_0_7_0+0
+	MOVLW       ?lstr115_FirmV_0_7_0+0
 	MOVWF       FARG_memcpy_s1+0 
-	MOVLW       hi_addr(?lstr113_FirmV_0_7_0+0)
+	MOVLW       hi_addr(?lstr115_FirmV_0_7_0+0)
 	MOVWF       FARG_memcpy_s1+1 
 	MOVLW       4
 	MOVWF       FARG_memcpy_n+0 
