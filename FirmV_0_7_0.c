@@ -400,7 +400,7 @@ memcpy(LCDLine1,FirmwareVersion,16);
 LCDLines=2;
 LCDUpdateFlag=1;
 LCDUpdater();
-delay_ms(500);
+delay_ms(1000);
 
 
 Buzzer=1;

@@ -339,7 +339,7 @@ while(1)
  KeyFlag=KeyFlag+1;
  Flag20ms=0;
  }
-
+ 0;
  if(Flag500ms==1)
  {
  AutoClosePause();
