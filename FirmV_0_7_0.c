@@ -1,4 +1,4 @@
-#define FirmwareVersion "Firmware V1.1.0 "
+#define FirmwareVersion "Firmware V1.2.0 "
 
 
 #include "COGLCDDriver.h"
@@ -43,6 +43,7 @@
 #define LockForceTime 2
 #define RelaseTime 1
 #define NoiseEliminatorTreshold 3
+#define AntiJitter 200
 
 #include <built_in.h>
 
@@ -119,6 +120,7 @@ char t[11],FlashFlag=0,KeyNoiseEliminator=0,AutoClosePauseFlag=0;
 unsigned int  OverloadCounter1=0,OverloadCounter2=0;
 unsigned long temp;
 unsigned VCapM1,VCapM2;
+char KeyUpCounter=0,KeyDownCounter=0,LimitCounter=0;
 //------Configs
 char Door1OpenTime,Door2OpenTime,Door1CloseTime,Door2CloseTime,OpenPhEnable,LimiterEnable,LockEnable,OverloadTime1,OverloadTime2;
 char OpenSoftStopTime,CloseSoftStopTime,OpenSoftStartTime,CloseSoftStartTime,ActionTimeDiff,LockForce,CloseAfterPass;
@@ -1608,10 +1610,21 @@ return fin;
 char GetExternalKeysState()
 {
   char out=0;
-  if(KeyUp==0)
+  if((KeyUp==0)&&(KeyUpCounter<=AntiJitter))
+    KeyUpCounter=KeyUpCounter+1;
+  else
+    KeyUpCounter=0;
+  if(KeyUpCounter>=AntiJitter)
     out.b0=1;
-  if(KeyDown==0)
+    
+    
+  if((KeyDown==0)&&(KeyDownCounter<=AntiJitter))
+    KeyDownCounter=KeyDownCounter+1;
+  else
+    KeyDownCounter=0;
+  if(KeyDownCounter>=AntiJitter)
     out.b1=1;
+    
   return out;
 }
 
@@ -1628,7 +1641,12 @@ char GetExternalKeysState()
 
 char GetLimitSwitchState()
 {
-  if((Limit1==0)||(Limit2==0))
+  if(((Limit1==0)||(Limit2==0)) && (LimitCounter<=AntiJitter))
+    LimitCounter=LimitCounter+1;
+  else
+    LimitCounter=0;
+    
+  if(LimitCounter>=AntiJitter)
     return 1;
   else
     return 0;

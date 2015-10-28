@@ -774,12 +774,14 @@ kbi2
 kbi2_bit
 kbi3
 kbi3_bit
+keydowncounter
 keyflag
 keynoiseeliminator
 keypad_init
 keypad_key_click
 keypad_key_press
 keys
+keyupcounter
 labs
 lata
 lata0
@@ -872,6 +874,7 @@ learnauto
 learningmode
 learnmanual
 learnphase
+limitcounter
 limiter
 limiterenable
 loadconfigs
