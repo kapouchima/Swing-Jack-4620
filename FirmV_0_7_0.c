@@ -1,4 +1,4 @@
-#define FirmwareVersion "Firmware V1.2.0 "
+#define FirmwareVersion "Firmware V1.2.1 "
 
 
 #include "COGLCDDriver.h"
@@ -43,7 +43,6 @@
 #define LockForceTime 2
 #define RelaseTime 1
 #define NoiseEliminatorTreshold 3
-#define AntiJitter 200
 
 #include <built_in.h>
 
@@ -111,7 +110,7 @@ unsigned char D2CloseSoftStop;
 
 //--------Variables
 unsigned long ms500=0;
-char msCounter=0,ms20A=0,ms20B,Flag20ms=1,Flag500ms=1,State=0,LCDUpdateFlag=0,LCDFlashFlag=0,RemotePulse1=0,RemotePulse2=0;
+char msCounter=0,ms20A=0,ms20B,Flag20ms=1,Flag500ms=1,State=0,LCDUpdateFlag=0,LCDFlashFlag=0,RemotePulse1=0,RemotePulse2=0,LimitCounter=0;
 char PrevRemotePulseTime1=0,PrevRemotePulseTime2=0,RemoteAFlag=0,RemoteBFlag=0,Motor1FullSpeed=1,Motor2FullSpeed=1,BuzzCounter=0;
 char Motor1Start=0,Motor2Start=0,ZCCounter=0,PhotocellOpenFlag=0,ActiveDoors=0,BuzzFlag=0,LongBuzzFlag=0,PrevAC=0;
 char OverloadCheckFlag1=0,OverloadCheckFlag2=0,OpenDone=3,CloseDone=3,M1isSlow=0,M2isSlow=0,PassFlag=0,LearnPhase,AboutCounter=0;
@@ -120,7 +119,6 @@ char t[11],FlashFlag=0,KeyNoiseEliminator=0,AutoClosePauseFlag=0;
 unsigned int  OverloadCounter1=0,OverloadCounter2=0;
 unsigned long temp;
 unsigned VCapM1,VCapM2;
-char KeyUpCounter=0,KeyDownCounter=0,LimitCounter=0;
 //------Configs
 char Door1OpenTime,Door2OpenTime,Door1CloseTime,Door2CloseTime,OpenPhEnable,LimiterEnable,LockEnable,OverloadTime1,OverloadTime2;
 char OpenSoftStopTime,CloseSoftStopTime,OpenSoftStartTime,CloseSoftStartTime,ActionTimeDiff,LockForce,CloseAfterPass;
@@ -1610,21 +1608,10 @@ return fin;
 char GetExternalKeysState()
 {
   char out=0;
-  if((KeyUp==0)&&(KeyUpCounter<=AntiJitter))
-    KeyUpCounter=KeyUpCounter+1;
-  else
-    KeyUpCounter=0;
-  if(KeyUpCounter>=AntiJitter)
+  if(KeyUp==0)
     out.b0=1;
-    
-    
-  if((KeyDown==0)&&(KeyDownCounter<=AntiJitter))
-    KeyDownCounter=KeyDownCounter+1;
-  else
-    KeyDownCounter=0;
-  if(KeyDownCounter>=AntiJitter)
+  if(KeyDown==0)
     out.b1=1;
-    
   return out;
 }
 
@@ -1641,12 +1628,15 @@ char GetExternalKeysState()
 
 char GetLimitSwitchState()
 {
-  if(((Limit1==0)||(Limit2==0)) && (LimitCounter<=AntiJitter))
-    LimitCounter=LimitCounter+1;
+  if((Limit1==0)||(Limit2==0))
+    {
+      if(LimitCounter <= 100)
+        LimitCounter=LimitCounter+1;
+    }
   else
     LimitCounter=0;
     
-  if(LimitCounter>=AntiJitter)
+  if(LimitCounter >100)
     return 1;
   else
     return 0;
