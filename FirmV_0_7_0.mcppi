@@ -45,11 +45,9 @@ Count=4
 Path0=C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC\Defs\
 Path1=C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC\uses\P18\
 Path2=C:\Users\Kapouchima\Documents\PIC Projects\Swing Jack\Swing-Jack-4620\
-Path3=C:\Users\Kapouchima\Desktop\Swing-Jack-4620-07c418ab64216126d196a18e7f6b92008834248c\Swing-Jack-4620-07c418ab64216126d196a18e7f6b92008834248c\
 [HEADER_PATH]
 Count=2
 Path0=C:\Users\Kapouchima\Documents\PIC Projects\Swing Jack\Swing-Jack-4620\
-Path1=C:\Users\Kapouchima\Desktop\Swing-Jack-4620-07c418ab64216126d196a18e7f6b92008834248c\Swing-Jack-4620-07c418ab64216126d196a18e7f6b92008834248c\
 [HEADERS]
 Count=1
 File0=COGLCDDriver.h

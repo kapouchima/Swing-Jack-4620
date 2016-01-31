@@ -29,8 +29,8 @@
 #define KeyDown inp1
 #define KeyUp inp2
 #define KeyMenu porte.b0
-#define Limit1 inp3
-#define Limit2 inp4
+#define Limit1 inp3 // Limit's Open Action
+#define Limit2 inp4 // Limit's Close Action
 #define Phcell2 inp5
 #define Phcell1 inp6
 //---- overload delay in 500ms
@@ -909,7 +909,7 @@ FlashFlag=1;
       {StopMotor(1); StopMotor(2); OverloadCheckFlag1=0;OverloadCheckFlag2=0;State=6;PhotocellOpenFlag=1;Logger("S4 Photocell Int",1);ClearTasks(0);
       memcpy(LCDLine1,_stop,16);memcpy(LCDLine2,_ErrPhoto,16);LCDUpdateFlag=1;LCDLines=2;}
 
-    if((Events.Limiter==1)&&(LimiterEnable))
+    if((Events.Limiter==2)&&(LimiterEnable))
       {StopMotor(1); StopMotor(2); State=6;OverloadCheckFlag1=0;OverloadCheckFlag2=0;Logger("S4 Limit Switch Stop",1);ClearTasks(9);
       memcpy(LCDLine1,_stop,16);memcpy(LCDLine2,_ErrLimit,16);LCDUpdateFlag=1;LCDLines=2;}
 
@@ -1216,7 +1216,7 @@ void State7()
       {StopMotor(1); StopMotor(2); State=6;OverloadCheckFlag1=0;OverloadCheckFlag2=0;Logger("S7 Remote Pressed",1);ClearTasks(9);
       memcpy(LCDLine1,_stop,16);memcpy(LCDLine2,_ErrRemote,16);LCDUpdateFlag=1;LCDLines=2;}
 
-    if((Events.Limiter==1)&&(LimiterEnable))
+    if((Events.Limiter==2)&&(LimiterEnable))
       {StopMotor(1); StopMotor(2); State=6;OverloadCheckFlag1=0;OverloadCheckFlag2=0;Logger("S7 Limit Switch Stop",1);ClearTasks(9);
       memcpy(LCDLine1,_stop,16);memcpy(LCDLine2,_ErrLimit,16);LCDUpdateFlag=1;LCDLines=2;}
   }
@@ -1636,10 +1636,11 @@ char GetLimitSwitchState()
   else
     LimitCounter=0;
     
-  if(LimitCounter >100)
+  if((LimitCounter >100) && (Limit1 == 0))
     return 1;
-  else
-    return 0;
+  if((LimitCounter >100) && (Limit2 == 0))
+    return 2;
+  return 0;
 }
 
 
