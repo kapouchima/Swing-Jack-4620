@@ -115,14 +115,14 @@ char PrevRemotePulseTime1=0,PrevRemotePulseTime2=0,RemoteAFlag=0,RemoteBFlag=0,M
 char Motor1Start=0,Motor2Start=0,ZCCounter=0,PhotocellOpenFlag=0,ActiveDoors=0,BuzzFlag=0,LongBuzzFlag=0,PrevAC=0;
 char OverloadCheckFlag1=0,OverloadCheckFlag2=0,OpenDone=3,CloseDone=3,M1isSlow=0,M2isSlow=0,PassFlag=0,LearnPhase,AboutCounter=0;
 char _AC=0,PhotocellCount=0,MenuPointer=0,DebouncingDelayPress=0,DebouncingDelayUnpress=0,LCDFlash=0,Pressed=0,OverloadSens1=7,OverloadSens2=7,LearningMode=0,KeyFlag=0,LCDLines=1;
-char t[11],FlashFlag=0,KeyNoiseEliminator=0,AutoClosePauseFlag=0;
+char t[11],FlashFlag=0,KeyNoiseEliminator=0,AutoClosePauseFlag=0,M1SoftTM,M1SoftTL,M2SoftTM,M2SoftTL;
 unsigned int  OverloadCounter1=0,OverloadCounter2=0;
 unsigned long temp;
 unsigned VCapM1,VCapM2;
 //------Configs
 char Door1OpenTime,Door2OpenTime,Door1CloseTime,Door2CloseTime,OpenPhEnable,LimiterEnable,LockEnable,OverloadTime1,OverloadTime2;
 char OpenSoftStopTime,CloseSoftStopTime,OpenSoftStartTime,CloseSoftStartTime,ActionTimeDiff,LockForce,CloseAfterPass;
-unsigned AutoCloseTime,OverloadTreshold1,OverloadDuration1,OverloadTreshold2,OverloadDuration2;
+unsigned AutoCloseTime,OverloadTreshold1,OverloadDuration1,OverloadTreshold2,OverloadDuration2,M1SoftPower,M2SoftPower;
 //------Configs
 char LCDLine1[17]="                ";
 char LCDLine2[17]="                ";
@@ -195,6 +195,7 @@ void intValueToStr(unsigned,char*);
 void SetOverloadParams(char,char,char,char);
 void TorqueLogger();
 void AutoClosePause();
+void SetSoftPower();
 
 
 
@@ -271,34 +272,50 @@ void interrupt()
 
 
 
+ if(TMR1IF_bit)
+ {
+   if(Motor1Start)
+     Motor1=1;
+     
+   TMR1IE_bit=0;
+   TMR1ON_bit=0;
+
+   TMR1IF_bit=0;
+ }
+ 
+ 
+ 
+ 
+ 
+ if(TMR3IF_bit)
+ {
+   if(Motor2Start)
+     Motor2=1;
+
+   TMR3IE_bit=0;
+   TMR3ON_bit=0;
+
+   TMR3IF_bit=0;
+ }
+
+
+
+
 
  if(INT0F_bit==1)
  {
-   ZCCounter=ZCCounter+1;
-   if(ZCCounter==255)
-     ZCCounter=2;
-   if(ZCCounter%3==1)
-   {
      if(Motor1Start)
        if(Motor1FullSpeed)
          Motor1=1;
        else
-         Motor1=0;
+         {Motor1=0;TMR1H=M1SoftTM;TMR1L=M1SoftTL;TMR1ON_bit=1;TMR1IE_bit=1;}
 
      if(Motor2Start)
        if(Motor2FullSpeed)
          Motor2=1;
        else
-         Motor2=0;
-   }
-   if(ZCCounter%3==0)
-   {
-     if(Motor1Start)
-         Motor1=1;
+         {Motor2=0;TMR3H=M1SoftTM;TMR3L=M1SoftTL;TMR3ON_bit=1;TMR3IE_bit=1;}
 
-     if(Motor2Start)
-         Motor2=1;
-   }
    INT0F_bit=0;
  }
 }
@@ -1427,6 +1444,23 @@ intcon.b2=0; //tmr0 flag
 tmr0h=0xF3;
 tmr0l=0xCA;
 
+
+//-----T1Config
+t1con=0b00011000;
+PEIE_GIEL_bit=1;
+TMR1IP_bit=1;
+TMR1IF_bit=0;
+TMR1IE_bit=0;
+
+
+//-----T3Config
+t3con=0b00001000;
+PEIE_GIEL_bit=1;
+TMR3IP_bit=1;
+TMR3IF_bit=0;
+TMR3IE_bit=0;
+
+
 //-----Int1 and Int2 Init
 INT1IP_bit=1;
 INT1E_bit=1;
@@ -1841,6 +1875,8 @@ void SaveConfigs()
   EEPROM_Write(18,OverloadTime1);
   EEPROM_Write(19,OverloadSens2);
   EEPROM_Write(20,OverloadTime2);
+  EEPROM_Write(21,M1SoftPower);
+  EEPROM_Write(22,M2SoftPower);
   SetOverloadParams(OverloadSens1,OverloadTime1,OverloadSens2,OverloadTime2);
 
 }
@@ -1879,6 +1915,9 @@ void LoadConfigs()
   OverloadTime1=EEPROM_Read(18);
   OverloadSens2=EEPROM_Read(19);
   OverloadTime2=EEPROM_Read(20);
+  M1SoftPower=EEPROM_Read(21);
+  M2SoftPower=EEPROM_Read(22);
+  SetSoftPower();
   SetOverloadParams(OverloadSens1,OverloadTime1,OverloadSens2,OverloadTime2);
 
 }
@@ -2104,59 +2143,67 @@ if(MenuPointer==0)
  if(MenuPointer==8)
    {memcpy(LCDLine1,"08 Cl Soft Stop ",16);LCDUpdateFlag=1;
     charValueToStr(CloseSoftStopTime,LCDLine2+6);}
-
+    
  if(MenuPointer==9)
-   {memcpy(LCDLine1,"09 M1 Overl Sens",16);LCDUpdateFlag=1;
-    bytetostr(OverloadSens1,LCDLine2+3);if(OverloadSens1>7)memcpy(LCDLine2+7,"250Kg-",6);else memcpy(LCDLine2+7,"250Kg+",6);}
+   {memcpy(LCDLine1,"09 M1 Soft Power",16);LCDUpdateFlag=1;
+    charValueToStr(CloseSoftStopTime,LCDLine2+6);}
     
  if(MenuPointer==10)
-   {memcpy(LCDLine1,"10 M2 Overl Sens",16);LCDUpdateFlag=1;
-    bytetostr(OverloadSens2,LCDLine2+3);if(OverloadSens2>7)memcpy(LCDLine2+7,"250Kg-",6);else memcpy(LCDLine2+7,"250Kg+",6);}
- 
+   {memcpy(LCDLine1,"10 M2 Soft Power",16);LCDUpdateFlag=1;
+    charValueToStr(CloseSoftStopTime,LCDLine2+6);}
+
  if(MenuPointer==11)
-   {memcpy(LCDLine1,"11 M1 Overl Time",16);LCDUpdateFlag=1;
-    charValueToStr(OverloadTime1,LCDLine2+6);}
+   {memcpy(LCDLine1,"11 M1 Overl Sens",16);LCDUpdateFlag=1;
+    bytetostr(OverloadSens1,LCDLine2+3);if(OverloadSens1>7)memcpy(LCDLine2+7,"250Kg-",6);else memcpy(LCDLine2+7,"250Kg+",6);}
     
  if(MenuPointer==12)
-   {memcpy(LCDLine1,"12 M2 Overl Time",16);LCDUpdateFlag=1;
-    charValueToStr(OverloadTime2,LCDLine2+6);}
-    
+   {memcpy(LCDLine1,"12 M2 Overl Sens",16);LCDUpdateFlag=1;
+    bytetostr(OverloadSens2,LCDLine2+3);if(OverloadSens2>7)memcpy(LCDLine2+7,"250Kg-",6);else memcpy(LCDLine2+7,"250Kg+",6);}
+ 
  if(MenuPointer==13)
-   {memcpy(LCDLine1,"13 Interval Time",16);LCDUpdateFlag=1;
-    charValueToStr(ActionTimeDiff,LCDLine2+6);}
+   {memcpy(LCDLine1,"13 M1 Overl Time",16);LCDUpdateFlag=1;
+    charValueToStr(OverloadTime1,LCDLine2+6);}
     
  if(MenuPointer==14)
-   {memcpy(LCDLine1,"14 Auto-close T ",16);LCDUpdateFlag=1;
+   {memcpy(LCDLine1,"14 M2 Overl Time",16);LCDUpdateFlag=1;
+    charValueToStr(OverloadTime2,LCDLine2+6);}
+    
+ if(MenuPointer==15)
+   {memcpy(LCDLine1,"15 Interval Time",16);LCDUpdateFlag=1;
+    charValueToStr(ActionTimeDiff,LCDLine2+6);}
+    
+ if(MenuPointer==16)
+   {memcpy(LCDLine1,"16 Auto-close T ",16);LCDUpdateFlag=1;
     intValueToStr(AutoCloseTime,LCDLine2+4);}
     
-if(MenuPointer==15)
-   {memcpy(LCDLine1,"15 Factory Reset",16);LCDUpdateFlag=1;}
+if(MenuPointer==17)
+   {memcpy(LCDLine1,"17 Factory Reset",16);LCDUpdateFlag=1;}
    
- if(MenuPointer==16)
-   {memcpy(LCDLine1,"16 Open Photo En",16);LCDUpdateFlag=1;
+ if(MenuPointer==18)
+   {memcpy(LCDLine1,"18 Open Photo En",16);LCDUpdateFlag=1;
     if(OpenPhEnable==0) memcpy(LCDLine2+6,"No     ",7);else memcpy(LCDLine2+6,"Yes     ",8);}
 
- if(MenuPointer==17)
-   {memcpy(LCDLine1,"17 Limit Enable ",16);LCDUpdateFlag=1;
+ if(MenuPointer==19)
+   {memcpy(LCDLine1,"19 Limit Enable ",16);LCDUpdateFlag=1;
     if(LimiterEnable==0) memcpy(LCDLine2+6,"No     ",7);else memcpy(LCDLine2+6,"Yes     ",8);}
 
- if(MenuPointer==18)
-   {memcpy(LCDLine1,"18 Lock Enable  ",16);LCDUpdateFlag=1;
+ if(MenuPointer==20)
+   {memcpy(LCDLine1,"20 Lock Enable  ",16);LCDUpdateFlag=1;
     if(LockEnable==0) memcpy(LCDLine2+6,"No     ",7);else memcpy(LCDLine2+6,"Yes     ",8);}
 
- if(MenuPointer==19)
-   {memcpy(LCDLine1,"19 Lock Force   ",16);LCDUpdateFlag=1;
+ if(MenuPointer==21)
+   {memcpy(LCDLine1,"21 Lock Force   ",16);LCDUpdateFlag=1;
     if(LockForce==0) memcpy(LCDLine2+6,"No     ",7);else memcpy(LCDLine2+6,"Yes     ",8);}
  
- if(MenuPointer==20)
-   {memcpy(LCDLine1,"20 Au-Cl Pass   ",16);LCDUpdateFlag=1;
+ if(MenuPointer==22)
+   {memcpy(LCDLine1,"22 Au-Cl Pass   ",16);LCDUpdateFlag=1;
     charValueToStr(CloseAfterPass,LCDLine2+6);}
 
-  if(MenuPointer==21)
-   {memcpy(LCDLine1,"21 Save Changes ",16);LCDUpdateFlag=1;}
+  if(MenuPointer==23)
+   {memcpy(LCDLine1,"23 Save Changes ",16);LCDUpdateFlag=1;}
 
-  if(MenuPointer==22)
-   {memcpy(LCDLine1,"22 Discard Exit ",16);LCDUpdateFlag=1;}
+  if(MenuPointer==24)
+   {memcpy(LCDLine1,"24 Discard Exit ",16);LCDUpdateFlag=1;}
 
 
    State=101;
@@ -2200,10 +2247,10 @@ void Menu1()
 {
 
   if((Events.Keys.b0==1))
-    {if(MenuPointer==0){MenuPointer=22;}else{MenuPointer=MenuPointer-1;}State=100;}
+    {if(MenuPointer==0){MenuPointer=24;}else{MenuPointer=MenuPointer-1;}State=100;}
 
   if((Events.Keys.b2==1))
-    {if(MenuPointer==22){MenuPointer=0;}else{MenuPointer=MenuPointer+1;}State=100;}
+    {if(MenuPointer==24){MenuPointer=0;}else{MenuPointer=MenuPointer+1;}State=100;}
 
   if((Events.Keys.b1==1))
     {State=102;}
@@ -2314,8 +2361,25 @@ void Menu2()
     }
 
 
-  //overload sensitivity 1
+  //M1 Soft Power
   if(MenuPointer==9)
+    { if((Events.Keys.b0==1)&&(M1SoftPower>1))
+        {M1SoftPower=M1SoftPower-1;Menu0();State=102;}
+      if((Events.Keys.b2==1)&&(M1SoftPower<10))
+        {M1SoftPower=M1SoftPower+1;Menu0();State=102;}
+    }
+    
+    //M2 Soft Power
+  if(MenuPointer==10)
+    { if((Events.Keys.b0==1)&&(M2SoftPower>1))
+        {M2SoftPower=M2SoftPower-1;Menu0();State=102;}
+      if((Events.Keys.b2==1)&&(M2SoftPower<10))
+        {M2SoftPower=M2SoftPower+1;Menu0();State=102;}
+    }
+
+
+  //overload sensitivity 1
+  if(MenuPointer==11)
     { if((Events.Keys.b0==1)&&(OverloadSens1>0))
         {OverloadSens1=OverloadSens1-1;Menu0();State=102;}
       if((Events.Keys.b2==1)&&(OverloadSens1<15))
@@ -2324,7 +2388,7 @@ void Menu2()
     
     
   //overload sensitivity 2
-  if(MenuPointer==10)
+  if(MenuPointer==12)
     { if((Events.Keys.b0==1)&&(OverloadSens2>0))
         {OverloadSens2=OverloadSens2-1;Menu0();State=102;}
       if((Events.Keys.b2==1)&&(OverloadSens2<15))
@@ -2332,7 +2396,7 @@ void Menu2()
     }
 
   //overload time  1
-  if(MenuPointer==11)
+  if(MenuPointer==13)
     { if((Events.Keys.b0==1)&&(OverloadTime1>0))
         {OverloadTime1=OverloadTime1-1;Menu0();State=102;}
       if((Events.Keys.b2==1)&&(OverloadTime1<10))
@@ -2341,7 +2405,7 @@ void Menu2()
 
 
   //overload time  2
-  if(MenuPointer==12)
+  if(MenuPointer==14)
     { if((Events.Keys.b0==1)&&(OverloadTime2>0))
         {OverloadTime2=OverloadTime2-1;Menu0();State=102;}
       if((Events.Keys.b2==1)&&(OverloadTime2<10))
@@ -2349,7 +2413,7 @@ void Menu2()
     }
 
   //interval time
-  if(MenuPointer==13)
+  if(MenuPointer==15)
     { if((Events.Keys.b0==1)&&(ActionTimeDiff>0))
         {ActionTimeDiff=ActionTimeDiff-1;Menu0();State=102;}
       if((Events.Keys.b2==1)&&(ActionTimeDiff<255))
@@ -2357,7 +2421,7 @@ void Menu2()
     }
   
   //autoclose time
-  if(MenuPointer==14)
+  if(MenuPointer==16)
     { if((Events.Keys.b0==1)&&(AutoCloseTime>0))
         {AutoCloseTime=AutoCloseTime-1;Menu0();State=102;}
       if((Events.Keys.b2==1)&&(AutoCloseTime<65000))
@@ -2365,7 +2429,7 @@ void Menu2()
     }
 
   //factory reset
-  if(MenuPointer==15)
+  if(MenuPointer==17)
     {
       State=0;
       memcpy(LCDLine1,Sipher,16);
@@ -2378,7 +2442,7 @@ void Menu2()
     }
 
   //open photocell enable
-  if(MenuPointer==16)
+  if(MenuPointer==18)
     { if((Events.Keys.b0==1)&&(OpenPhEnable>0))
         {OpenPhEnable=OpenPhEnable-1;Menu0();State=102;}
       if((Events.Keys.b2==1)&&(OpenPhEnable<1))
@@ -2387,7 +2451,7 @@ void Menu2()
     
     
   //limiter enable
-  if(MenuPointer==17)
+  if(MenuPointer==19)
     { if((Events.Keys.b0==1)&&(LimiterEnable>0))
         {LimiterEnable=LimiterEnable-1;Menu0();State=102;}
       if((Events.Keys.b2==1)&&(LimiterEnable<1))
@@ -2395,7 +2459,7 @@ void Menu2()
     }
 
   //lock
-  if(MenuPointer==18)
+  if(MenuPointer==20)
     { if((Events.Keys.b0==1)&&(LockEnable>0))
         {LockEnable=LockEnable-1;Menu0();State=102;}
       if((Events.Keys.b2==1)&&(LockEnable<1))
@@ -2403,7 +2467,7 @@ void Menu2()
     }
 
   //lock force
-  if(MenuPointer==19)
+  if(MenuPointer==21)
     { if((Events.Keys.b0==1)&&(LockForce>0))
         {LockForce=LockForce-1;Menu0();State=102;}
       if((Events.Keys.b2==1)&&(LockForce<1))
@@ -2411,7 +2475,7 @@ void Menu2()
     }
 
   //auto close after pass
-  if(MenuPointer==20)
+  if(MenuPointer==22)
     { if((Events.Keys.b0==1)&&(CloseAfterPass>0))
         {CloseAfterPass=CloseAfterPass-1;if(CloseAfterPass==9) CloseAfterPass=0;Menu0();State=102;}
       if((Events.Keys.b2==1)&&(CloseAfterPass<255))
@@ -2419,7 +2483,7 @@ void Menu2()
     }
 
   //save
-  if(MenuPointer==21)
+  if(MenuPointer==23)
     {
       State=103;
       memcpy(LCDLine1,Sipher,16);
@@ -2430,7 +2494,7 @@ void Menu2()
     }
 
   //Exit
-  if(MenuPointer==22)
+  if(MenuPointer==24)
     {
       State=0;
       memcpy(LCDLine1,Sipher,16);
@@ -3090,4 +3154,47 @@ void AutoClosePause()
     for(i=0;i<20;i++)
       if((Tasks[i].Expired==0)&&(Tasks[i].TaskCode==9))
         {Tasks[i].Time=Tasks[i].Time+1;}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+void SetSoftPower()
+{
+  switch(M1SoftPower)
+  {
+    case 1: M1SoftTM=0x50;M1SoftTL=0x37;break;
+    case 2: M1SoftTM=0x63;M1SoftTL=0xBF;break;
+    case 3: M1SoftTM=0x77;M1SoftTL=0x47;break;
+    case 4: M1SoftTM=0x8A;M1SoftTL=0xCF;break;
+    case 5: M1SoftTM=0x9E;M1SoftTL=0x57;break;
+    case 6: M1SoftTM=0xB1;M1SoftTL=0xDF;break;
+    case 7: M1SoftTM=0xC5;M1SoftTL=0x67;break;
+    case 8: M1SoftTM=0xD8;M1SoftTL=0xEF;break;
+    case 9: M1SoftTM=0xEC;M1SoftTL=0x77;break;
+    case 10:M1SoftTM=0xFF;M1SoftTL=0x00;break;
+  }
+  
+  switch(M2SoftPower)
+  {
+    case 1: M2SoftTM=0x50;M2SoftTL=0x37;break;
+    case 2: M2SoftTM=0x63;M2SoftTL=0xBF;break;
+    case 3: M2SoftTM=0x77;M2SoftTL=0x47;break;
+    case 4: M2SoftTM=0x8A;M2SoftTL=0xCF;break;
+    case 5: M2SoftTM=0x9E;M2SoftTL=0x57;break;
+    case 6: M2SoftTM=0xB1;M2SoftTL=0xDF;break;
+    case 7: M2SoftTM=0xC5;M2SoftTL=0x67;break;
+    case 8: M2SoftTM=0xD8;M2SoftTL=0xEF;break;
+    case 9: M2SoftTM=0xEC;M2SoftTL=0x77;break;
+    case 10:M2SoftTM=0xFF;M2SoftTL=0x00;break;
+  }
 }

@@ -920,7 +920,13 @@ lvv2_bit
 lvv3
 lvv3_bit
 m1isslow
+m1softpower
+m1softtl
+m1softtm
 m2isslow
+m2softpower
+m2softtl
+m2softtm
 main
 malloc
 man_break
@@ -1454,6 +1460,7 @@ setiov3224
 setjmp
 setmotorspeed
 setoverloadparams
+setsoftpower
 shorttohex
 shorttostr
 sin

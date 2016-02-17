@@ -41,12 +41,12 @@ Count=0
 [OTHER_FILES]
 Count=0
 [SEARCH_PATH]
-Count=4
+Count=3
 Path0=C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC\Defs\
 Path1=C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC\uses\P18\
 Path2=C:\Users\Kapouchima\Documents\PIC Projects\Swing Jack\Swing-Jack-4620\
 [HEADER_PATH]
-Count=2
+Count=1
 Path0=C:\Users\Kapouchima\Documents\PIC Projects\Swing Jack\Swing-Jack-4620\
 [HEADERS]
 Count=1
@@ -100,4 +100,6 @@ File41=TouchPanel
 File42=Trigonometry
 File43=UART
 [EXPANDED_NODES]
-Count=0
+Node0=Sources
+Node1=Header Files
+Count=2
