@@ -1,4 +1,4 @@
-#define FirmwareVersion "Firmware V1.4.2 "
+#define FirmwareVersion "Firmware V1.5.0 "
 
 
 #include "COGLCDDriver.h"
@@ -120,7 +120,7 @@ unsigned int  OverloadCounter1=0,OverloadCounter2=0;
 unsigned long temp;
 unsigned VCapM1,VCapM2;
 //------Configs
-char Door1OpenTime,Door2OpenTime,Door1CloseTime,Door2CloseTime,OpenPhEnable,LimiterEnable,LockEnable,OverloadTime1,OverloadTime2;
+char Door1OpenTime,Door2OpenTime,Door1CloseTime,Door2CloseTime,OpenPhEnable,LimiterEnable,ReverseOnOpen,ReverseOnClose,OverloadTime1,OverloadTime2;
 char OpenSoftStopTime,CloseSoftStopTime,OpenSoftStartTime,CloseSoftStartTime,ActionTimeDiff,LockForce,CloseAfterPass;
 unsigned AutoCloseTime,OverloadTreshold1,OverloadDuration1,OverloadTreshold2,OverloadDuration2,M1SoftPower,M2SoftPower;
 //------Configs
@@ -615,8 +615,7 @@ void State1()
     ClearTasks(9);
     Flasher=1;
     FlashFlag=1;
-    if(Lockenable)
-      AddTask(ms500+1,12);
+    AddTask(ms500+1,12); // Unlock
     temp=ms500+delay;
     AddTask(temp,1);
     if(OpenSoftStartTime!=0)
@@ -860,14 +859,14 @@ void State3()
   }
 
   if(OpenDone==0)
-    if(LockEnable)
+    if(ReverseOnOpen)
     {StartMotor(1,_Close);StartMotor(2,_Close);SetMotorSpeed(1,Motor2FullSpeed);OverloadCheckFlag1=0; M1isSlow=0;SetMotorSpeed(Motor1FullSpeed,1);OverloadCheckFlag2=0; M2isSlow=0;
     AddTask(ms500+RelaseTime,3);AddTask(ms500+RelaseTime,4);AddTask(ms500+1+RelaseTime,13);OpenDone.b2=1;}
     else
     {AddTask(ms500+1,13);OpenDone.b2=1;}
 
   if(CheckTask(13))
-    {State=2; PrevAC=0;PassFlag=0;ClearTasks(9);memcpy(LCDLine1,_open,16);memcpy(LCDLine2,_blank,16);LCDUpdateFlag=1;LCDLines=2;}
+    {State=2; PrevAC=0;PassFlag=0;ClearTasks(9);memcpy(LCDLine1,_open,16);memcpy(LCDLine2,_blank,16);LCDUpdateFlag=1;LCDLines=1;}
 
   if((State==5)||(State==6))
     {ClearTasks(0);if(AutoCloseTime!=0){AddTask(ms500+AutoCloseTime,9);AutoClosePauseFlag=0;PrevAC=0;Logger("S3 Autoclose Renewed",1);}}
@@ -951,7 +950,7 @@ FlashFlag=1;
 
 
   if(CloseDone==0)
-    if(LockEnable)
+    if(ReverseOnClose)
     {StartMotor(1,_Open);AddTask(ms500+1,14);SetMotorSpeed(1,Motor2FullSpeed);OverloadCheckFlag1=0;M1isSlow=0;SetMotorSpeed(Motor1FullSpeed,1);OverloadCheckFlag2=0;M2isSlow=0;
     AddTask(ms500+RelaseTime,3);AddTask(ms500+1+RelaseTime,4);AddTask(ms500+1+RelaseTime,13);CloseDone.b2=1;}
     else
@@ -1098,8 +1097,7 @@ void State6()
     Flasher=1;
     FlashFlag=1;
     ClearTasks(0);
-    if(Lockenable)
-      AddTask(ms500+1,12);
+    AddTask(ms500+1,12);//Unlock
     temp=ms500+delay;
     AddTask(temp,1);
     AddTask(temp,5);
@@ -1256,7 +1254,7 @@ void State7()
   
   
   if(CloseDone==0)
-    if(LockEnable)
+    if(ReverseOnClose)
     {StartMotor(1,_Open);AddTask(ms500+1,14);SetMotorSpeed(1,Motor2FullSpeed);OverloadCheckFlag1=0; M1isSlow=0;SetMotorSpeed(Motor1FullSpeed,1);OverloadCheckFlag2=0; M2isSlow=0;
     AddTask(ms500+RelaseTime,3);AddTask(ms500+1+RelaseTime,4);AddTask(ms500+1+RelaseTime,13);CloseDone.b2=1;}
     else
@@ -1344,7 +1342,7 @@ void State8()
     {
       if(AutoCloseTime!=0)
         {AddTask(ms500+AutoCloseTime,9);}
-      if(LockEnable)
+      if(ReverseOnOpen)
       {StartMotor(1,_Close);StartMotor(2,_Close);SetMotorSpeed(1,Motor2FullSpeed);OverloadCheckFlag1=0; M1isSlow=0;SetMotorSpeed(Motor1FullSpeed,1);OverloadCheckFlag2=0; M2isSlow=0;
       AddTask(ms500+RelaseTime,3);AddTask(ms500+RelaseTime,4);AddTask(ms500+1+RelaseTime,13);OpenDone.b2=1;}
       else
@@ -1353,7 +1351,7 @@ void State8()
 
 
   if(CheckTask(13))
-    {State=2; PassFlag=0;PrevAC=0;ClearTasks(9);memcpy(LCDLine1,_open,16);memcpy(LCDLine2,_Blank,16);LCDUpdateFlag=1;LCDLines=2;}
+    {State=2; PassFlag=0;PrevAC=0;ClearTasks(9);memcpy(LCDLine1,_open,16);memcpy(LCDLine2,_Blank,16);LCDUpdateFlag=1;LCDLines=1;}
 
   if((State==5)||(State==6))
     {ClearTasks(0);if(AutoCloseTime!=0){AddTask(ms500+AutoCloseTime,9);AutoClosePauseFlag=0;PrevAC=0;Logger("S8 Autoclose Renewed",1);}}
@@ -1893,12 +1891,13 @@ void SaveConfigs()
   EEPROM_Write(14,LockForce);
   EEPROM_Write(15,OpenPhEnable);
   EEPROM_Write(16,LimiterEnable);
-  EEPROM_Write(17,LockEnable);
+  EEPROM_Write(17,ReverseOnOpen);
   EEPROM_Write(18,OverloadTime1);
   EEPROM_Write(19,OverloadSens2);
   EEPROM_Write(20,OverloadTime2);
   EEPROM_Write(21,M1SoftPower);
   EEPROM_Write(22,M2SoftPower);
+  EEPROM_Write(23,ReverseOnClose);
   SetOverloadParams(OverloadSens1,OverloadTime1,OverloadSens2,OverloadTime2);
   SetSoftPower();
 
@@ -1934,12 +1933,13 @@ void LoadConfigs()
   LockForce=EEPROM_Read(14);
   OpenPhEnable=EEPROM_Read(15);
   LimiterEnable=EEPROM_Read(16);
-  LockEnable=EEPROM_Read(17);
+  ReverseOnOpen=EEPROM_Read(17);
   OverloadTime1=EEPROM_Read(18);
   OverloadSens2=EEPROM_Read(19);
   OverloadTime2=EEPROM_Read(20);
   M1SoftPower=EEPROM_Read(21);
   M2SoftPower=EEPROM_Read(22);
+  ReverseOnClose=EEPROM_Read(23);
   SetSoftPower();
   SetOverloadParams(OverloadSens1,OverloadTime1,OverloadSens2,OverloadTime2);
 
@@ -1977,7 +1977,8 @@ void FactorySettings()
   OpenPhEnable=0;
   LimiterEnable=0;
   CloseAfterPass=0;
-  LockEnable=1;
+  ReverseOnOpen=0;
+  ReverseOnClose=0;
 
   SaveConfigs();
 }
@@ -2211,22 +2212,26 @@ if(MenuPointer==17)
     if(LimiterEnable==0) memcpy(LCDLine2+6,"No     ",7);else memcpy(LCDLine2+6,"Yes     ",8);}
 
  if(MenuPointer==20)
-   {memcpy(LCDLine1,"20 Lock Enable  ",16);LCDUpdateFlag=1;
-    if(LockEnable==0) memcpy(LCDLine2+6,"No     ",7);else memcpy(LCDLine2+6,"Yes     ",8);}
-
+   {memcpy(LCDLine1,"20 Reverse Open ",16);LCDUpdateFlag=1;
+    if(ReverseOnOpen==0) memcpy(LCDLine2+6,"No     ",7);else memcpy(LCDLine2+6,"Yes     ",8);}
+    
  if(MenuPointer==21)
-   {memcpy(LCDLine1,"21 Lock Force   ",16);LCDUpdateFlag=1;
+   {memcpy(LCDLine1,"21 Reverse Close ",16);LCDUpdateFlag=1;
+    if(ReverseOnClose==0) memcpy(LCDLine2+6,"No     ",7);else memcpy(LCDLine2+6,"Yes     ",8);}
+
+ if(MenuPointer==22)
+   {memcpy(LCDLine1,"22 Lock Force   ",16);LCDUpdateFlag=1;
     if(LockForce==0) memcpy(LCDLine2+6,"No     ",7);else memcpy(LCDLine2+6,"Yes     ",8);}
  
- if(MenuPointer==22)
-   {memcpy(LCDLine1,"22 Au-Cl Pass   ",16);LCDUpdateFlag=1;
+ if(MenuPointer==23)
+   {memcpy(LCDLine1,"23 Au-Cl Pass   ",16);LCDUpdateFlag=1;
     charValueToStr(CloseAfterPass,LCDLine2+6);}
 
-  if(MenuPointer==23)
-   {memcpy(LCDLine1,"23 Save Changes ",16);LCDUpdateFlag=1;}
-
   if(MenuPointer==24)
-   {memcpy(LCDLine1,"24 Discard Exit ",16);LCDUpdateFlag=1;}
+   {memcpy(LCDLine1,"24 Save Changes ",16);LCDUpdateFlag=1;}
+
+  if(MenuPointer==25)
+   {memcpy(LCDLine1,"25 Discard Exit ",16);LCDUpdateFlag=1;}
 
 
    State=101;
@@ -2270,10 +2275,10 @@ void Menu1()
 {
 
   if((Events.Keys.b0==1))
-    {if(MenuPointer==0){MenuPointer=24;}else{MenuPointer=MenuPointer-1;}State=100;}
+    {if(MenuPointer==0){MenuPointer=25;}else{MenuPointer=MenuPointer-1;}State=100;}
 
   if((Events.Keys.b2==1))
-    {if(MenuPointer==24){MenuPointer=0;}else{MenuPointer=MenuPointer+1;}State=100;}
+    {if(MenuPointer==25){MenuPointer=0;}else{MenuPointer=MenuPointer+1;}State=100;}
 
   if((Events.Keys.b1==1))
     {State=102;}
@@ -2481,16 +2486,25 @@ void Menu2()
         {LimiterEnable=LimiterEnable+1;Menu0();State=102;}
     }
 
-  //lock
+  //Reverse on Open
   if(MenuPointer==20)
-    { if((Events.Keys.b0==1)&&(LockEnable>0))
-        {LockEnable=LockEnable-1;Menu0();State=102;}
-      if((Events.Keys.b2==1)&&(LockEnable<1))
-        {LockEnable=LockEnable+1;Menu0();State=102;}
+    { if((Events.Keys.b0==1)&&(ReverseOnOpen>0))
+        {ReverseOnOpen=ReverseOnOpen-1;Menu0();State=102;}
+      if((Events.Keys.b2==1)&&(ReverseOnOpen<1))
+        {ReverseOnOpen=ReverseOnOpen+1;Menu0();State=102;}
+    }
+    
+    
+  //Reverse on close
+  if(MenuPointer==21)
+    { if((Events.Keys.b0==1)&&(ReverseOnClose>0))
+        {ReverseOnClose=ReverseOnClose-1;Menu0();State=102;}
+      if((Events.Keys.b2==1)&&(ReverseOnClose<1))
+        {ReverseOnClose=ReverseOnClose+1;Menu0();State=102;}
     }
 
   //lock force
-  if(MenuPointer==21)
+  if(MenuPointer==22)
     { if((Events.Keys.b0==1)&&(LockForce>0))
         {LockForce=LockForce-1;Menu0();State=102;}
       if((Events.Keys.b2==1)&&(LockForce<1))
@@ -2498,7 +2512,7 @@ void Menu2()
     }
 
   //auto close after pass
-  if(MenuPointer==22)
+  if(MenuPointer==23)
     { if((Events.Keys.b0==1)&&(CloseAfterPass>0))
         {CloseAfterPass=CloseAfterPass-1;if(CloseAfterPass==9) CloseAfterPass=0;Menu0();State=102;}
       if((Events.Keys.b2==1)&&(CloseAfterPass<255))
@@ -2506,7 +2520,7 @@ void Menu2()
     }
 
   //save
-  if(MenuPointer==23)
+  if(MenuPointer==24)
     {
       State=103;
       memcpy(LCDLine1,Sipher,16);
@@ -2517,7 +2531,7 @@ void Menu2()
     }
 
   //Exit
-  if(MenuPointer==24)
+  if(MenuPointer==25)
     {
       State=0;
       memcpy(LCDLine1,Sipher,16);

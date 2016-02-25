@@ -876,7 +876,6 @@ limitcounter
 limiter
 limiterenable
 loadconfigs
-lockenable
 lockforce
 log
 log10
@@ -1332,6 +1331,8 @@ remotepulse2
 res032
 resettaskevents
 returnautoclose
+reverseonclose
+reverseonopen
 ri
 ri_bit
 rs485master_init
