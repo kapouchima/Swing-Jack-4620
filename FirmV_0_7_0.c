@@ -1,4 +1,4 @@
-#define FirmwareVersion "Firmware V1.5.0 "
+#define FirmwareVersion "Firmware V1.5.1 "
 
 
 #include "COGLCDDriver.h"
@@ -115,7 +115,7 @@ char PrevRemotePulseTime1=0,PrevRemotePulseTime2=0,RemoteAFlag=0,RemoteBFlag=0,M
 char Motor1Start=0,Motor2Start=0,ZCCounter=0,PhotocellOpenFlag=0,ActiveDoors=0,BuzzFlag=0,LongBuzzFlag=0,PrevAC=0;
 char OverloadCheckFlag1=0,OverloadCheckFlag2=0,OpenDone=3,CloseDone=3,M1isSlow=0,M2isSlow=0,PassFlag=0,LearnPhase,AboutCounter=0;
 char _AC=0,PhotocellCount=0,MenuPointer=0,DebouncingDelayPress=0,DebouncingDelayUnpress=0,LCDFlash=0,Pressed=0,OverloadSens1=7,OverloadSens2=7,LearningMode=0,KeyFlag=0,LCDLines=1;
-char t[11],FlashFlag=0,KeyNoiseEliminator=0,AutoClosePauseFlag=0,M1SoftTM,M1SoftTL,M2SoftTM,M2SoftTL;
+char t[11],FlashFlag=0,KeyNoiseEliminator=0,AutoClosePauseFlag=0,M1SoftTM,M1SoftTL,M2SoftTM,M2SoftTL,LCDTimeout,LCDTimeoutFlag=0;
 unsigned int  OverloadCounter1=0,OverloadCounter2=0;
 unsigned long temp;
 unsigned VCapM1,VCapM2;
@@ -476,6 +476,11 @@ while(1)
   
     if(KeyNoiseEliminator<NoiseEliminatorTreshold)
       KeyNoiseEliminator=KeyNoiseEliminator+1;
+    
+    if(LCDTimeout>0)
+      {LCDTimeout=LCDTimeout-1;LCDTimeoutFlag=0;}
+    else
+      if(!LCDTimeoutFlag){memcpy(LCDLine1,Sipher,16);LCDLines=1;LCDUpdateFlag=1;LCDTimeoutFlag=1;}
       
     if(FlashFlag)
       FlasherLamp=!FlasherLamp;// Buzzer=!Buzzer;
@@ -1385,6 +1390,7 @@ void LCDUpdater()
   else
     UpdateWhenFlashing=1;
   LCDUpdateFlag=0;
+  LCDTimeout=120;
  }
 
  if(LCDFlash)

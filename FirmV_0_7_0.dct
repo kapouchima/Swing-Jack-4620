@@ -864,6 +864,8 @@ lcdflashflag
 lcdline1
 lcdline2
 lcdlines
+lcdtimeout
+lcdtimeoutflag
 lcdupdateflag
 lcdupdater
 ldexp
