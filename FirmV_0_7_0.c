@@ -1,4 +1,4 @@
-#define FirmwareVersion "Firmware V1.4.1 "
+#define FirmwareVersion "Firmware V1.4.2 "
 
 
 #include "COGLCDDriver.h"
@@ -2563,6 +2563,16 @@ void LearnAuto()
   static Learn RawData;
   static char DoorNo;
   
+  if(Events.Keys.b1)
+  {
+    State=1;
+    Flasher=0;
+    memcpy(LCDLine1,_open,16);
+    memcpy(LCDLine2," Learn Canceled ",16);
+    LCDLines=2;
+    LCDUpdateFlag=1;
+  }
+  
   switch(LearnPhase)
   {
     case 0:
@@ -2738,6 +2748,15 @@ void LearnManual()
   static unsigned long t1,t2,t3,t4;
   static char DoorNo;
   
+  if(Events.Keys.b1)
+  {
+    State=1;
+    Flasher=0;
+    memcpy(LCDLine1,_open,16);
+    memcpy(LCDLine2," Learn Canceled ",16);
+    LCDLines=2;
+    LCDUpdateFlag=1;
+  }
   
   switch(LearnPhase)
   {

@@ -275,6 +275,7 @@ main
 				SetOverloadParams
 				SetSoftPower
 		LearnAuto
+			memcpy
 			StartMotor
 			AddTask
 				Mul_16X16_U
@@ -286,8 +287,8 @@ main
 					EEPROM_Write
 					SetOverloadParams
 					SetSoftPower
-			memcpy
 		LearnManual
+			memcpy
 			StartMotor
 			AddTask
 				Mul_16X16_U
@@ -299,7 +300,6 @@ main
 					EEPROM_Write
 					SetOverloadParams
 					SetSoftPower
-			memcpy
 		About
 			memcpy
 interrupt
