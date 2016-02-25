@@ -260,9 +260,11 @@ main
 				SaveConfigs
 					EEPROM_Write
 					SetOverloadParams
+					SetSoftPower
 			SaveConfigs
 				EEPROM_Write
 				SetOverloadParams
+				SetSoftPower
 			LoadConfigs
 				EEPROM_Read
 				SetSoftPower
@@ -271,6 +273,7 @@ main
 			SaveConfigs
 				EEPROM_Write
 				SetOverloadParams
+				SetSoftPower
 		LearnAuto
 			StartMotor
 			AddTask
@@ -282,6 +285,7 @@ main
 				SaveConfigs
 					EEPROM_Write
 					SetOverloadParams
+					SetSoftPower
 			memcpy
 		LearnManual
 			StartMotor
@@ -294,6 +298,7 @@ main
 				SaveConfigs
 					EEPROM_Write
 					SetOverloadParams
+					SetSoftPower
 			memcpy
 		About
 			memcpy

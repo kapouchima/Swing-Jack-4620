@@ -1,4 +1,4 @@
-#define FirmwareVersion "Firmware V1.2.1 "
+#define FirmwareVersion "Firmware V1.4.1 "
 
 
 #include "COGLCDDriver.h"
@@ -302,9 +302,18 @@ void interrupt()
 
 
 
- if(INT0F_bit==1)
+ if(INT0F_bit)
  {
-     if(Motor1Start)
+   TMR2=0;
+   TMR2ON_bit=1;
+   TMR2IE_bit=1;
+   INT0F_bit=0;
+ }
+ 
+ 
+ if(TMR2IF_bit)
+ {
+    if(Motor1Start)
        if(Motor1FullSpeed)
          Motor1=1;
        else
@@ -315,8 +324,12 @@ void interrupt()
          Motor2=1;
        else
          {Motor2=0;TMR3H=M1SoftTM;TMR3L=M1SoftTL;TMR3ON_bit=1;TMR3IE_bit=1;}
-
-   INT0F_bit=0;
+   
+   TMR2ON_bit=0;
+   TMR2IE_bit=0;
+   TMR2IF_bit=0;
+   
+   
  }
 }
 
@@ -1453,6 +1466,15 @@ TMR1IF_bit=0;
 TMR1IE_bit=0;
 
 
+//-----T2Config
+t2con=0b00011011;
+PEIE_GIEL_bit=1;
+TMR2IP_bit=1;
+TMR2IF_bit=0;
+TMR2IE_bit=0;
+PR2=117;
+
+
 //-----T3Config
 t3con=0b00001000;
 PEIE_GIEL_bit=1;
@@ -1878,6 +1900,7 @@ void SaveConfigs()
   EEPROM_Write(21,M1SoftPower);
   EEPROM_Write(22,M2SoftPower);
   SetOverloadParams(OverloadSens1,OverloadTime1,OverloadSens2,OverloadTime2);
+  SetSoftPower();
 
 }
 
@@ -2146,11 +2169,11 @@ if(MenuPointer==0)
     
  if(MenuPointer==9)
    {memcpy(LCDLine1,"09 M1 Soft Power",16);LCDUpdateFlag=1;
-    charValueToStr(CloseSoftStopTime,LCDLine2+6);}
+    bytetostr(M1SoftPower,LCDLine2+6);}
     
  if(MenuPointer==10)
    {memcpy(LCDLine1,"10 M2 Soft Power",16);LCDUpdateFlag=1;
-    charValueToStr(CloseSoftStopTime,LCDLine2+6);}
+    bytetostr(M2SoftPower,LCDLine2+6);}
 
  if(MenuPointer==11)
    {memcpy(LCDLine1,"11 M1 Overl Sens",16);LCDUpdateFlag=1;
