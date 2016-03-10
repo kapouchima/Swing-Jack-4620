@@ -1,4 +1,4 @@
-#define FirmwareVersion "Firmware V1.5.1 "
+#define FirmwareVersion "Firmware V1.6.0 "
 
 
 #include "COGLCDDriver.h"
@@ -115,7 +115,7 @@ char PrevRemotePulseTime1=0,PrevRemotePulseTime2=0,RemoteAFlag=0,RemoteBFlag=0,M
 char Motor1Start=0,Motor2Start=0,ZCCounter=0,PhotocellOpenFlag=0,ActiveDoors=0,BuzzFlag=0,LongBuzzFlag=0,PrevAC=0;
 char OverloadCheckFlag1=0,OverloadCheckFlag2=0,OpenDone=3,CloseDone=3,M1isSlow=0,M2isSlow=0,PassFlag=0,LearnPhase,AboutCounter=0;
 char _AC=0,PhotocellCount=0,MenuPointer=0,DebouncingDelayPress=0,DebouncingDelayUnpress=0,LCDFlash=0,Pressed=0,OverloadSens1=7,OverloadSens2=7,LearningMode=0,KeyFlag=0,LCDLines=1;
-char t[11],FlashFlag=0,KeyNoiseEliminator=0,AutoClosePauseFlag=0,M1SoftTM,M1SoftTL,M2SoftTM,M2SoftTL,LCDTimeout,LCDTimeoutFlag=0;
+char t[11],FlashFlag=0,KeyNoiseEliminator=0,AutoClosePauseFlag=0,LCDTimeout,LCDTimeoutFlag=0,PowerCounter=0;
 unsigned int  OverloadCounter1=0,OverloadCounter2=0;
 unsigned long temp;
 unsigned VCapM1,VCapM2;
@@ -269,38 +269,7 @@ void interrupt()
        RemotePulse2=0;
    INT2IF_bit=0;
  }
-
-
-
- if(TMR1IF_bit)
- {
-   if(Motor1Start)
-     Motor1=1;
-     
-   TMR1IE_bit=0;
-   TMR1ON_bit=0;
-
-   TMR1IF_bit=0;
- }
  
- 
- 
- 
- 
- if(TMR3IF_bit)
- {
-   if(Motor2Start)
-     Motor2=1;
-
-   TMR3IE_bit=0;
-   TMR3ON_bit=0;
-
-   TMR3IF_bit=0;
- }
-
-
-
-
 
  if(INT0F_bit)
  {
@@ -313,22 +282,40 @@ void interrupt()
  
  if(TMR2IF_bit)
  {
-    if(Motor1Start)
+   ZCCounter=ZCCounter+1;
+    
+   if(ZCCounter==255)
+     ZCCounter=2;
+   if(ZCCounter%3==1)
+   {
+     if(Motor1Start)
        if(Motor1FullSpeed)
          Motor1=1;
        else
-         {Motor1=0;TMR1H=M1SoftTM;TMR1L=M1SoftTL;TMR1ON_bit=1;TMR1IE_bit=1;}
+         {if(PowerCounter >= (M1SoftPower))Motor1=0;}
 
      if(Motor2Start)
        if(Motor2FullSpeed)
          Motor2=1;
        else
-         {Motor2=0;TMR3H=M1SoftTM;TMR3L=M1SoftTL;TMR3ON_bit=1;TMR3IE_bit=1;}
+         {if(PowerCounter >= (M2SoftPower))Motor2=0;}
+   }
+   if(ZCCounter%3==0)
+   {
+     PowerCounter ++;
+     if(PowerCounter >= 10)
+        PowerCounter=1;
+        
+     if(Motor1Start)
+         Motor1=1;
+
+     if(Motor2Start)
+         Motor2=1;
+   }
    
    TMR2ON_bit=0;
    TMR2IE_bit=0;
    TMR2IF_bit=0;
-   
    
  }
 }
@@ -1463,11 +1450,11 @@ tmr0l=0xCA;
 
 
 //-----T1Config
-t1con=0b00011000;
+/*t1con=0b00010000;
 PEIE_GIEL_bit=1;
 TMR1IP_bit=1;
 TMR1IF_bit=0;
-TMR1IE_bit=0;
+TMR1IE_bit=0;*/
 
 
 //-----T2Config
@@ -1480,11 +1467,11 @@ PR2=117;
 
 
 //-----T3Config
-t3con=0b00001000;
+/*t3con=0b00010000;
 PEIE_GIEL_bit=1;
 TMR3IP_bit=1;
 TMR3IF_bit=0;
-TMR3IE_bit=0;
+TMR3IE_bit=0;*/
 
 
 //-----Int1 and Int2 Init
@@ -1905,7 +1892,6 @@ void SaveConfigs()
   EEPROM_Write(22,M2SoftPower);
   EEPROM_Write(23,ReverseOnClose);
   SetOverloadParams(OverloadSens1,OverloadTime1,OverloadSens2,OverloadTime2);
-  SetSoftPower();
 
 }
 
@@ -1946,7 +1932,6 @@ void LoadConfigs()
   M1SoftPower=EEPROM_Read(21);
   M2SoftPower=EEPROM_Read(22);
   ReverseOnClose=EEPROM_Read(23);
-  SetSoftPower();
   SetOverloadParams(OverloadSens1,OverloadTime1,OverloadSens2,OverloadTime2);
 
 }
@@ -3216,47 +3201,4 @@ void AutoClosePause()
     for(i=0;i<20;i++)
       if((Tasks[i].Expired==0)&&(Tasks[i].TaskCode==9))
         {Tasks[i].Time=Tasks[i].Time+1;}
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-void SetSoftPower()
-{
-  switch(M1SoftPower)
-  {
-    case 1: M1SoftTM=0x50;M1SoftTL=0x37;break;
-    case 2: M1SoftTM=0x63;M1SoftTL=0xBF;break;
-    case 3: M1SoftTM=0x77;M1SoftTL=0x47;break;
-    case 4: M1SoftTM=0x8A;M1SoftTL=0xCF;break;
-    case 5: M1SoftTM=0x9E;M1SoftTL=0x57;break;
-    case 6: M1SoftTM=0xB1;M1SoftTL=0xDF;break;
-    case 7: M1SoftTM=0xC5;M1SoftTL=0x67;break;
-    case 8: M1SoftTM=0xD8;M1SoftTL=0xEF;break;
-    case 9: M1SoftTM=0xEC;M1SoftTL=0x77;break;
-    case 10:M1SoftTM=0xFF;M1SoftTL=0x00;break;
-  }
-  
-  switch(M2SoftPower)
-  {
-    case 1: M2SoftTM=0x50;M2SoftTL=0x37;break;
-    case 2: M2SoftTM=0x63;M2SoftTL=0xBF;break;
-    case 3: M2SoftTM=0x77;M2SoftTL=0x47;break;
-    case 4: M2SoftTM=0x8A;M2SoftTL=0xCF;break;
-    case 5: M2SoftTM=0x9E;M2SoftTL=0x57;break;
-    case 6: M2SoftTM=0xB1;M2SoftTL=0xDF;break;
-    case 7: M2SoftTM=0xC5;M2SoftTL=0x67;break;
-    case 8: M2SoftTM=0xD8;M2SoftTL=0xEF;break;
-    case 9: M2SoftTM=0xEC;M2SoftTL=0x77;break;
-    case 10:M2SoftTM=0xFF;M2SoftTL=0x00;break;
-  }
 }

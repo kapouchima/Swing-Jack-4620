@@ -100,6 +100,4 @@ File41=TouchPanel
 File42=Trigonometry
 File43=UART
 [EXPANDED_NODES]
-Node0=Sources
-Node1=Header Files
-Count=2
+Count=0

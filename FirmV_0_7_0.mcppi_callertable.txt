@@ -16,7 +16,6 @@ main
 		UART1_Init
 		LoadConfigs
 			EEPROM_Read
-			SetSoftPower
 			SetOverloadParams
 	Decrypt
 	memcpy
@@ -260,20 +259,16 @@ main
 				SaveConfigs
 					EEPROM_Write
 					SetOverloadParams
-					SetSoftPower
 			SaveConfigs
 				EEPROM_Write
 				SetOverloadParams
-				SetSoftPower
 			LoadConfigs
 				EEPROM_Read
-				SetSoftPower
 				SetOverloadParams
 		Menu3
 			SaveConfigs
 				EEPROM_Write
 				SetOverloadParams
-				SetSoftPower
 		LearnAuto
 			memcpy
 			StartMotor
@@ -286,7 +281,6 @@ main
 				SaveConfigs
 					EEPROM_Write
 					SetOverloadParams
-					SetSoftPower
 		LearnManual
 			memcpy
 			StartMotor
@@ -299,7 +293,7 @@ main
 				SaveConfigs
 					EEPROM_Write
 					SetOverloadParams
-					SetSoftPower
 		About
 			memcpy
 interrupt
+	Div_8X8_U
