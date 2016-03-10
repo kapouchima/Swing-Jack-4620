@@ -18,10 +18,10 @@ hint: 1601	1164	Variable 'res' has been eliminated by optimizer	FirmV_0_7_0.c
 hint: 2567	1164	Variable 'stopT' has been eliminated by optimizer	FirmV_0_7_0.c
 diagnostics: 0	122	Compilation Started	COGLCDDriver.c
 diagnostics: 104	123	Compiled Successfully	COGLCDDriver.c
-diagnostics: 0	127	All files Compiled in 296 ms	 
+diagnostics: 0	127	All files Compiled in 297 ms	 
 hint: 0	1144	Used RAM (bytes): 2603 (66%)  Free RAM (bytes): 1344 (34%)	Used RAM (bytes): 2603 (66%)  Free RAM (bytes): 1344 (34%)
 hint: 0	1144	Used ROM (bytes): 33067 (50%)  Free ROM (bytes): 32469 (50%)	Used ROM (bytes): 33067 (50%)  Free ROM (bytes): 32469 (50%)
 diagnostics: 0	125	Project Linked Successfully	FirmV_0_7_0.mcppi
-diagnostics: 0	128	Linked in 125 ms	 
-diagnostics: 0	129	Project 'FirmV_0_7_0.mcppi' completed: 593 ms	 
-diagnostics: 0	103	Finished successfully: 10 Mar 2016, 09:48:30	FirmV_0_7_0.mcppi
+diagnostics: 0	128	Linked in 140 ms	 
+diagnostics: 0	129	Project 'FirmV_0_7_0.mcppi' completed: 608 ms	 
+diagnostics: 0	103	Finished successfully: 10 Mar 2016, 15:52:02	FirmV_0_7_0.mcppi

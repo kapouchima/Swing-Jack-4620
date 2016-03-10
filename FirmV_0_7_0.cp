@@ -239,7 +239,7 @@ void interrupt()
  if(ZCCounter%3==0)
  {
  PowerCounter ++;
- if(PowerCounter >= 10)
+ if(PowerCounter >= 20)
  PowerCounter=1;
 
  if(Motor1Start)
@@ -313,7 +313,7 @@ Init();
 
 Decrypt();
 
-memcpy(LCDLine1, "Firmware V1.6.0 " ,16);
+memcpy(LCDLine1, "Firmware V1.6.1 " ,16);
 LCDLines=2;
 LCDUpdateFlag=1;
 LCDUpdater();

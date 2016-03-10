@@ -276,8 +276,8 @@ L_interrupt25:
 	GOTO        L_interrupt34
 ;FirmV_0_7_0.c,305 :: 		PowerCounter ++;
 	INCF        _PowerCounter+0, 1 
-;FirmV_0_7_0.c,306 :: 		if(PowerCounter >= 10)
-	MOVLW       10
+;FirmV_0_7_0.c,306 :: 		if(PowerCounter >= 20)
+	MOVLW       20
 	SUBWF       _PowerCounter+0, 0 
 	BTFSS       STATUS+0, 0 
 	GOTO        L_interrupt35
